@@ -3,8 +3,9 @@
  * so search engines and social previews (WhatsApp, Facebook, LinkedIn) see it without running scripts.
  * Public, read-only: the same endpoints the pages already use for their content.
  */
-import React, { cache } from "react";
+import React from "react";
 import type { Metadata } from "next";
+import { cacheLife } from "next/cache";
 import { API_BASE } from "@/lib/home2";
 
 export interface SeoData {
@@ -32,17 +33,22 @@ const absolute = (url?: string) => {
   return `${SITE_URL}${u.startsWith("/") ? "" : "/"}${u}`;
 };
 
-/** endpoint: "pages/treatments", "home2", "home1" -> GET {API}/website/<endpoint>; null if unreachable */
-export const fetchSeo = cache(async (endpoint: string): Promise<SeoData | null> => {
+/**
+ * endpoint: "pages/treatments", "home2", "home1" -> GET {API}/website/<endpoint>; null if unreachable.
+ * Cached, so the page can be prerendered: an admin change shows up on the website within about a minute.
+ */
+export async function fetchSeo(endpoint: string): Promise<SeoData | null> {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
   try {
-    const res = await fetch(`${API_BASE}/website/${endpoint}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE}/website/${endpoint}`);
     if (!res.ok) return null;
     const json = await res.json();
     return (json?.data?.seo ?? null) as SeoData | null;
   } catch {
     return null;
   }
-});
+}
 
 /** <meta property="og:x" content="y"> pasted into "Open Graph Tags" -> { "og:x": "y" } */
 function parseMetaTags(html?: string): Record<string, string> {
