@@ -6,6 +6,8 @@ import { useHome2 } from "@/components/home/Home2Provider";
 import { submitAppointment } from "@/lib/home2";
 
 export default function AppointmentBooking() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [service, setService] = useState("");
   const [date, setDate] = useState("");
   const [type, setType] = useState<"clinic" | "online">("clinic");
@@ -26,8 +28,10 @@ export default function AppointmentBooking() {
     setSending(true);
     setError("");
     try {
-      await submitAppointment({ service, preferredDate: date, consultationType: type });
+      await submitAppointment({ name: name.trim(), phone: phone.trim(), service, preferredDate: date, consultationType: type });
       setSubmitted(true);
+      setName("");
+      setPhone("");
       setService("");
       setDate("");
     } catch (err) {
@@ -72,6 +76,33 @@ export default function AppointmentBooking() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-12 lg:items-end">
+              {/* Contact details, so the clinic can reach the patient */}
+              <div className="lg:col-span-6">
+                <label className="block text-[11.5px] font-bold uppercase tracking-wider text-[#67776E] mb-1.5">Full name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your full name"
+                  required
+                  maxLength={100}
+                  className="h-[44px] w-full rounded-md border border-[#D6CFC3] bg-white px-3.5 text-[13.5px] font-medium text-[#2C3B32] outline-none transition-all placeholder:text-[#95A39B] focus:border-[#0D3226] focus:ring-1 focus:ring-[#0D3226]"
+                />
+              </div>
+              <div className="lg:col-span-6">
+                <label className="block text-[11.5px] font-bold uppercase tracking-wider text-[#67776E] mb-1.5">Mobile number</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Your mobile number"
+                  required
+                  pattern="[+\d][\d\s\-]{6,18}"
+                  title="Please enter a valid mobile number"
+                  className="h-[44px] w-full rounded-md border border-[#D6CFC3] bg-white px-3.5 text-[13.5px] font-medium text-[#2C3B32] outline-none transition-all placeholder:text-[#95A39B] focus:border-[#0D3226] focus:ring-1 focus:ring-[#0D3226]"
+                />
+              </div>
+
               {/* Field 1: Service */}
               <div className="lg:col-span-3">
                 <label className="block text-[11.5px] font-bold uppercase tracking-wider text-[#67776E] mb-1.5">

@@ -7,7 +7,7 @@
  * API cannot be reached.
  */
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { API_BASE } from "@/lib/home2";
+import { API_BASE, withDefaultImages } from "@/lib/home2";
 import { featuredArticle, initialArticles } from "@/data/articles";
 
 export interface JournalCategory {
@@ -122,6 +122,28 @@ export const defaultJournal: JournalContent = {
 
 export const articleHref = (article: JournalArticle) => article.link || `/#article-${article.slug}`;
 
+/** An image the admin has deleted comes back as "": use the website's own image (articles are matched by title) */
+function withJournalDefaultImages(live: JournalContent): JournalContent {
+  const bundled = [defaultJournal.featured?.article, ...(defaultJournal.articlesSection?.articles ?? [])];
+  const fill = (a: JournalArticle): JournalArticle => {
+    if (a.image) return a;
+    const match = bundled.find((b) => b && b.title.trim().toLowerCase() === a.title.trim().toLowerCase());
+    return match?.image ? { ...a, image: match.image } : a;
+  };
+  // Hero and decorative images by position; article images by title, since the article list is editable
+  const { featured, articlesSection, ...rest } = live;
+  const { featured: dFeatured, articlesSection: dArticles, ...dRest } = defaultJournal;
+  return {
+    ...withDefaultImages(rest, dRest),
+    featured: featured
+      ? { ...withDefaultImages({ ...featured, article: undefined }, dFeatured), article: fill(featured.article) }
+      : featured,
+    articlesSection: articlesSection
+      ? { ...articlesSection, articles: articlesSection.articles.map(fill) }
+      : articlesSection,
+  } as JournalContent;
+}
+
 async function fetchJournal(signal?: AbortSignal): Promise<JournalContent | null> {
   try {
     const res = await fetch(`${API_BASE}/website/home1`, { cache: "no-store", signal });
@@ -147,7 +169,7 @@ export function JournalProvider({ children }: { children: React.ReactNode }) {
     fetchJournal(controller.signal).then((live) => {
       if (controller.signal.aborted) return;
       if (live) {
-        setContent(live);
+        setContent(withJournalDefaultImages(live));
         if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
       }
       setReady(true);

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { AboutContent, defaultAbout, fetchAbout } from "@/lib/aboutPage";
+import { withDefaultImages } from "@/lib/home2";
 
 const AboutContext = createContext<AboutContent>(defaultAbout);
 
@@ -15,7 +16,7 @@ export function AboutProvider({ children }: { children: React.ReactNode }) {
     fetchAbout(controller.signal).then((live) => {
       if (controller.signal.aborted) return;
       if (live) {
-        setContent(live);
+        setContent(withDefaultImages(live, defaultAbout));
         if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
       }
       setReady(true);

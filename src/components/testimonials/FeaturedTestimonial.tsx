@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { assetUrl } from "@/lib/home2";
+import { ApiTestimonial, fetchFeaturedTestimonial } from "@/lib/catalogApi";
 
 interface FeaturedTestimonialProps {
   imageSrc?: string;
@@ -10,7 +11,23 @@ interface FeaturedTestimonialProps {
 
 export default function FeaturedTestimonial({ imageSrc }: FeaturedTestimonialProps) {
   const { featured } = useTestimonialsPage();
+  const [live, setLive] = useState<ApiTestimonial | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchFeaturedTestimonial(controller.signal).then((t) => {
+      if (!controller.signal.aborted && t) setLive(t);
+    });
+    return () => controller.abort();
+  }, []);
   if (!featured) return null;
+
+  // The admin's featured card once it loads; the built-in one if there is none or the API cannot be reached
+  const name = live?.name ?? "Anita S.";
+  const category = live?.category ?? "Consultation";
+  const quote = live?.quote ?? "The doctor listened carefully and explained the next steps clearly.";
+  const photo =
+    imageSrc || (live ? assetUrl(live.photo) : "") || "/testimonial/testimonial-woman-cream-outfit.webp";
+  const showSample = live ? !!live.isSample : true;
 
   return (
     <section className="w-full bg-[#FAF8F3] py-4 sm:py-6 border-b border-[#ECE6DB]">
@@ -21,8 +38,8 @@ export default function FeaturedTestimonial({ imageSrc }: FeaturedTestimonialPro
             <div className="sm:col-span-5 lg:col-span-3">
               <div className="relative aspect-[4/3.7] sm:aspect-square w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xs">
                 <img
-                  src={imageSrc || "/testimonial/testimonial-woman-cream-outfit.webp"}
-                  alt="Anita S."
+                  src={photo}
+                  alt={name}
                   className="h-full w-full object-cover object-center"
                 />
               </div>
@@ -32,11 +49,13 @@ export default function FeaturedTestimonial({ imageSrc }: FeaturedTestimonialPro
             <div className="sm:col-span-7 lg:col-span-6 flex flex-col justify-center">
               {/* Badges - Title Case Rounded Pills */}
               <div className="flex items-center gap-2.5">
-                <span className="rounded-full px-3 py-0.5 text-[12px] font-medium text-[#7D5A2B] bg-[#F2E5D3]">
-                  {featured.sampleLabel}
-                </span>
+                {showSample && (
+                  <span className="rounded-full px-3 py-0.5 text-[12px] font-medium text-[#7D5A2B] bg-[#F2E5D3]">
+                    {featured.sampleLabel}
+                  </span>
+                )}
                 <span className="rounded-full px-3 py-0.5 text-[12px] font-medium text-[#355F46] bg-[#E3EFE5]">
-                  Consultation
+                  {category}
                 </span>
               </div>
 
@@ -47,12 +66,12 @@ export default function FeaturedTestimonial({ imageSrc }: FeaturedTestimonialPro
 
               {/* Quote */}
               <p className="mt-2.5 text-[16px] sm:text-[17px] font-normal leading-[1.6] text-[#4A554E]">
-                &ldquo;The doctor listened carefully and explained the next steps clearly.&rdquo;
+                &ldquo;{quote}&rdquo;
               </p>
 
               {/* Author */}
               <p className="mt-2 text-[14.5px] sm:text-[15px] font-medium text-[#222E27]">
-                &mdash; Anita S.
+                &mdash; {name}
               </p>
             </div>
 

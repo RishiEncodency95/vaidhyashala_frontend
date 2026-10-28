@@ -1,15 +1,19 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
+import { assetUrl } from "@/lib/home2";
+import { fetchTestimonials } from "@/lib/catalogApi";
 
 interface TestimonialItem {
   id: string;
   name: string;
-  category: "Consultation" | "Panchakarma" | "Yoga & Lifestyle" | "Products";
+  category: string;
   quote: string;
   avatarSrc?: string;
+  /** The built-in cards are all samples; admin cards say so only when marked */
+  isSample: boolean;
 }
 
 const testimonialsData: TestimonialItem[] = [
@@ -18,6 +22,7 @@ const testimonialsData: TestimonialItem[] = [
     name: "Anita S.",
     category: "Consultation",
     quote: "“The doctor listened carefully and explained the next steps clearly.”",
+    isSample: true,
     avatarSrc: "/testimonial/testimonial-woman-cream-outfit.webp",
   },
   {
@@ -25,6 +30,7 @@ const testimonialsData: TestimonialItem[] = [
     name: "Rajesh K.",
     category: "Panchakarma",
     quote: "“The team explained the session and checked that I was comfortable.”",
+    isSample: true,
     avatarSrc: "/testimonial/testimonial-mature-man-portrait.webp",
   },
   {
@@ -32,6 +38,7 @@ const testimonialsData: TestimonialItem[] = [
     name: "Meera P.",
     category: "Yoga & Lifestyle",
     quote: "“The guidance was practical and easy to discuss around my daily routine.”",
+    isSample: true,
     avatarSrc: "/testimonial/testimonial-woman-portrait.webp",
   },
   {
@@ -39,6 +46,7 @@ const testimonialsData: TestimonialItem[] = [
     name: "Amit V.",
     category: "Products",
     quote: "“The team helped me understand the product label and available packs.”",
+    isSample: true,
     avatarSrc: "/testimonial/testimonial-man-green-shirt.webp",
   },
   {
@@ -46,6 +54,7 @@ const testimonialsData: TestimonialItem[] = [
     name: "Neha R.",
     category: "Consultation",
     quote: "“The appointment coordination was clear, and the clinic felt welcoming.”",
+    isSample: true,
     avatarSrc: "/testimonial/testimonial-woman-cream-outfit.webp",
   },
   {
@@ -53,6 +62,7 @@ const testimonialsData: TestimonialItem[] = [
     name: "Sanjay M.",
     category: "Panchakarma",
     quote: "“I appreciated the attention to preparation and follow-up instructions.”",
+    isSample: true,
     avatarSrc: "/testimonial/testimonial-man-portrait.webp",
   },
 ];
@@ -63,15 +73,35 @@ interface TestimonialGridProps {
 
 export default function TestimonialGrid({ avatars }: TestimonialGridProps) {
   const { grid, categoryFilter } = useTestimonialsPage();
+  const [liveItems, setLiveItems] = useState<TestimonialItem[] | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchTestimonials(controller.signal).then((items) => {
+      if (controller.signal.aborted || !items || !items.length) return;
+      setLiveItems(
+        items.map((t) => ({
+          id: t._id,
+          name: t.name,
+          category: t.category,
+          quote: `“${t.quote}”`,
+          avatarSrc: assetUrl(t.photo) || undefined,
+          isSample: !!t.isSample,
+        })),
+      );
+    });
+    return () => controller.abort();
+  }, []);
+  // The admin's cards once they load; the built-in cards if the API has none or cannot be reached
+  const testimonials = liveItems ?? testimonialsData;
   const allLabel = categoryFilter?.allLabel || "All";
   const categories = [{ label: allLabel, value: "" }, ...(categoryFilter?.items ?? [])];
   // "" means "All", so the selection survives the label being changed in the admin
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const filtered = useMemo(() => {
-    if (selectedCategory === "") return testimonialsData;
-    return testimonialsData.filter((item) => item.category === selectedCategory);
-  }, [selectedCategory]);
+    if (selectedCategory === "") return testimonials;
+    return testimonials.filter((item) => item.category === selectedCategory);
+  }, [testimonials, selectedCategory]);
 
   if (!grid) return null;
 
@@ -136,9 +166,11 @@ export default function TestimonialGrid({ avatars }: TestimonialGridProps) {
                 <div className="flex-1 min-w-0">
                   {/* Badges */}
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="rounded px-2.5 py-0.5 text-[11.5px] font-extrabold uppercase tracking-wider bg-[#F3ECE1] text-[#8C7451]">
-                      Sample
-                    </span>
+                    {item.isSample && (
+                      <span className="rounded px-2.5 py-0.5 text-[11.5px] font-extrabold uppercase tracking-wider bg-[#F3ECE1] text-[#8C7451]">
+                        Sample
+                      </span>
+                    )}
                     <span className="rounded px-2.5 py-0.5 text-[11.5px] font-extrabold uppercase tracking-wider bg-[#E8F0EA] text-[#2F5C45]">
                       {item.category}
                     </span>

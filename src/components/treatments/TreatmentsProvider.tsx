@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { TreatmentsContent, defaultTreatments, fetchTreatments } from "@/lib/treatmentsPage";
+import { withDefaultImages } from "@/lib/home2";
 
 const TreatmentsContext = createContext<TreatmentsContent>(defaultTreatments);
 
@@ -15,7 +16,7 @@ export function TreatmentsProvider({ children }: { children: React.ReactNode }) 
     fetchTreatments(controller.signal).then((live) => {
       if (controller.signal.aborted) return;
       if (live) {
-        setContent(live);
+        setContent(withDefaultImages(live, defaultTreatments));
         if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
       }
       setReady(true);

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { X, Calendar, ChevronDown, ArrowRight, Info, CheckCircle2, Check } from "lucide-react";
+import { submitConsultation } from "@/lib/home2";
 
 export interface PlanConsultationModalProps {
   isOpen: boolean;
@@ -22,6 +23,8 @@ export default function PlanConsultationModal({
   const [message, setMessage] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
   // Close on Escape key & lock body scroll
   useEffect(() => {
@@ -45,9 +48,32 @@ export default function PlanConsultationModal({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError("");
+    if (!agreed) {
+      setError("Please agree to be contacted about your request.");
+      return;
+    }
+    setSending(true);
+    try {
+      await submitConsultation({
+        consultationType,
+        name: fullName.trim(),
+        phone: mobileNumber.trim(),
+        email: email.trim(),
+        service,
+        preferredDate,
+        preferredTime,
+        message: message.trim(),
+        consent: agreed,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleReset = () => {
@@ -60,6 +86,7 @@ export default function PlanConsultationModal({
     setEmail("");
     setMessage("");
     setAgreed(false);
+    setError("");
     onClose();
   };
 
@@ -306,6 +333,7 @@ export default function PlanConsultationModal({
                   Full name <span className="text-[#BA2B2B]">*</span>
                 </label>
                 <input
+                  required
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
@@ -320,6 +348,7 @@ export default function PlanConsultationModal({
                   Mobile number <span className="text-[#BA2B2B]">*</span>
                 </label>
                 <input
+                  required
                   type="tel"
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
@@ -335,6 +364,7 @@ export default function PlanConsultationModal({
                 </label>
                 <div className="relative">
                   <select
+                    required
                     value={service}
                     onChange={(e) => setService(e.target.value)}
                     className={`w-full h-[36px] appearance-none px-3 pr-8 text-[13px] bg-white border border-[#D8D2C6] rounded-md outline-none transition-all focus:border-[#0A3527] focus:ring-1 focus:ring-[#0A3527] cursor-pointer ${
@@ -361,6 +391,7 @@ export default function PlanConsultationModal({
                 </label>
                 <div className="relative">
                   <input
+                    required
                     type="date"
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
@@ -382,6 +413,7 @@ export default function PlanConsultationModal({
                 </label>
                 <div className="relative">
                   <select
+                    required
                     value={preferredTime}
                     onChange={(e) => setPreferredTime(e.target.value)}
                     className={`w-full h-[36px] appearance-none px-3 pr-8 text-[13px] bg-white border border-[#D8D2C6] rounded-md outline-none transition-all focus:border-[#0A3527] focus:ring-1 focus:ring-[#0A3527] cursor-pointer ${
@@ -451,6 +483,12 @@ export default function PlanConsultationModal({
               </label>
             </div>
 
+            {error && (
+              <p role="alert" className="mt-2 text-[12.5px] font-medium text-[#B3261E]">
+                {error}
+              </p>
+            )}
+
             {/* Bottom Actions Row */}
             <div className="mt-3 pt-2.5 border-t border-[#EDE7DD] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <span className="text-[11px] text-[#7A8A81]">
@@ -468,9 +506,10 @@ export default function PlanConsultationModal({
 
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[13px] font-medium text-white transition-all shadow-xs bg-[#0A3527] hover:bg-[#124534] cursor-pointer"
+                  disabled={sending}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[13px] font-medium text-white transition-all shadow-xs bg-[#0A3527] hover:bg-[#124534] cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  <span>Request Appointment</span>
+                  <span>{sending ? "Sending..." : "Request Appointment"}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

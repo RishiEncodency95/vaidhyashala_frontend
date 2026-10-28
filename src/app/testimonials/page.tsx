@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { JsonLd, withSeo } from "@/lib/seoServer";
 import TestimonialsNavbar from "@/components/testimonials/TestimonialsNavbar";
 import TestimonialsHero from "@/components/testimonials/TestimonialsHero";
 import FeaturedTestimonial from "@/components/testimonials/FeaturedTestimonial";
@@ -12,15 +13,20 @@ import TestimonialsCTA from "@/components/testimonials/TestimonialsCTA";
 import { TestimonialsProvider } from "@/lib/testimonialsPage";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "Patient Testimonials & Experiences | The Vaidhyashala",
   description:
     "Read genuine experiences from patients at The Vaidhyashala. Feedback on Ayurvedic consultations, Panchakarma therapies, and compassionate clinic care.",
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo(fallbackMetadata, "pages/testimonials");
+}
+
 export default function TestimonialsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FAF8F3] text-[#22332A]">
+      <JsonLd endpoint="pages/testimonials" />
       {/* 1. Header Navigation */}
       <TestimonialsNavbar />
 

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import { useProductsPage } from "@/lib/productsPage";
+import { assetUrl } from "@/lib/home2";
+import { ApiProduct, fetchProducts } from "@/lib/catalogApi";
 import ProductDetailModal from "@/components/products/ProductDetailModal";
 import ProductEnquiryModal from "@/components/products/ProductEnquiryModal";
 
@@ -14,7 +16,18 @@ interface Product {
   description: React.ReactNode;
   searchText: string;
   imageSrc: string;
+  /** Only set for products from the admin */
+  detail?: {
+    productType?: string;
+    packOptions?: string;
+    availability?: string;
+    productInfo?: string;
+    directions?: string;
+    gallery: string[];
+  };
 }
+
+const GUIDANCE_IMAGE = "/product/vaidhyashala_product_page_images/14_product_guidance_consultation.webp";
 
 const allProducts: Product[] = [
   {
@@ -207,10 +220,48 @@ const categoryNames = [
   "Wellness Essentials",
 ];
 
+/** Admin product -> card. A product without an uploaded image keeps the website's own picture for it */
+const fromApi = (p: ApiProduct): Product => {
+  const name = p.category?.name ?? "";
+  const bundled = allProducts.find((s) => s.title.toLowerCase() === p.title.trim().toLowerCase());
+  const imageSrc = assetUrl(p.image) || bundled?.imageSrc || GUIDANCE_IMAGE;
+  const text = p.shortDescription || p.description || "";
+  return {
+    id: p._id,
+    title: p.title,
+    categoryTag: name.toUpperCase(),
+    category: name,
+    description: text,
+    searchText: text,
+    imageSrc,
+    detail: {
+      productType: p.productType,
+      packOptions: p.packOptions,
+      availability: p.availability,
+      productInfo: p.productInfo,
+      directions: p.directions,
+      gallery: [imageSrc, assetUrl(p.galleryImage1) || imageSrc, assetUrl(p.galleryImage2) || GUIDANCE_IMAGE],
+    },
+  };
+};
+
 export default function ProductCatalog() {
   const { catalog, categoryFilter } = useProductsPage();
+  const [liveProducts, setLiveProducts] = useState<Product[] | null>(null);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchProducts(controller.signal).then((items) => {
+      if (!controller.signal.aborted && items && items.length) setLiveProducts(items.map(fromApi));
+    });
+    return () => controller.abort();
+  }, []);
+  // The admin's list once it loads; the built-in list if the API has nothing or cannot be reached
+  const products = liveProducts ?? allProducts;
+  const names = liveProducts
+    ? Array.from(new Set(liveProducts.map((p) => p.category).filter(Boolean)))
+    : categoryNames;
   const allLabel = categoryFilter?.allLabel || "All Products";
-  const categories = [allLabel, ...categoryNames];
+  const categories = [allLabel, ...names];
   // "" means "All", so the selection survives the label being changed in the admin
   const [selectedCategory, setSelectedCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -220,7 +271,7 @@ export default function ProductCatalog() {
   const [enquiryProduct, setEnquiryProduct] = useState<Product | null>(null);
 
   const filteredProducts = useMemo(() => {
-    return allProducts.filter((product) => {
+    return products.filter((product) => {
       const matchesCategory =
         selectedCategory === "" ||
         product.category.toLowerCase() === selectedCategory.toLowerCase();
@@ -231,7 +282,7 @@ export default function ProductCatalog() {
         product.category.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [products, selectedCategory, searchQuery]);
 
   if (!catalog) return null;
 
@@ -344,7 +395,7 @@ export default function ProductCatalog() {
         {/* Load More Button */}
         <div className="mt-7 sm:mt-9 flex flex-col items-center justify-center text-center">
           <button
-            onClick={() => setShown(Math.min(visibleCount + catalog.loadMoreStep, allProducts.length))}
+            onClick={() => setShown(Math.min(visibleCount + catalog.loadMoreStep, filteredProducts.length))}
             className="inline-flex items-center gap-2 rounded-md border border-[#D5CDBC] bg-[#FAF8F3] px-6 py-2.5 text-[14px] font-medium text-[#0D3226] transition-all hover:bg-[#F3ECE0]"
           >
             <span>{catalog.loadMoreLabel}</span>
@@ -366,10 +417,11 @@ export default function ProductCatalog() {
             title: selectedProduct.title,
             categoryTag: selectedProduct.categoryTag,
             description: selectedProduct.searchText,
-            images: [
+            ...selectedProduct.detail,
+            images: selectedProduct.detail?.gallery ?? [
               selectedProduct.imageSrc,
               selectedProduct.imageSrc,
-              "/product/vaidhyashala_product_page_images/14_product_guidance_consultation.webp",
+              GUIDANCE_IMAGE,
             ],
           }}
           onContactClinic={() => {

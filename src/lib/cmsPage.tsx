@@ -7,7 +7,7 @@
  * cannot be reached (or the page is a draft).
  */
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { API_BASE } from "@/lib/home2";
+import { API_BASE, withDefaultImages } from "@/lib/home2";
 
 export type CmsContent<T> = T & { seo?: { metaTitle?: string } };
 
@@ -55,7 +55,7 @@ export function createCmsPage<T>(key: string, defaults: CmsContent<T>) {
       fetchCmsPage<T>(key, controller.signal).then((live) => {
         if (controller.signal.aborted) return;
         if (live) {
-          setContent(live);
+          setContent(withDefaultImages(live, defaults));
           if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
         }
         setReady(true);

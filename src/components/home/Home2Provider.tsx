@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Home2Content, defaultHome2, fetchHome2 } from "@/lib/home2";
+import { Home2Content, defaultHome2, fetchHome2, withDefaultImages } from "@/lib/home2";
 
 const Home2Context = createContext<Home2Content>(defaultHome2);
 
@@ -15,7 +15,7 @@ export function Home2Provider({ children }: { children: React.ReactNode }) {
     fetchHome2(controller.signal).then((live) => {
       if (controller.signal.aborted) return;
       if (live) {
-        setContent(live);
+        setContent(withDefaultImages(live, defaultHome2));
         if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
       }
       setReady(true);

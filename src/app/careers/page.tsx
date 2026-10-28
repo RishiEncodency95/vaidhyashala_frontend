@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd, withSeo } from "@/lib/seoServer";
 import CareersNavbar from "@/components/careers/CareersNavbar";
 import CareersHero from "@/components/careers/CareersHero";
 import ExploreOpportunities from "@/components/careers/ExploreOpportunities";
@@ -8,15 +9,20 @@ import ShareProfileBanner from "@/components/careers/ShareProfileBanner";
 import { CareersProvider } from "@/lib/careersPage";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "Careers | Vaidhyashala Ayurvedic Clinic",
   description:
     "Build a purposeful career in Ayurveda. Be a part of a dedicated team committed to authentic Ayurvedic care, holistic healing and healthier lives at Vaidhyashala.",
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo(fallbackMetadata, "pages/careers");
+}
+
 export default function CareersPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FAF7F0] text-[#22332A]">
+      <JsonLd endpoint="pages/careers" />
       {/* 1. Header & Navigation */}
       <CareersNavbar />
 

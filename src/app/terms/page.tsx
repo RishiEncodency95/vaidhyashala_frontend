@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { JsonLd, withSeo } from "@/lib/seoServer";
 import TermsNavbar from "@/components/terms/TermsNavbar";
 import TermsHero from "@/components/terms/TermsHero";
 import TermsCards from "@/components/terms/TermsCards";
@@ -8,15 +9,20 @@ import BeforeSubmittingBanner from "@/components/terms/BeforeSubmittingBanner";
 import { TermsProvider } from "@/lib/termsPage";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "Terms of Use | The Vaidhyashala",
   description:
     "Guidelines for using the website and requesting clinic assistance. Read our draft terms of use for Vaidhyashala website, consultations, therapies and product information.",
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo(fallbackMetadata, "pages/terms");
+}
+
 export default function TermsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FBF9F5] text-[#22332A]">
+      <JsonLd endpoint="pages/terms" />
       {/* Top Navigation */}
       <TermsNavbar />
 

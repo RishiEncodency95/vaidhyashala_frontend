@@ -71,7 +71,7 @@ export default function Navbar() {
               onClick={() => setIsConsultModalOpen(true)}
               className="group inline-flex items-center gap-2 rounded-lg bg-[#093526] px-5 py-2.5 text-[14.5px] font-semibold text-white shadow-xs transition-all hover:bg-[#104834] cursor-pointer"
             >
-              <span>Book a Consultation</span>
+              <span>Book Appointment</span>
               <ArrowRight className="h-4 w-4 text-[#D8B45D] transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
           </div>
@@ -112,7 +112,7 @@ export default function Navbar() {
                 }}
                 className="flex w-full items-center justify-center gap-2 rounded-md bg-[#093526] py-2.5 text-[15px] font-semibold text-white"
               >
-                <span>Book a Consultation</span>
+                <span>Book Appointment</span>
                 <ArrowRight className="h-4 w-4 text-[#D8B45D]" />
               </button>
             </div>

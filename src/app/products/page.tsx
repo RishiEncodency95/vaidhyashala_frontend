@@ -1,5 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
+import { JsonLd, withSeo } from "@/lib/seoServer";
 import ProductsNavbar from "@/components/products/ProductsNavbar";
 import ProductsHero from "@/components/products/ProductsHero";
 import ProductCatalog from "@/components/products/ProductCatalog";
@@ -9,15 +10,20 @@ import ProductsFAQ from "@/components/products/ProductsFAQ";
 import { ProductsProvider } from "@/lib/productsPage";
 import Footer from "@/components/Footer";
 
-export const metadata: Metadata = {
+const fallbackMetadata: Metadata = {
   title: "Ayurvedic Products & Formulations | The Vaidhyashala",
   description:
     "Explore Ayurvedic preparations, therapy oils and wellness essentials. Ask our team about product details, availability and consultations.",
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeo(fallbackMetadata, "pages/products");
+}
+
 export default function ProductsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#FAF8F3] text-[#22332A]">
+      <JsonLd endpoint="pages/products" />
       {/* Top Navigation */}
       <ProductsNavbar />
 

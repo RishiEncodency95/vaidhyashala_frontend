@@ -14,6 +14,28 @@ export const assetUrl = (src?: string) => {
   return src.startsWith("/") ? src : `/${src}`;
 };
 
+/**
+ * An image the admin has deleted comes back as "": put the website's own image for that spot back.
+ * Walks live and default content together (lists match by position); only image fields are touched.
+ */
+export function withDefaultImages<T>(live: T, defaults: unknown): T {
+  const walk = (l: unknown, d: unknown, key = ""): unknown => {
+    if (Array.isArray(l)) {
+      return l.map((item, i) => walk(item, Array.isArray(d) ? d[i] : undefined, key));
+    }
+    if (l && typeof l === "object") {
+      const dObj = d && typeof d === "object" ? (d as Record<string, unknown>) : {};
+      return Object.fromEntries(
+        Object.entries(l as Record<string, unknown>).map(([k, v]) => [k, walk(v, dObj[k], k)]),
+      );
+    }
+    const isImage = /image$/i.test(key) || key === "image";
+    if (isImage && (l === "" || l == null) && typeof d === "string" && d) return d;
+    return l;
+  };
+  return walk(live, defaults) as T;
+}
+
 export interface Home2Content {
   hero: {
     eyebrow: string;
@@ -244,20 +266,34 @@ export async function fetchHome2(signal?: AbortSignal): Promise<Home2Content | n
 }
 
 export interface AppointmentPayload {
+  name: string;
+  phone: string;
   service: string;
   preferredDate: string;
   consultationType: "clinic" | "online";
 }
 
-/** POST {API}/website/home2/appointments. Throws Error(message) on failure. */
-export async function submitAppointment(payload: AppointmentPayload): Promise<void> {
+export interface ConsultationPayload {
+  consultationType: "clinic" | "online";
+  name: string;
+  phone: string;
+  email?: string;
+  service: string;
+  preferredDate: string;
+  preferredTime: string;
+  message?: string;
+  consent: boolean;
+}
+
+/** POST {API}/website/home2/consultations ("Plan your consultation" popup). Throws Error(message) on failure. */
+export async function submitConsultation(payload: ConsultationPayload): Promise<void> {
+  await postJson(`${API_BASE}/website/home2/consultations`, payload);
+}
+
+async function postJson(url: string, payload: unknown): Promise<void> {
   let res: Response;
   try {
-    res = await fetch(`${API_BASE}/website/home2/appointments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
   } catch {
     throw new Error("We could not reach the server. Please try again.");
   }
@@ -266,4 +302,9 @@ export async function submitAppointment(payload: AppointmentPayload): Promise<vo
     const detail = Array.isArray(json?.errors) && json.errors.length ? String(json.errors[0]) : "";
     throw new Error(detail || json?.message || "Something went wrong. Please try again.");
   }
+}
+
+/** POST {API}/website/home2/appointments. Throws Error(message) on failure. */
+export async function submitAppointment(payload: AppointmentPayload): Promise<void> {
+  await postJson(`${API_BASE}/website/home2/appointments`, payload);
 }

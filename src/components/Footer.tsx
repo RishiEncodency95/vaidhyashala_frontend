@@ -489,15 +489,19 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="enCodency Pvt. Ltd."
-                  className="shrink-0 transition-opacity hover:opacity-90"
+                  className="relative block shrink-0 transition-opacity hover:opacity-90"
+                  style={{ width: u(83.35), height: u(28) }}
                 >
+                  {/* The link keeps its original footprint, so nothing around it moves; the logo is
+                      wider than that and grows into the gaps on both sides (object-cover trims only
+                      the empty red band above and below the text). */}
                   <Image
-                    src="/encodency-logo.webp"
+                    src="/enc.webp"
                     alt="enCodency Pvt. Ltd. - Raise the Bar"
-                    width={1600}
-                    height={473}
-                    className="w-auto rounded-[3px]"
-                    style={{ height: u(28) }}
+                    width={2164}
+                    height={727}
+                    className="absolute top-0 max-w-none rounded-[3px] object-cover"
+                    style={{ left: u(-12), width: u(110), height: u(28) }}
                   />
                 </a>
                 <button
