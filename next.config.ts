@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
     inlineCss: true,
   },
   images: {
+    // In development, serve the files as they are: resizing every image on first view made pages
+    // slow to show their pictures. Production builds still resize and convert them.
+    unoptimized: process.env.NODE_ENV === "development",
     // WebP only: AVIF is a little smaller but much slower to create, so images appeared late on first view
     formats: ["image/webp"],
     // More widths than the defaults, so each image gets a copy close to its on-screen size

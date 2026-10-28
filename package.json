@@ -12,7 +12,8 @@
     "clean:images": "node remove_original_images.js",
     "images:webp": "node convert_to_webp.js && node update_image_references.js",
     "optimize:images": "node optimize_all_images.js",
-    "images:all": "node convert_to_webp.js && node update_image_references.js && node remove_original_images.js && node optimize_all_images.js"
+    "images:all": "node convert_to_webp.js && node update_image_references.js && node remove_original_images.js && node optimize_all_images.js",
+    "warm-images": "node scripts/warm-images.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.56.0",
