@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { X, ChevronDown, ArrowRight, Check, Leaf } from "lucide-react";
+import { API_BASE } from "@/lib/home2";
 
 export interface ProductEnquiryModalProps {
   isOpen: boolean;
@@ -29,6 +30,8 @@ export default function ProductEnquiryModal({
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
   // Lock background scroll and handle ESC key
   useEffect(() => {
@@ -58,13 +61,48 @@ export default function ProductEnquiryModal({
     product?.imageSrc ||
     "/product/vaidhyashala_product_page_images/05_ayurvedic_massage_oil.webp";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Saved with the Products page enquiries (Admin → Product Enquiries), marked as coming from this popup
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setError("");
+    if (!formData.fullName.trim()) return setError("Please enter your full name.");
+    if (!/^[+\d][\d\s-]{6,18}$/.test(formData.mobile.trim())) return setError("Please enter a valid mobile number.");
+    if (!formData.enquiryType) return setError("Please choose what you would like to know.");
+    if (!formData.consent) return setError("Please agree to be contacted about this product enquiry.");
+
+    setSending(true);
+    try {
+      const res = await fetch(`${API_BASE}/website/products/enquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.fullName.trim(),
+          mobile: formData.mobile.trim(),
+          ...(formData.email.trim() ? { email: formData.email.trim() } : {}),
+          productName: productTitle,
+          // Only products from the admin have a database id; the built-in list does not
+          ...(product?.id && /^[a-f\d]{24}$/i.test(product.id) ? { productId: product.id } : {}),
+          enquiryType: formData.enquiryType,
+          ...(formData.message.trim() ? { message: formData.message.trim() } : {}),
+          source: "product-modal",
+        }),
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        const detail = Array.isArray(json?.errors) && json.errors.length ? String(json.errors[0]) : "";
+        throw new Error(detail || json?.message || "Something went wrong. Please try again.");
+      }
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof TypeError ? "We could not reach the server. Please try again." : err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleReset = () => {
     setSubmitted(false);
+    setError("");
     setFormData({
       fullName: "",
       mobile: "",
@@ -272,10 +310,7 @@ export default function ProductEnquiryModal({
 
             {/* Enquiry Form */}
             <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setSubmitted(true);
-              }}
+              onSubmit={handleSubmit}
               noValidate
               className="mt-3 space-y-2.5"
             >
@@ -385,6 +420,12 @@ export default function ProductEnquiryModal({
                 </label>
               </div>
 
+              {error && (
+                <p role="alert" className="text-[12px] sm:text-[12.5px] font-semibold text-[#B3261E]">
+                  {error}
+                </p>
+              )}
+
               {/* Bottom Footer Row: Availability text on Left, Action Buttons on Right */}
               <div className="pt-1.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
                 <p className="text-[11px] sm:text-[11.5px] font-semibold text-[#66756C]">
@@ -401,14 +442,11 @@ export default function ProductEnquiryModal({
                   </button>
 
                   <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSubmitted(true);
-                    }}
-                    className="group inline-flex items-center gap-2 rounded-md bg-[#0A2E22] hover:bg-[#124232] px-4.5 py-1.5 sm:py-2 text-[12.5px] sm:text-[13px] font-bold text-white shadow-xs transition-all cursor-pointer"
+                    type="submit"
+                    disabled={sending || !formData.consent}
+                    className="group inline-flex items-center gap-2 rounded-md bg-[#0A2E22] hover:bg-[#124232] px-4.5 py-1.5 sm:py-2 text-[12.5px] sm:text-[13px] font-bold text-white shadow-xs transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#0A2E22]"
                   >
-                    <span>Send Enquiry</span>
+                    <span>{sending ? "Sending..." : "Send Enquiry"}</span>
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                   </button>
                 </div>

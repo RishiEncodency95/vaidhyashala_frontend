@@ -120,7 +120,8 @@ export const defaultJournal: JournalContent = {
   },
 };
 
-export const articleHref = (article: JournalArticle) => article.link || `/#article-${article.slug}`;
+/** Where "Read Article" goes: the admin's link, otherwise the article's card on the Health Journal page */
+export const articleHref = (article: JournalArticle) => article.link || `/blog#article-${article.slug}`;
 
 /** An image the admin has deleted comes back as "": use the website's own image (articles are matched by title) */
 function withJournalDefaultImages(live: JournalContent): JournalContent {

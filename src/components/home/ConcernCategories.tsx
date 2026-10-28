@@ -3,6 +3,7 @@
 import React from "react";
 import { useHome2 } from "@/components/home/Home2Provider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ConcernCategories() {
   const { concerns } = useHome2();
@@ -25,11 +26,16 @@ export default function ConcernCategories() {
 
         {/* Health Concerns Graphic Image (t1.png) */}
         <div className="mt-3.5 sm:mt-4 w-full flex justify-center items-center">
-          <img
-            src={assetUrl(concerns.image)}
-            alt={concerns.imageAlt}
-            className="w-full h-auto object-contain max-w-[1360px]"
-          />
+          {concerns.image && (
+            <CmsImage
+              src={assetUrl(concerns.image)}
+              alt={concerns.imageAlt}
+              width={2171}
+              height={161}
+              sizes="(min-width: 1400px) 1360px, 100vw"
+              className="w-full h-auto object-contain max-w-[1360px]"
+            />
+          )}
         </div>
       </div>
     </section>

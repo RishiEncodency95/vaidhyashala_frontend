@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useHome2 } from "@/components/home/Home2Provider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ProductsBanner() {
   const { products } = useHome2();
@@ -13,11 +14,15 @@ export default function ProductsBanner() {
     <section className="relative w-full overflow-hidden bg-[#FAF7F2] border-b border-[#ECE6DB]">
       {/* Background Banner Image: /home/i2.png */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={assetUrl(products.image)}
-          alt={products.imageAlt}
-          className="h-full w-full object-cover object-right"
-        />
+        {products.image && (
+          <CmsImage
+            src={assetUrl(products.image)}
+            alt={products.imageAlt}
+            fill
+            sizes="100vw"
+            className="h-full w-full object-cover object-right"
+          />
+        )}
         {/* Soft mobile gradient overlay to guarantee pristine readability on small screens */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent sm:via-[#FAF7F2]/60 md:hidden" />
       </div>

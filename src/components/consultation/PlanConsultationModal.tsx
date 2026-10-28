@@ -48,6 +48,10 @@ export default function PlanConsultationModal({
 
   if (!isOpen) return null;
 
+  // Today in the visitor's own timezone: earlier dates cannot be requested
+  const now = new Date();
+  const today = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -393,8 +397,17 @@ export default function PlanConsultationModal({
                   <input
                     required
                     type="date"
+                    min={today}
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
+                    // The input is invisible and covers the box: open the picker wherever it is clicked
+                    onClick={(e) => {
+                      try {
+                        e.currentTarget.showPicker();
+                      } catch {
+                        // already open, or not supported: the browser's own behaviour applies
+                      }
+                    }}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
                   <div className="w-full h-[36px] px-3 pr-8 flex items-center bg-white border border-[#D8D2C6] rounded-md text-[13px]">
@@ -506,8 +519,8 @@ export default function PlanConsultationModal({
 
                 <button
                   type="submit"
-                  disabled={sending}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[13px] font-medium text-white transition-all shadow-xs bg-[#0A3527] hover:bg-[#124534] cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                  disabled={sending || !agreed}
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md text-[13px] font-medium text-white transition-all shadow-xs bg-[#0A3527] hover:bg-[#124534] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#0A3527]"
                 >
                   <span>{sending ? "Sending..." : "Request Appointment"}</span>
                   <ArrowRight className="w-3.5 h-3.5" />

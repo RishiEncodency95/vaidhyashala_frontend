@@ -12,7 +12,7 @@ export default function FeaturedArticle() {
   const { article } = featured;
 
   return (
-    <section className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 pt-2.5 sm:pt-3 pb-2.5 sm:pb-3">
+    <section id={`article-${article.slug}`} className="scroll-mt-24 mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8 pt-2.5 sm:pt-3 pb-2.5 sm:pb-3">
       <div className="relative overflow-hidden rounded-2xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs transition-shadow duration-300 hover:shadow-sm">
         <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[380px] lg:min-h-[420px]">
           {/* Left Column: Article image */}

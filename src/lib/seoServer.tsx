@@ -3,9 +3,8 @@
  * so search engines and social previews (WhatsApp, Facebook, LinkedIn) see it without running scripts.
  * Public, read-only: the same endpoints the pages already use for their content.
  */
-import React from "react";
+import React, { Suspense, cache } from "react";
 import type { Metadata } from "next";
-import { cacheLife } from "next/cache";
 import { API_BASE } from "@/lib/home2";
 
 export interface SeoData {
@@ -35,20 +34,19 @@ const absolute = (url?: string) => {
 
 /**
  * endpoint: "pages/treatments", "home2", "home1" -> GET {API}/website/<endpoint>; null if unreachable.
- * Cached, so the page can be prerendered: an admin change shows up on the website within about a minute.
+ * Never cached, so whatever is saved in the admin is on the very next page load. Fetched once per
+ * request (React cache), shared by the metadata and the schema script.
  */
-export async function fetchSeo(endpoint: string): Promise<SeoData | null> {
-  "use cache";
-  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
+export const fetchSeo = cache(async (endpoint: string): Promise<SeoData | null> => {
   try {
-    const res = await fetch(`${API_BASE}/website/${endpoint}`);
+    const res = await fetch(`${API_BASE}/website/${endpoint}`, { cache: "no-store" });
     if (!res.ok) return null;
     const json = await res.json();
     return (json?.data?.seo ?? null) as SeoData | null;
   } catch {
     return null;
   }
-}
+});
 
 /** <meta property="og:x" content="y"> pasted into "Open Graph Tags" -> { "og:x": "y" } */
 function parseMetaTags(html?: string): Record<string, string> {
@@ -61,6 +59,11 @@ function parseMetaTags(html?: string): Record<string, string> {
   return out;
 }
 
+/** The website path an SEO endpoint belongs to, for the automatic canonical URL */
+const pagePath = (endpoint: string) =>
+  ({ home2: "/", home1: "/blog", "pages/about-us": "/about" } as Record<string, string>)[endpoint] ??
+  `/${endpoint.replace(/^pages\//, "")}`;
+
 /** href of a pasted <link rel="canonical" href="..."> */
 const canonicalFromTag = (tag?: string) => (tag ?? "").match(/\bhref\s*=\s*["']([^"']+)["']/i)?.[1] ?? "";
 
@@ -70,10 +73,15 @@ export async function seoMetadata(endpoint: string): Promise<Metadata> {
   if (!seo) return {};
 
   const og = parseMetaTags(seo.openGraphTags);
-  const canonical = absolute(seo.canonicalUrl || canonicalFromTag(seo.canonicalTag));
+  // Left empty in the admin: the page's own address on this website
+  const canonical = absolute(seo.canonicalUrl || canonicalFromTag(seo.canonicalTag) || pagePath(endpoint));
   const title = seo.metaTitle?.trim() || undefined;
   const description = seo.metaDescription?.trim() || undefined;
-  const ogImage = absolute(og["og:image"] || seo.ogImage);
+  // What the admin can see wins: the "Open Graph Tags" box, then Meta Title / Description
+  const ogTitle = og["og:title"] || title || seo.ogTitle?.trim() || undefined;
+  const ogDescription = og["og:description"] || description || seo.ogDescription?.trim() || undefined;
+  // The "OG Image" upload first, then an og:image in the "Open Graph Tags" box
+  const ogImage = absolute(seo.ogImage || og["og:image"]);
 
   return {
     title: title ? { absolute: title } : undefined,
@@ -82,17 +90,18 @@ export async function seoMetadata(endpoint: string): Promise<Metadata> {
     robots: { index: seo.robotsIndex !== false, follow: seo.robotsFollow !== false },
     alternates: canonical ? { canonical } : undefined,
     openGraph: {
-      title: og["og:title"] || seo.ogTitle?.trim() || title,
-      description: og["og:description"] || seo.ogDescription?.trim() || description,
-      url: og["og:url"] || canonical || undefined,
-      siteName: og["og:site_name"] || undefined,
+      title: ogTitle,
+      description: ogDescription,
+      url: absolute(og["og:url"]) || canonical || undefined,
+      siteName: og["og:site_name"] || "Vaidhyashala",
+      locale: og["og:locale"] || undefined,
       type: "website",
       images: ogImage ? [{ url: ogImage }] : undefined,
     },
     twitter: {
       card: ogImage ? "summary_large_image" : "summary",
-      title: og["og:title"] || seo.ogTitle?.trim() || title,
-      description: og["og:description"] || seo.ogDescription?.trim() || description,
+      title: ogTitle,
+      description: ogDescription,
       images: ogImage ? [ogImage] : undefined,
     },
   };
@@ -130,8 +139,19 @@ export function parseSchema(raw?: string): object[] {
   return out;
 }
 
-/** The page's schema markup as <script type="application/ld+json"> tags */
-export async function JsonLd({ endpoint }: { endpoint: string }) {
+/**
+ * The page's schema markup as <script type="application/ld+json"> tags. Read at request time, so it
+ * sits in a Suspense boundary (Cache Components): the rest of the page does not wait for it.
+ */
+export function JsonLd({ endpoint }: { endpoint: string }) {
+  return (
+    <Suspense fallback={null}>
+      <JsonLdScripts endpoint={endpoint} />
+    </Suspense>
+  );
+}
+
+async function JsonLdScripts({ endpoint }: { endpoint: string }) {
   const seo = await fetchSeo(endpoint);
   return (
     <>

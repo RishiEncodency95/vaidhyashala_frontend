@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useHome2 } from "@/components/home/Home2Provider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 import AyurvedicConsultationModal from "@/components/consultation/AyurvedicConsultationModal";
 
 export default function CarePillars() {
@@ -40,18 +41,22 @@ export default function CarePillars() {
               <div>
                 {/* Image */}
                 <div
-                  className={`overflow-hidden rounded-xl aspect-[16/11] bg-[#EAE4D8] ${
+                  className={`relative overflow-hidden rounded-xl aspect-[16/11] bg-[#EAE4D8] ${
                     index === 0 ? "cursor-pointer" : ""
                   }`}
                   onClick={() => {
                     if (index === 0) setIsConsultationModalOpen(true);
                   }}
                 >
-                  <img
-                    src={assetUrl(pillar.image)}
-                    alt={pillar.imageAlt}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
+                  {pillar.image && (
+                    <CmsImage
+                      src={assetUrl(pillar.image)}
+                      alt={pillar.imageAlt}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
                 </div>
 
                 {/* Number Eyebrow */}

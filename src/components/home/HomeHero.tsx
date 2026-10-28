@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useHome2 } from "@/components/home/Home2Provider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 import PlanConsultationModal from "@/components/consultation/PlanConsultationModal";
 
 export default function HomeHero() {
@@ -15,11 +16,17 @@ export default function HomeHero() {
     <section className="relative w-full overflow-hidden bg-[#FAF7F2]">
       {/* Panoramic Hero Background Image: /home/h1.png */}
       <div className="absolute inset-0 z-0">
-        <img
-          src={assetUrl(hero.image)}
-          alt={hero.imageAlt}
-          className="h-full w-full object-cover object-right"
-        />
+        {hero.image && (
+          <CmsImage
+            src={assetUrl(hero.image)}
+            alt={hero.imageAlt}
+            fill
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
+            className="h-full w-full object-cover object-right"
+          />
+        )}
         {/* Soft responsive fade on smaller screens to ensure pristine text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent sm:via-[#FAF7F2]/40 md:hidden" />
       </div>

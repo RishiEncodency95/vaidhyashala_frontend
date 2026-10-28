@@ -14,7 +14,7 @@ export default function ArticleCard({ article, readMoreLabel }: ArticleCardProps
   const href = articleHref(article);
 
   return (
-    <article className="group flex flex-col justify-between transition-all duration-200">
+    <article id={`article-${article.slug}`} className="group scroll-mt-24 flex flex-col justify-between transition-all duration-200">
       <div>
         {/* Image Container */}
         <div className="overflow-hidden rounded-xl">

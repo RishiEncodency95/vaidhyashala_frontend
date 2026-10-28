@@ -3,6 +3,7 @@
 import React from "react";
 import { useHome2 } from "@/components/home/Home2Provider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ApproachSection() {
   const { approach } = useHome2();
@@ -16,11 +17,16 @@ export default function ApproachSection() {
           {/* Left Column: Shirodhara photo */}
           <div className="lg:col-span-6">
             <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs">
-              <img
-                src={assetUrl(approach.image)}
-                alt={approach.imageAlt}
-                className="w-full h-auto max-h-[480px] object-cover object-center"
-              />
+              {approach.image && (
+                <CmsImage
+                  src={assetUrl(approach.image)}
+                  alt={approach.imageAlt}
+                  width={1600}
+                  height={900}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="w-full h-auto max-h-[480px] object-cover object-center"
+                />
+              )}
             </div>
           </div>
 

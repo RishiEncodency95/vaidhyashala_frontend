@@ -140,7 +140,7 @@ export default function Footer() {
         <section aria-label="Ayurvedic Consultation CTA" className="relative w-full overflow-hidden bg-[#F8F6F0]">
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: 'url("/footer-ref/banner-bg-v3.png")', backgroundSize: "100% 100%", backgroundPosition: "center" }}
+            style={{ backgroundImage: 'url("/footer-ref/banner-bg-v3.webp")', backgroundSize: "100% 100%", backgroundPosition: "center" }}
           />
 
           <div
@@ -208,9 +208,11 @@ export default function Footer() {
                       className="pointer-events-none absolute rounded-full bg-white/[0.025]"
                       style={{ left: "25%", top: "2%", width: "50%", height: "62%", filter: `blur(${u(40)})` }}
                     />
-                    <img
+                    <Image
                       src="/footerlogo-light-text.png"
                       alt="Vaidhyashala Innovative Healing"
+                      width={324}
+                      height={207}
                       className="relative block h-auto max-w-full select-none object-contain"
                       style={{ width: u(270), filter: "drop-shadow(0 0 4px rgba(255,255,255,0.12))" }}
                     />
@@ -303,9 +305,11 @@ export default function Footer() {
                   {treatmentLinks.map(({ label, href, icon }) => (
                     <li key={label}>
                       <Link href={href} className={rowLink} style={{ height: u(32), fontSize: u(13.3) }}>
-                        <img
+                        <Image
                           src={`/footer-ref/${icon}.png`}
                           alt=""
+                          width={38}
+                          height={38}
                           className="shrink-0 object-contain transition-transform duration-200 group-hover:scale-110"
                           style={{ width: u(31), height: u(31), marginRight: u(26) }}
                         />
@@ -372,9 +376,11 @@ export default function Footer() {
                           className="flex items-center justify-center rounded-full"
                           style={{ width: u(47), height: u(47), border: `${u(1)} solid #D9A91A` }}
                         >
-                          <img
+                          <Image
                             src={`/footer-ref/disc-${icon}.png`}
                             alt=""
+                            width={40}
+                            height={40}
                             className="block rounded-full select-none"
                             style={{ width: u(32.6), height: u(32.6) }}
                           />
@@ -395,9 +401,11 @@ export default function Footer() {
                         {/* Clinic hours sit inside the Delhi Clinic entry */}
                         {index === 0 && (
                           <div className="flex items-start" style={{ marginTop: u(3), gap: u(15), marginLeft: u(1) }}>
-                            <img
+                            <Image
                               src="/footer-ref/clock.png"
                               alt=""
+                              width={44}
+                              height={44}
                               className="shrink-0 select-none"
                               style={{ width: u(36), height: u(36), marginTop: u(-3), marginLeft: u(-3) }}
                             />
@@ -433,15 +441,19 @@ export default function Footer() {
               }}
             />
             {/* Corner leaves */}
-            <img
+            <Image
               src="/footer-ref/leaf-left-v2.png"
               alt=""
+              width={34}
+              height={50}
               aria-hidden="true"
               className="pointer-events-none absolute bottom-0 left-0 hidden h-full w-auto select-none lg:block"
             />
-            <img
+            <Image
               src="/footer-ref/leaf-right-v2.png"
               alt=""
+              width={30}
+              height={50}
               aria-hidden="true"
               className="pointer-events-none absolute bottom-0 right-0 hidden h-full w-auto select-none lg:block"
             />
