@@ -3,6 +3,7 @@
 import React from "react";
 import { useAbout } from "./AboutProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function HolisticCare() {
   const { holisticCare } = useAbout();
@@ -29,7 +30,10 @@ export default function HolisticCare() {
           {/* Right Column: pillars illustration */}
           <div className="lg:col-span-6 xl:col-span-6 flex justify-center items-center">
             {holisticCare.image && (
-              <img
+              <CmsImage
+                width={1600}
+                height={533}
+                sizes="(min-width: 1024px) 45vw, 100vw"
                 src={assetUrl(holisticCare.image)}
                 alt={holisticCare.imageAlt}
                 className="w-full h-auto max-h-[320px] object-contain"

@@ -1,13 +1,17 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import CmsImage from "@/components/CmsImage";
 
 export default function TreatmentsCTA() {
   return (
     <section className="relative overflow-hidden bg-[#0B3728] py-4 sm:py-5 text-white">
       {/* Decorative leaf motif on left */}
-      <img
+      <CmsImage
+        width={300}
+        height={150}
         src="/cont.webp"
+        style={{ height: "auto" }}
         alt="Decorative botanical illustration"
         className="pointer-events-none absolute -bottom-8 -left-8 w-[240px] sm:w-[300px] opacity-15 select-none filter invert"
       />

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { useTermsPage } from "@/lib/termsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function TermsHero() {
   const { hero } = useTermsPage();
@@ -15,7 +16,11 @@ export default function TermsHero() {
       {/* Background Hero Image */}
       <div className="absolute inset-0 z-0">
         {hero.image && (
-          <img
+          <CmsImage
+            fill
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
             src={assetUrl(hero.image)}
             alt={hero.imageAlt}
             className="h-full w-full object-cover object-right"
@@ -31,7 +36,7 @@ export default function TermsHero() {
           <div className="flex items-center gap-3.5 sm:gap-4">
             <div className="inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-lg border border-[#C5BBA7] bg-[#EAE1CF] text-[#052119] shadow-2xs flex-shrink-0">
               {hero.iconImage ? (
-                <img src={assetUrl(hero.iconImage)} alt="" className="h-5 w-5 sm:h-6 sm:w-6 object-contain" />
+                <CmsImage src={assetUrl(hero.iconImage)} alt="" className="h-5 w-5 sm:h-6 sm:w-6 object-contain" width={24} height={24} />
               ) : (
                 <FileText className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2.4] text-[#052119]" />
               )}

@@ -23,7 +23,7 @@ export default function Navbar() {
     { name: "Home", href: "/" },
     { name: "About Us", href: "/about" },
     { name: "Treatments", href: "/treatments" },
-    { name: "Our Doctors", href: "/about#team" },
+    { name: "Panchakarma", href: "/panchakarma" },
     { name: "Products", href: "/products" },
     { name: "Blog", href: "/blog" },
     { name: "Careers", href: "/careers" },

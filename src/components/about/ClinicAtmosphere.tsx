@@ -3,6 +3,7 @@
 import React from "react";
 import { useAbout } from "./AboutProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ClinicAtmosphere() {
   const { atmosphere } = useAbout();
@@ -33,10 +34,12 @@ export default function ClinicAtmosphere() {
               {atmosphere.items.map((photo, index) => (
                 <div
                   key={index}
-                  className="overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] aspect-[4/3] shadow-2xs"
+                  className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] aspect-[4/3] shadow-2xs"
                 >
                   {photo.image && (
-                    <img
+                    <CmsImage
+                      fill
+                      sizes="(min-width: 1024px) 26vw, (min-width: 640px) 33vw, 100vw"
                       src={assetUrl(photo.image)}
                       alt={photo.imageAlt}
                       className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"

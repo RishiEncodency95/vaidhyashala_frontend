@@ -2,11 +2,17 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
-  // SEO from the admin is read on every request: put it in <head> for every visitor (browsers, Google,
-  // WhatsApp/Facebook previews) instead of streaming it into <body> after the page.
-  htmlLimitedBots: /.*/,
+  experimental: {
+    // Tailwind's CSS is small: send it inside the HTML instead of as a render-blocking stylesheet request
+    inlineCss: true,
+  },
   images: {
-    formats: ["image/avif", "image/webp"],
+    // WebP only: AVIF is a little smaller but much slower to create, so images appeared late on first view
+    formats: ["image/webp"],
+    // More widths than the defaults, so each image gets a copy close to its on-screen size
+    // (imageSizes must stay below the smallest deviceSize)
+    imageSizes: [16, 32, 48, 64, 96, 128, 160, 200, 240, 256, 320, 384, 480, 540],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1280, 1366, 1440, 1600, 1920, 2048, 3840],
     // Admin uploads (Cloudinary) are resized too; keep in step with OPTIMIZED_HOSTS in components/CmsImage.tsx
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
     minimumCacheTTL: 31536000,

@@ -3,6 +3,7 @@
 import React from "react";
 import { useTreatments } from "./TreatmentsProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function HealthConcerns() {
   const { healthConcerns } = useTreatments();
@@ -27,7 +28,10 @@ export default function HealthConcerns() {
         {/* Health Concerns Image */}
         {healthConcerns.image && (
           <div className="mt-3.5 sm:mt-4 w-full flex justify-center items-center">
-            <img
+            <CmsImage
+              width={2171}
+              height={161}
+              sizes="(min-width: 1400px) 1360px, 100vw"
               src={assetUrl(healthConcerns.image)}
               alt={healthConcerns.imageAlt}
               className="w-full h-auto object-contain max-w-[1360px]"

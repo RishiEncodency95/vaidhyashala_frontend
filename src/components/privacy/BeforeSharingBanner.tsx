@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { usePrivacyPage } from "@/lib/privacyPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function BeforeSharingBanner() {
   const { beforeSharing, relatedLinks } = usePrivacyPage();
@@ -16,7 +17,10 @@ export default function BeforeSharingBanner() {
         {/* Main Banner Image */}
         {beforeSharing && beforeSharing.image && (
           <div className="w-full">
-            <img
+            <CmsImage
+              width={1962}
+              height={312}
+              sizes="(min-width: 1400px) 1360px, 100vw"
               src={assetUrl(beforeSharing.image)}
               alt={beforeSharing.imageAlt}
               className="w-full h-auto object-contain"

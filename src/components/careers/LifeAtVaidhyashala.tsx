@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { useCareersPage } from "@/lib/careersPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function LifeAtVaidhyashala() {
   const { life } = useCareersPage();
@@ -40,11 +40,10 @@ export default function LifeAtVaidhyashala() {
               key={index}
               className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-2xs aspect-[4/3] sm:aspect-[3/4] lg:aspect-[4/5] group"
             >
-              <Image
+              <CmsImage
                 src={assetUrl(item.image)}
                 alt={item.imageAlt}
                 fill
-                unoptimized
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
@@ -55,11 +54,10 @@ export default function LifeAtVaidhyashala() {
           {/* Last card: wellness interior with the lettering on top */}
           {life.lastImage && (
             <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-2xs aspect-[4/3] sm:aspect-[3/4] lg:aspect-[4/5] col-span-2 sm:col-span-1 group">
-              <Image
+              <CmsImage
                 src={assetUrl(life.lastImage)}
                 alt={life.lastImageAlt}
                 fill
-                unoptimized
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                 className="object-cover object-[75%_center] transition-transform duration-500 group-hover:scale-105"
               />

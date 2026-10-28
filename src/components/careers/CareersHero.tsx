@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { useCareersPage } from "@/lib/careersPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 const lines = (value: string) => value.split("\n").map((l) => l.trim()).filter(Boolean);
 
@@ -16,12 +16,13 @@ export default function CareersHero() {
       {/* Background panoramic image: he1.png */}
       <div className="absolute inset-0 select-none pointer-events-none">
         {hero.image && (
-          <Image
+          <CmsImage
             src={assetUrl(hero.image)}
             alt={hero.imageAlt}
             fill
-            priority
-            unoptimized
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
             className="object-cover object-[78%_center] sm:object-[72%_center] lg:object-center"
           />
         )}
@@ -61,12 +62,12 @@ export default function CareersHero() {
           {/* Feature badges image */}
           {hero.badgesImage && (
             <div className="mt-4 sm:mt-5 max-w-[480px]">
-              <Image
+              <CmsImage
                 src={assetUrl(hero.badgesImage)}
                 alt={hero.badgesImageAlt}
                 width={520}
                 height={170}
-                unoptimized
+                sizes="480px"
                 className="w-full h-auto object-contain mix-blend-multiply"
               />
             </div>

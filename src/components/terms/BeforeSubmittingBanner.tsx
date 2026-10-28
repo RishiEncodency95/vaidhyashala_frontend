@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useTermsPage } from "@/lib/termsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function BeforeSubmittingBanner() {
   const { beforeSubmitting, relatedLinks } = useTermsPage();
@@ -16,7 +17,10 @@ export default function BeforeSubmittingBanner() {
         {/* Main Banner Image */}
         {beforeSubmitting && beforeSubmitting.image && (
           <div className="w-full">
-            <img
+            <CmsImage
+              width={1965}
+              height={330}
+              sizes="(min-width: 1400px) 1360px, 100vw"
               src={assetUrl(beforeSubmitting.image)}
               alt={beforeSubmitting.imageAlt}
               className="w-full h-auto object-contain"

@@ -3,6 +3,7 @@
 import React from "react";
 import { useAbout } from "./AboutProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function DedicatedTeam() {
   const { team } = useAbout();
@@ -33,7 +34,10 @@ export default function DedicatedTeam() {
           <div className="lg:col-span-7">
             {team.image && (
               <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs">
-                <img
+                <CmsImage
+                  width={1600}
+                  height={800}
+                  sizes="(min-width: 1024px) 58vw, 100vw"
                   src={assetUrl(team.image)}
                   alt={team.imageAlt}
                   className="w-full h-auto max-h-[460px] object-cover object-center"

@@ -3,6 +3,7 @@
 import React from "react";
 import { usePanchakarma } from "@/lib/panchakarmaPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function UnderstandingPanchakarma() {
   const { understanding } = usePanchakarma();
@@ -24,7 +25,10 @@ export default function UnderstandingPanchakarma() {
         {/* 3 Step Visual Flow */}
         {understanding.image && (
           <div className="mt-3 sm:mt-3.5 w-full flex justify-center items-center">
-            <img
+            <CmsImage
+              width={1600}
+              height={394}
+              sizes="(min-width: 1400px) 1360px, 100vw"
               src={assetUrl(understanding.image)}
               alt={understanding.imageAlt}
               className="w-full h-auto object-contain max-w-[1360px]"

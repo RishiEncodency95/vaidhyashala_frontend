@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { X, ChevronDown, ArrowRight, Check, Leaf } from "lucide-react";
 import { API_BASE } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export interface ProductEnquiryModalProps {
   isOpen: boolean;
@@ -132,7 +133,9 @@ export default function ProductEnquiryModal({
         {/* Header Row: Logo on Left, Close Button on Right */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img
+            <CmsImage
+              width={40}
+              height={40}
               src="/emblem.webp"
               alt="Vaidhyashala"
               className="h-9 w-9 sm:h-10 sm:w-10 object-contain"
@@ -181,7 +184,9 @@ export default function ProductEnquiryModal({
             <div className="relative overflow-hidden rounded-xl border border-[#DCE4DA] bg-[#EFF3ED] p-3 sm:p-3.5 mt-4 sm:mt-5 flex items-center gap-3.5">
               {/* Product Thumbnail Frame */}
               <div className="relative h-14 w-14 sm:h-16 sm:w-16 rounded-lg overflow-hidden bg-white border border-[#D5E0D3] flex-shrink-0 shadow-2xs">
-                <img
+                <CmsImage
+                  fill
+                  sizes="64px"
                   src={productImage}
                   alt={productTitle}
                   className="h-full w-full object-cover object-center"
@@ -199,8 +204,11 @@ export default function ProductEnquiryModal({
               </div>
 
               {/* Decorative Leaf Graphic in Right Background */}
-              <img
+              <CmsImage
+                width={160}
+                height={80}
                 src="/cont.webp"
+                style={{ width: "auto" }}
                 alt=""
                 className="pointer-events-none absolute -right-3 -bottom-5 h-20 w-auto opacity-30 select-none object-contain z-0"
               />
@@ -280,7 +288,9 @@ export default function ProductEnquiryModal({
             <div className="relative overflow-hidden rounded-xl border border-[#DCE4DA] bg-[#EFF3ED] p-2.5 mt-2.5 flex items-center gap-2.5 sm:gap-3">
               {/* Product Thumbnail Frame */}
               <div className="relative h-12 w-12 sm:h-13 sm:w-13 rounded-lg overflow-hidden bg-white border border-[#D5E0D3] flex-shrink-0 shadow-2xs">
-                <img
+                <CmsImage
+                  fill
+                  sizes="52px"
                   src={productImage}
                   alt={productTitle}
                   className="h-full w-full object-cover object-center"
@@ -301,8 +311,11 @@ export default function ProductEnquiryModal({
               </div>
 
               {/* Decorative Leaf Graphic in Right Background */}
-              <img
+              <CmsImage
+                width={160}
+                height={80}
                 src="/cont.webp"
+                style={{ width: "auto" }}
                 alt=""
                 className="pointer-events-none absolute -right-3 -bottom-5 h-20 w-auto opacity-30 select-none object-contain z-0"
               />

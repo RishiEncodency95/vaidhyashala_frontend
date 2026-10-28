@@ -4,6 +4,7 @@ import React from "react";
 import { FileText, Pill, ClipboardList } from "lucide-react";
 import { useTreatments } from "./TreatmentsProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 // Used when a tip has no uploaded icon, in the order the tips are listed
 const FALLBACK_ICONS = [FileText, Pill, ClipboardList];
@@ -39,7 +40,7 @@ export default function ConsultationPreparation() {
               >
                 <div className="flex h-12 w-12 sm:h-13 sm:w-13 flex-shrink-0 items-center justify-center rounded-xl bg-[#F4EFE6] text-[#0D3226] shadow-2xs">
                   {item.iconImage ? (
-                    <img src={assetUrl(item.iconImage)} alt="" className="h-7 w-7 object-contain" />
+                    <CmsImage src={assetUrl(item.iconImage)} alt="" className="h-7 w-7 object-contain" width={28} height={28} />
                   ) : (
                     <Icon className="h-6.5 w-6.5 sm:h-7 sm:w-7 stroke-[1.8]" />
                   )}

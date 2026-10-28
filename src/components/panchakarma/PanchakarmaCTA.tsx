@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { usePanchakarma } from "@/lib/panchakarmaPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function PanchakarmaCTA() {
   const { cta } = usePanchakarma();
@@ -15,7 +16,9 @@ export default function PanchakarmaCTA() {
       {/* Background Wellness Image */}
       <div className="absolute inset-0 z-0">
         {cta.backgroundImage && (
-          <img
+          <CmsImage
+            fill
+            sizes="100vw"
             src={assetUrl(cta.backgroundImage)}
             alt={cta.backgroundImageAlt}
             className="h-full w-full object-cover object-right"

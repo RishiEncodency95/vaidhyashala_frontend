@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 import JobModal from "./JobModal";
 import { useCareersPage } from "@/lib/careersPage";
-import { API_BASE } from "@/lib/home2";
+import { API_BASE, assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 interface JobRole {
   title: string;
@@ -27,7 +28,7 @@ interface JobRole {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-// The photo and icon on a job card (jobs have none of their own), picked in turn
+// The icon on a job card, and its photo when the job has none of its own (Admin → Job Card Image), picked in turn
 const CARD_LOOKS: { imageSrc: string; icon: JobRole["icon"] }[] = [
   { imageSrc: "/career/03_doctor_patient_consultation.webp", icon: Stethoscope },
   { imageSrc: "/career/05_meditation_garden.webp", icon: Sparkles },
@@ -51,7 +52,7 @@ async function fetchOpenJobs(signal: AbortSignal): Promise<JobRole[] | null> {
         location: String(job.location ?? ""),
         type: String(job.employmentType ?? ""),
         description: String(job.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
-        imageSrc: look.imageSrc,
+        imageSrc: assetUrl(typeof job.image === "string" ? job.image : "") || look.imageSrc,
         icon: look.icon,
       };
     });
@@ -98,8 +99,7 @@ export default function ExploreOpportunities() {
                 src="/leaf.webp"
                 alt=""
                 width={260}
-                height={260}
-                unoptimized
+                height={239}
                 className="rotate-[15deg] object-contain"
               />
             </div>
@@ -108,8 +108,7 @@ export default function ExploreOpportunities() {
                 src="/leaf.webp"
                 alt=""
                 width={260}
-                height={260}
-                unoptimized
+                height={239}
                 className="-rotate-[25deg] scale-x-[-1] object-contain"
               />
             </div>
@@ -194,12 +193,11 @@ export default function ExploreOpportunities() {
                       {/* Image Container */}
                       <div className="relative aspect-[16/11] w-full overflow-hidden bg-[#EAE4D8]">
                         {job.imageSrc ? (
-                          <Image
+                          <CmsImage
                             src={job.imageSrc}
                             alt={job.title}
                             fill
-                            unoptimized
-                            sizes="330px"
+                            sizes="(min-width: 1024px) 330px, (min-width: 640px) 50vw, 100vw"
                             className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                           />
                         ) : (
@@ -231,7 +229,8 @@ export default function ExploreOpportunities() {
                         </div>
 
                         {/* Description */}
-                        <p className="mt-2 text-[13.5px] sm:text-[14px] font-medium leading-[1.5] text-[#4A5950]">
+                        {/* A posted job's full description can be long: the card shows its first lines */}
+                        <p className="mt-2 line-clamp-4 text-[13.5px] sm:text-[14px] font-medium leading-[1.5] text-[#4A5950]">
                           {job.description}
                         </p>
                       </div>
@@ -260,8 +259,7 @@ export default function ExploreOpportunities() {
                   src="/leaf.webp"
                   alt=""
                   width={300}
-                  height={300}
-                  unoptimized
+                  height={276}
                   className="rotate-12 object-contain"
                 />
               </div>

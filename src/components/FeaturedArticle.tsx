@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { articleHref, useJournal } from "@/lib/journalPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function FeaturedArticle() {
   const { featured } = useJournal();
@@ -18,7 +19,10 @@ export default function FeaturedArticle() {
           {/* Left Column: Article image */}
           <div className="relative lg:col-span-6 xl:col-span-6 h-full min-h-[300px] lg:min-h-full overflow-hidden">
             {article.image && (
-              <img
+              <CmsImage
+                fill
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                loading="eager"
                 src={assetUrl(article.image)}
                 alt={article.imageAlt || article.title}
                 className="h-full w-full object-cover rounded-t-2xl lg:rounded-tr-none lg:rounded-l-2xl"
@@ -29,8 +33,11 @@ export default function FeaturedArticle() {
           {/* Right Column: Article Details with decorative leaves in bottom-right */}
           <div className="relative flex flex-col justify-center p-8 sm:p-10 lg:p-12 lg:col-span-6 xl:col-span-6 overflow-hidden bg-[#FAF8F3]">
             {featured.decorativeImage && (
-              <img
+              <CmsImage
+                width={400}
+                height={200}
                 src={assetUrl(featured.decorativeImage)}
+                style={{ height: "auto" }}
                 alt={featured.decorativeImageAlt}
                 className="pointer-events-none absolute -bottom-2 -right-2 w-[280px] sm:w-[340px] lg:w-[400px] max-w-[65%] h-auto object-contain mix-blend-multiply select-none"
               />

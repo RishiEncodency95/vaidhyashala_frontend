@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useTreatments } from "./TreatmentsProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ExploreCareServices() {
   const { careServices } = useTreatments();
@@ -36,7 +37,9 @@ export default function ExploreCareServices() {
               {/* Card Image: 42% proportion matching reference image */}
               <div className="w-full sm:w-[42%] md:w-[44%] lg:w-[42%] shrink-0 bg-[#EAE4D8] overflow-hidden relative min-h-[200px] sm:min-h-[230px] lg:min-h-[240px]">
                 {service.image && (
-                  <img
+                  <CmsImage
+                    fill
+                    sizes="(min-width: 1024px) 21vw, (min-width: 640px) 44vw, 100vw"
                     src={assetUrl(service.image)}
                     alt={service.imageAlt}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

@@ -1,13 +1,17 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import CmsImage from "@/components/CmsImage";
 
 export default function AboutCTA() {
   return (
     <section className="relative overflow-hidden bg-[#0D3226] py-8 sm:py-10 lg:py-12 text-white">
       {/* Decorative botanical element on the right */}
-      <img
+      <CmsImage
+        width={380}
+        height={190}
         src="/cont.webp"
+        style={{ height: "auto" }}
         alt="Decorative leaf motif"
         className="pointer-events-none absolute -bottom-10 -right-10 w-[300px] sm:w-[380px] opacity-15 select-none filter invert"
       />

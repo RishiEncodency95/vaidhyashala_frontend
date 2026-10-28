@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { assetUrl } from "@/lib/home2";
 import { ApiTestimonial, fetchFeaturedTestimonial } from "@/lib/catalogApi";
+import CmsImage from "@/components/CmsImage";
 
 interface FeaturedTestimonialProps {
   imageSrc?: string;
@@ -37,7 +38,9 @@ export default function FeaturedTestimonial({ imageSrc }: FeaturedTestimonialPro
             {/* Left: Patient Portrait Frame */}
             <div className="sm:col-span-5 lg:col-span-3">
               <div className="relative aspect-[4/3.7] sm:aspect-square w-full overflow-hidden rounded-xl sm:rounded-2xl shadow-2xs">
-                <img
+                <CmsImage
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 42vw, 100vw"
                   src={photo}
                   alt={name}
                   className="h-full w-full object-cover object-center"
@@ -90,8 +93,11 @@ export default function FeaturedTestimonial({ imageSrc }: FeaturedTestimonialPro
 
           {/* Delicate Botanical Leaf Motif in the bottom-right corner */}
           {featured.decorativeImage && (
-            <img
+            <CmsImage
+              width={300}
+              height={150}
               src={assetUrl(featured.decorativeImage)}
+              style={{ height: "auto" }}
               alt=""
               className="pointer-events-none absolute bottom-0 right-0 w-[220px] sm:w-[260px] lg:w-[300px] opacity-75 select-none z-0"
             />

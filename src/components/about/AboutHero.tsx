@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useAbout } from "./AboutProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function AboutHero() {
   const { hero } = useAbout();
@@ -14,7 +15,11 @@ export default function AboutHero() {
       {/* Panoramic Hero Background Image */}
       <div className="absolute inset-0 z-0">
         {hero.image && (
-          <img
+          <CmsImage
+            fill
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
             src={assetUrl(hero.image)}
             alt={hero.imageAlt}
             className="h-full w-full object-cover object-right"
@@ -22,6 +27,8 @@ export default function AboutHero() {
         )}
         {/* Soft responsive fade on smaller screens to ensure pristine text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent sm:via-[#FAF7F2]/40 md:hidden" />
+        {/* Wider screens: a light band behind the heading and text, fading out before the reception wall */}
+        <div className="absolute inset-0 hidden md:block bg-[linear-gradient(to_right,#FAF7F2_0%,rgba(250,247,242,0.96)_34%,rgba(250,247,242,0.82)_46%,rgba(250,247,242,0)_64%)]" />
       </div>
 
       {/* Hero Content Container aligned with Navbar */}

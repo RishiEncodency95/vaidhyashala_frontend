@@ -24,6 +24,7 @@ export default function ApproachSection() {
                   width={1600}
                   height={900}
                   sizes="(min-width: 1024px) 50vw, 100vw"
+                  loading="eager"
                   className="w-full h-auto max-h-[480px] object-cover object-center"
                 />
               )}

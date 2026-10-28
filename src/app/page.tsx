@@ -1,5 +1,5 @@
 // "/" is the same Home page as "/home" (content from Admin → Pages & CMS → Home)
-import Home from "./home/page";
+import Home from "./home/view";
 import { JsonLd, seoMetadata } from "@/lib/seoServer";
 
 export const generateMetadata = () => seoMetadata("home2");

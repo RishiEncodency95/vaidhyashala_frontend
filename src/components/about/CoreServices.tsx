@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useAbout } from "./AboutProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function CoreServices() {
   const { services } = useAbout();
@@ -29,9 +30,11 @@ export default function CoreServices() {
           {services.items.map((service, index) => {
             const card = (
               <>
-                <div className="overflow-hidden rounded-xl aspect-[16/11] bg-[#EAE4D8]">
+                <div className="relative overflow-hidden rounded-xl aspect-[16/11] bg-[#EAE4D8]">
                   {service.image && (
-                    <img
+                    <CmsImage
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                       src={assetUrl(service.image)}
                       alt={service.imageAlt}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

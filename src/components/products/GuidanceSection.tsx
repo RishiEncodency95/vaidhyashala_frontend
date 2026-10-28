@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useProductsPage } from "@/lib/productsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function GuidanceSection() {
   const { guidance } = useProductsPage();
@@ -17,7 +18,9 @@ export default function GuidanceSection() {
           <div className="lg:col-span-6 flex items-stretch">
             <div className="relative aspect-[16/9] lg:aspect-auto w-full h-full min-h-[220px] overflow-hidden rounded-xl border border-[#E5DFD3] bg-[#FAF8F3] shadow-2xs">
               {guidance.image && !imageError ? (
-                <img
+                <CmsImage
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   src={assetUrl(guidance.image)}
                   alt={guidance.imageAlt}
                   className="h-full w-full object-cover object-[center_30%]"
@@ -52,7 +55,10 @@ export default function GuidanceSection() {
 
             {guidance.pointsImage && (
               <div className="mt-3 sm:mt-3.5 w-full">
-                <img
+                <CmsImage
+                  width={1600}
+                  height={250}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   src={assetUrl(guidance.pointsImage)}
                   alt={guidance.pointsImageAlt}
                   className="w-full h-auto object-contain block"

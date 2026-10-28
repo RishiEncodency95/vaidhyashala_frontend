@@ -3,6 +3,7 @@
 import React from "react";
 import { useAbout } from "./AboutProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function AboutApproach() {
   const { approach } = useAbout();
@@ -16,7 +17,10 @@ export default function AboutApproach() {
           <div className="lg:col-span-6">
             {approach.image && (
               <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs">
-                <img
+                <CmsImage
+                  width={1448}
+                  height={1086}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   src={assetUrl(approach.image)}
                   alt={approach.imageAlt}
                   className="w-full h-auto max-h-[460px] object-cover object-center"

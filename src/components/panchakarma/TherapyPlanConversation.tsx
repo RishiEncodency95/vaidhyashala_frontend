@@ -4,6 +4,7 @@ import React from "react";
 import { Check } from "lucide-react";
 import { usePanchakarma } from "@/lib/panchakarmaPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function TherapyPlanConversation() {
   const { therapyPlan } = usePanchakarma();
@@ -13,7 +14,9 @@ export default function TherapyPlanConversation() {
     <section className="relative w-full overflow-hidden bg-[#FAF7F2] pt-2.5 sm:pt-3 pb-2.5 sm:pb-3 border-b border-[#ECE6DB]">
       {/* Decorative leaf branch in bottom right corner */}
       <div className="pointer-events-none absolute -bottom-10 -right-8 z-0 hidden md:block w-52 lg:w-64 opacity-80">
-        <img
+        <CmsImage
+          width={256}
+          height={128}
           src="/cont.webp"
           alt=""
           aria-hidden="true"
@@ -27,7 +30,10 @@ export default function TherapyPlanConversation() {
           <div className="lg:col-span-6">
             {therapyPlan.image && (
               <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs">
-                <img
+                <CmsImage
+                  width={1536}
+                  height={1024}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   src={assetUrl(therapyPlan.image)}
                   alt={therapyPlan.imageAlt}
                   className="w-full h-auto max-h-[460px] object-cover object-center"

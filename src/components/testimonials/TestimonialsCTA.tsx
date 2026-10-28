@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function TestimonialsCTA() {
   const { cta } = useTestimonialsPage();
@@ -14,16 +15,22 @@ export default function TestimonialsCTA() {
     <section className="relative overflow-hidden bg-[#E9F0E8] py-6 sm:py-8 lg:py-10 border-t border-[#D5E1D4]">
       {/* Decorative leaf motif on left */}
       {cta.decorativeImage && (
-        <img
+        <CmsImage
+          width={240}
+          height={120}
           src={assetUrl(cta.decorativeImage)}
+          style={{ height: "auto" }}
           alt=""
           className="pointer-events-none absolute -bottom-8 -left-8 w-[240px] opacity-40 select-none scale-x-[-1]"
         />
       )}
       {/* Decorative leaf motif on right */}
       {cta.decorativeImage && (
-        <img
+        <CmsImage
+          width={240}
+          height={120}
           src={assetUrl(cta.decorativeImage)}
+          style={{ height: "auto" }}
           alt=""
           className="pointer-events-none absolute -bottom-8 -right-8 w-[240px] opacity-40 select-none"
         />

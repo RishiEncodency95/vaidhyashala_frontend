@@ -20,6 +20,7 @@ export default function ProductsBanner() {
             alt={products.imageAlt}
             fill
             sizes="100vw"
+            loading="eager"
             className="h-full w-full object-cover object-right"
           />
         )}

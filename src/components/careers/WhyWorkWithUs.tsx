@@ -4,6 +4,7 @@ import React from "react";
 import { Leaf, Users, TrendingUp, Heart } from "lucide-react";
 import { useCareersPage } from "@/lib/careersPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 // Used when a reason has no uploaded icon, in the order the reasons are listed
 const FALLBACK_ICONS = [Leaf, Users, TrendingUp, Heart];
@@ -21,14 +22,20 @@ export default function WhyWorkWithUs() {
       }}
     >
       {/* Decorative ambient leaf silhouettes on borders */}
-      <img
+      <CmsImage
+        width={288}
+        height={265}
         src="/leaf.webp"
+        style={{ height: "auto" }}
         alt=""
         aria-hidden="true"
         className="pointer-events-none absolute -left-20 top-10 w-72 rotate-[25deg] opacity-[0.14] mix-blend-screen"
       />
-      <img
+      <CmsImage
+        width={288}
+        height={265}
         src="/leaf.webp"
+        style={{ height: "auto" }}
         alt=""
         aria-hidden="true"
         className="pointer-events-none absolute -right-20 bottom-10 w-72 -rotate-[30deg] opacity-[0.14] mix-blend-screen"
@@ -68,7 +75,7 @@ export default function WhyWorkWithUs() {
                 {/* Circle Icon */}
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#EAE2D5] text-[#0D3226]">
                   {item.iconImage ? (
-                    <img src={assetUrl(item.iconImage)} alt="" className="h-5 w-5 object-contain" />
+                    <CmsImage src={assetUrl(item.iconImage)} alt="" className="h-5 w-5 object-contain" width={20} height={20} />
                   ) : (
                     <IconComponent className="h-5 w-5 stroke-[1.8]" />
                   )}

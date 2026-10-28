@@ -3,6 +3,7 @@
 import React from "react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function VideoStories() {
   const { videoStories } = useTestimonialsPage();
@@ -12,7 +13,10 @@ export default function VideoStories() {
     <section className="relative overflow-hidden w-full bg-[#FAF8F3] border-b border-[#ECE6DB]">
       <div className="relative w-full">
         {videoStories.image && (
-          <img
+          <CmsImage
+            width={2171}
+            height={451}
+            sizes="100vw"
             src={assetUrl(videoStories.image)}
             alt={videoStories.imageAlt}
             className="w-full h-auto block"

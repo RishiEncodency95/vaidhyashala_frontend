@@ -4,6 +4,7 @@ import React from "react";
 import Breadcrumb from "./Breadcrumb";
 import { useJournal } from "@/lib/journalPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function HeroJournal() {
   const { hero } = useJournal();
@@ -14,7 +15,11 @@ export default function HeroJournal() {
       {/* Panoramic Hero Background Image */}
       <div className="absolute inset-0 z-0">
         {hero.backgroundImage && (
-          <img
+          <CmsImage
+            fill
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
             src={assetUrl(hero.backgroundImage)}
             alt={hero.backgroundImageAlt}
             className="h-full w-full object-cover object-right"

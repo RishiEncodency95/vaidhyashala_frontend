@@ -15,8 +15,9 @@ export default function Logo({
       {/* Shown at most 292x68: next/image sends a copy that size (and 2x for sharp screens), not the 1600px file */}
       <Image
         src="/lo.webp"
+        style={{ width: "auto" }}
         alt="Vaidhyashala - Ayurvedic Clinic & Panchakarma Centre"
-        width={292}
+        width={290}
         height={68}
         loading="eager"
         className="h-[60px] sm:h-[68px] w-auto object-contain mix-blend-multiply"

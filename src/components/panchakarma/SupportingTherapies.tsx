@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { usePanchakarma } from "@/lib/panchakarmaPage";
 import { assetUrl } from "@/lib/home2";
 import AyurvedicConsultationModal from "@/components/consultation/AyurvedicConsultationModal";
+import CmsImage from "@/components/CmsImage";
 
 interface TherapyItem {
   title: string;
@@ -61,12 +62,16 @@ export default function SupportingTherapies() {
                   e.stopPropagation();
                   setSelectedTherapy(therapy);
                 }}
-                className="overflow-hidden rounded-xl aspect-[16/10] bg-[#EAE4D8] border border-[#ECE5D9] cursor-pointer"
+                className="relative overflow-hidden rounded-xl aspect-[16/10] bg-[#EAE4D8] border border-[#ECE5D9] cursor-pointer"
               >
-                <img
+                <CmsImage
+                  fill
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   src={therapy.imageSrc}
                   onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).src = therapy.fallbackSrc;
+                    const img = e.currentTarget as HTMLImageElement;
+                    img.srcset = "";
+                    img.src = therapy.fallbackSrc;
                   }}
                   alt={therapy.alt}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-104"

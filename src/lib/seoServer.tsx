@@ -5,6 +5,7 @@
  */
 import React, { Suspense, cache } from "react";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { API_BASE } from "@/lib/home2";
 
 export interface SeoData {
@@ -152,6 +153,9 @@ export function JsonLd({ endpoint }: { endpoint: string }) {
 }
 
 async function JsonLdScripts({ endpoint }: { endpoint: string }) {
+  // Marks the page as read at request time on purpose (Cache Components), so the uncached SEO fetch in
+  // generateMetadata is allowed and the rest of the page still prerenders
+  await connection();
   const seo = await fetchSeo(endpoint);
   return (
     <>

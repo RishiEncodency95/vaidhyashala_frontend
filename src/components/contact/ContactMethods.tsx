@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { useContactPage } from "@/lib/contactPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -51,7 +52,7 @@ export default function ContactMethods() {
                   {/* Icon in Circular Badge */}
                   <div className="mx-auto flex h-13 w-13 items-center justify-center rounded-full bg-[#EBF1EB] text-[#0D3226] mb-3.5">
                     {method.iconImage ? (
-                      <img src={assetUrl(method.iconImage)} alt="" className="h-6 w-6 object-contain" />
+                      <CmsImage src={assetUrl(method.iconImage)} alt="" className="h-6 w-6 object-contain" width={24} height={24} />
                     ) : (
                       <Icon className="h-6 w-6 stroke-[1.75]" />
                     )}

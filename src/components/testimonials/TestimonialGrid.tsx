@@ -5,6 +5,7 @@ import { ArrowDown } from "lucide-react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { assetUrl } from "@/lib/home2";
 import { fetchTestimonials } from "@/lib/catalogApi";
+import CmsImage from "@/components/CmsImage";
 
 interface TestimonialItem {
   id: string;
@@ -150,7 +151,9 @@ export default function TestimonialGrid({ avatars }: TestimonialGridProps) {
                 {/* Circular Avatar Frame - Increased size */}
                 <div className="relative h-20 w-20 sm:h-24 sm:w-24 flex-shrink-0 overflow-hidden rounded-full border-2 border-[#D5CDC0] bg-[#EFE9DF] flex items-center justify-center shadow-xs">
                   {avatarSrc ? (
-                    <img
+                    <CmsImage
+                      fill
+                      sizes="96px"
                       src={avatarSrc}
                       alt={item.name}
                       className="h-full w-full object-cover object-top"

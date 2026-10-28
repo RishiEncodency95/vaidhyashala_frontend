@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 interface TestimonialsHeroProps {
   heroImageSrc?: string;
@@ -19,7 +20,11 @@ export default function TestimonialsHero({ heroImageSrc }: TestimonialsHeroProps
         {/* Hero Background Image: clinic-reception-hero.jpg */}
         <div className="absolute inset-0 z-0">
           {(heroImageSrc || hero.image) && (
-            <img
+            <CmsImage
+              fill
+              sizes="100vw"
+              loading="eager"
+              fetchPriority="high"
               src={heroImageSrc || assetUrl(hero.image)}
               alt={hero.imageAlt}
               className="h-full w-full object-cover object-right"

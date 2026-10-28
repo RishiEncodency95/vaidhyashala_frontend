@@ -3,6 +3,7 @@
 import React from "react";
 import { useContactPage } from "@/lib/contactPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function LocationAndClinic() {
   const { location } = useContactPage();
@@ -39,7 +40,10 @@ export default function LocationAndClinic() {
                   />
                 ) : (
                   location.mapImage && (
-                    <img
+                    <CmsImage
+                      width={1697}
+                      height={801}
+                      sizes="(min-width: 1024px) 50vw, 100vw"
                       src={assetUrl(location.mapImage)}
                       alt={location.mapImageAlt}
                       className="w-full h-auto object-cover object-center block"
@@ -72,10 +76,12 @@ export default function LocationAndClinic() {
           <div className="lg:col-span-6 flex flex-col justify-end">
             <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs min-h-[320px] sm:min-h-[360px] lg:min-h-full flex items-end">
               {location.clinicImage && (
-                <img
+                <CmsImage
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   src={assetUrl(location.clinicImage)}
                   alt={location.clinicImageAlt}
-                  className="absolute inset-0 h-full w-full object-cover object-center"
+                  className="h-full w-full object-cover object-center"
                 />
               )}
 

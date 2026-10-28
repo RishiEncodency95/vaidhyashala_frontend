@@ -3,6 +3,7 @@
 import React from "react";
 import { useTreatments } from "./TreatmentsProvider";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function TreatmentsApproach() {
   const { approach } = useTreatments();
@@ -16,7 +17,10 @@ export default function TreatmentsApproach() {
           <div className="lg:col-span-6">
             {approach.image && (
               <div className="relative overflow-hidden rounded-xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-xs">
-                <img
+                <CmsImage
+                  width={1600}
+                  height={900}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   src={assetUrl(approach.image)}
                   alt={approach.imageAlt}
                   className="w-full h-auto max-h-[460px] object-cover object-center"

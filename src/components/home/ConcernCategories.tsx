@@ -33,6 +33,7 @@ export default function ConcernCategories() {
               width={2171}
               height={161}
               sizes="(min-width: 1400px) 1360px, 100vw"
+              loading="eager"
               className="w-full h-auto object-contain max-w-[1360px]"
             />
           )}

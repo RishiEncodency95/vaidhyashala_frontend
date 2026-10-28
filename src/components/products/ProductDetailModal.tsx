@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import ProductEnquiryModal from "@/components/products/ProductEnquiryModal";
+import CmsImage from "@/components/CmsImage";
 
 export interface ProductDetailModalProps {
   isOpen?: boolean;
@@ -124,7 +125,9 @@ export default function ProductDetailModal({
           <div className="lg:col-span-5 flex flex-col">
             {/* Main Featured Image */}
             <div className="relative aspect-[4/4.1] w-full overflow-hidden rounded-xl border border-[#E6DFD1] bg-[#F7F4EC] shadow-2xs">
-              <img
+              <CmsImage
+                fill
+                sizes="(min-width: 1024px) 400px, 90vw"
                 src={defaultImages[activeImageIndex]}
                 alt={title}
                 className="h-full w-full object-cover object-center"
@@ -151,7 +154,9 @@ export default function ProductDetailModal({
                         : "border border-[#DFD7CB] hover:border-[#0D382B]/60 opacity-80 hover:opacity-100"
                     }`}
                   >
-                    <img
+                    <CmsImage
+                      fill
+                      sizes="120px"
                       src={imgSrc}
                       alt={`Thumbnail ${idx + 1}`}
                       className="h-full w-full object-cover object-center"

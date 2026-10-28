@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Image as ImageIcon } from "lucide-react";
+import CmsImage from "@/components/CmsImage";
 
 interface ImagePlaceholderProps {
   label: string;
@@ -25,7 +26,9 @@ export default function ImagePlaceholder({
       <div
         className={`relative overflow-hidden rounded-xl bg-[#EBE7DF] ${aspectRatio} ${className}`}
       >
-        <img
+        <CmsImage
+          fill
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           src={src}
           alt={alt}
           className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"

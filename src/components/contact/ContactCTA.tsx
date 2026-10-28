@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useContactPage } from "@/lib/contactPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ContactCTA() {
   const { cta } = useContactPage();
@@ -15,7 +16,7 @@ export default function ContactCTA() {
       {/* Subtle background decorative leaf illustration */}
       {cta.decorativeImage && (
         <div className="pointer-events-none absolute -right-12 -top-12 z-0 h-64 w-64 opacity-10">
-          <img src={assetUrl(cta.decorativeImage)} alt="" aria-hidden="true" className="h-full w-full object-contain" />
+          <CmsImage src={assetUrl(cta.decorativeImage)} alt="" aria-hidden="true" className="h-full w-full object-contain" fill sizes="256px" />
         </div>
       )}
 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ArrowRight, Upload } from "lucide-react";
 import { useTestimonialsPage } from "@/lib/testimonialsPage";
 import { API_BASE, assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function FeedbackForm() {
   const [formData, setFormData] = useState({
@@ -62,7 +63,9 @@ export default function FeedbackForm() {
       {/* Botanical leaf watermark in the background of the left area */}
       <div className="pointer-events-none absolute -bottom-10 -left-10 sm:-bottom-16 sm:-left-16 w-[360px] sm:w-[460px] lg:w-[540px] opacity-25 lg:opacity-30 select-none z-0">
         {feedbackForm.decorativeImage && (
-          <img
+          <CmsImage
+            width={540}
+            height={497}
             src={assetUrl(feedbackForm.decorativeImage)}
             alt=""
             className="w-full h-auto object-contain"

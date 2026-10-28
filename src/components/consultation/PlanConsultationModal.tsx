@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { X, Calendar, ChevronDown, ArrowRight, Info, CheckCircle2, Check } from "lucide-react";
 import { submitConsultation } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export interface PlanConsultationModalProps {
   isOpen: boolean;
@@ -112,8 +113,11 @@ export default function PlanConsultationModal({
           <div>
             {/* Top Header: Centered Logo + Close Button */}
             <div className="relative flex items-center justify-center">
-              <img
+              <CmsImage
+                width={155}
+                height={36}
                 src="/lo.webp"
+                style={{ width: "auto" }}
                 alt="Vaidhyashala - Ayurvedic Clinic & Panchakarma Centre"
                 className="h-8 sm:h-9 w-auto object-contain mix-blend-multiply"
               />
@@ -238,8 +242,11 @@ export default function PlanConsultationModal({
             {/* Top Header: Logo + Close Button */}
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <img
+                <CmsImage
+                  width={138}
+                  height={32}
                   src="/lo.webp"
+                  style={{ width: "auto" }}
                   alt="Vaidhyashala - Ayurvedic Clinic & Panchakarma Centre"
                   className="h-7 sm:h-8 w-auto object-contain mix-blend-multiply"
                 />

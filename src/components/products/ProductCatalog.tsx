@@ -7,6 +7,7 @@ import { assetUrl } from "@/lib/home2";
 import { ApiProduct, fetchProducts } from "@/lib/catalogApi";
 import ProductDetailModal from "@/components/products/ProductDetailModal";
 import ProductEnquiryModal from "@/components/products/ProductEnquiryModal";
+import CmsImage from "@/components/CmsImage";
 
 interface Product {
   id: string;
@@ -352,7 +353,9 @@ export default function ProductCatalog() {
             >
               {/* Product Image Frame */}
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#E6DFD1] bg-[#F3EDE2] shadow-2xs">
-                <img
+                <CmsImage
+                  fill
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   src={product.imageSrc}
                   alt={product.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

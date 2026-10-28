@@ -54,6 +54,7 @@ export default function CarePillars() {
                       alt={pillar.imageAlt}
                       fill
                       sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      loading="eager"
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   )}

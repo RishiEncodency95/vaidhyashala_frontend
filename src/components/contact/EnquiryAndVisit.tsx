@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { useContactPage } from "@/lib/contactPage";
 import { postCmsPage } from "@/lib/cmsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function EnquiryAndVisit() {
   const [formData, setFormData] = useState({
@@ -188,7 +189,10 @@ export default function EnquiryAndVisit() {
           {/* Right Column: Plan your visit card */}
           {planVisit && planVisit.image && (
             <div className="lg:col-span-5 flex flex-col rounded-2xl border border-[#E3DDCF] bg-[#FAF8F3] shadow-2xs overflow-hidden">
-              <img
+              <CmsImage
+                width={1315}
+                height={1196}
+                sizes="(min-width: 1024px) 42vw, 100vw"
                 src={assetUrl(planVisit.image)}
                 alt={planVisit.imageAlt}
                 className="w-full h-full object-cover object-center block"

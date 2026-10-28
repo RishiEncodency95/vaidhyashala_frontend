@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useProductsPage } from "@/lib/productsPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function ProductsHero() {
   const { hero } = useProductsPage();
@@ -15,7 +16,11 @@ export default function ProductsHero() {
       {/* Panoramic Hero Background Image */}
       <div className="absolute inset-0 z-0">
         {hero.image && (
-          <img
+          <CmsImage
+            fill
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
             src={assetUrl(hero.image)}
             alt={hero.imageAlt}
             className="h-full w-full object-cover object-right"

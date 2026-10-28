@@ -4,6 +4,7 @@ import React from "react";
 import { Shield } from "lucide-react";
 import { usePrivacyPage } from "@/lib/privacyPage";
 import { assetUrl } from "@/lib/home2";
+import CmsImage from "@/components/CmsImage";
 
 export default function PrivacyHero() {
   const { hero } = usePrivacyPage();
@@ -14,7 +15,11 @@ export default function PrivacyHero() {
       {/* Background Hero Image */}
       <div className="absolute inset-0 z-0">
         {hero.image && (
-          <img
+          <CmsImage
+            fill
+            sizes="100vw"
+            loading="eager"
+            fetchPriority="high"
             src={assetUrl(hero.image)}
             alt={hero.imageAlt}
             className="h-full w-full object-cover object-right"
@@ -30,7 +35,7 @@ export default function PrivacyHero() {
           <div className="flex items-center gap-3.5 sm:gap-4">
             <div className="inline-flex items-center justify-center h-10 w-10 sm:h-11 sm:w-11 rounded-lg border border-[#C5BBA7] bg-[#EAE1CF] text-[#052119] shadow-2xs flex-shrink-0">
               {hero.iconImage ? (
-                <img src={assetUrl(hero.iconImage)} alt="" className="h-5 w-5 sm:h-6 sm:w-6 object-contain" />
+                <CmsImage src={assetUrl(hero.iconImage)} alt="" className="h-5 w-5 sm:h-6 sm:w-6 object-contain" width={24} height={24} />
               ) : (
                 <Shield className="h-5 w-5 sm:h-6 sm:w-6 stroke-[2.4] text-[#052119]" />
               )}

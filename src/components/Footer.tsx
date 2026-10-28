@@ -213,6 +213,7 @@ export default function Footer() {
                       alt="Vaidhyashala Innovative Healing"
                       width={324}
                       height={207}
+                      sizes="(min-width: 1024px) 17vw, 270px"
                       className="relative block h-auto max-w-full select-none object-contain"
                       style={{ width: u(270), filter: "drop-shadow(0 0 4px rgba(255,255,255,0.12))" }}
                     />
@@ -510,8 +511,9 @@ export default function Footer() {
                   <Image
                     src="/enc.webp"
                     alt="enCodency Pvt. Ltd. - Raise the Bar"
-                    width={2164}
-                    height={727}
+                    // Its largest on-screen size (110u wide, --u up to 1.2px): a small copy, not the 2164px file
+                    width={132}
+                    height={44}
                     className="absolute top-0 max-w-none rounded-[3px] object-cover"
                     style={{ left: u(-12), width: u(110), height: u(28) }}
                   />
