@@ -1,0 +1,202 @@
+/*
+ * "Plan your visit" panel of /contact, drawn to match the approved design (1315 px wide frame).
+ * Every size is expressed in --u (= 1/1315 of the card's width), so the panel keeps the
+ * design's proportions at any width. The text itself comes from Admin → Pages & CMS → Contact Us.
+ */
+.pvc-wrap {
+  container-type: inline-size;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.pvc-card {
+  --u: calc(100cqw / 1315);
+  --green: #0b3d2e;
+  --gold: #bf8a2e;
+  --gray: #606462;
+
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: calc(var(--u) * 1196);
+  overflow: hidden;
+  background: #f1f5e8;
+  padding: calc(var(--u) * 115) calc(var(--u) * 72) calc(var(--u) * 75);
+  font-family: var(--font-sans), Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--gray);
+}
+
+/* ── Header ───────────────────────────────────────── */
+.pvc-eyebrow {
+  margin: 0;
+  font-size: calc(var(--u) * 30.5);
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.122em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* Text drawn at the design's letter height, then squeezed to the design's width (--sx) */
+.pvc-serif,
+.pvc-sans {
+  width: calc(100% / var(--sx));
+  transform: scaleX(var(--sx));
+  transform-origin: left top;
+}
+/* Playfair Display */
+.pvc-serif {
+  --sx: 0.855;
+  font-family: var(--font-serif), "Playfair Display", Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  color: var(--green);
+}
+.pvc-sans {
+  --sx: 0.94;
+}
+
+.pvc-heading {
+  --sx: 0.867;
+  margin: calc(var(--u) * 17.4) 0 0;
+  font-size: calc(var(--u) * 122.9);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.pvc-subtitle {
+  margin: calc(var(--u) * 21) 0 0;
+  font-size: calc(var(--u) * 47.7);
+  line-height: 1;
+  font-weight: 400;
+  color: var(--gray);
+}
+
+/* ── Steps ────────────────────────────────────────── */
+.pvc-list {
+  margin: calc(var(--u) * 64) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pvc-item {
+  display: flex;
+  align-items: flex-start;
+}
+.pvc-item + .pvc-item {
+  margin-top: calc(var(--u) * 18);
+}
+
+.pvc-icon-col {
+  flex: none;
+  width: calc(var(--u) * 183);
+  margin-left: calc(var(--u) * 3);
+}
+
+.pvc-circle {
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 183);
+  height: calc(var(--u) * 183);
+  border-radius: 50%;
+  background: #dde2c7;
+}
+.pvc-circle svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.pvc-circle img {
+  width: 48%;
+  height: 48%;
+  object-fit: contain;
+}
+
+.pvc-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: calc(var(--u) * 11);
+}
+.pvc-dash {
+  width: 0;
+  border-left: calc(var(--u) * 2.5) dashed #c9a25a;
+}
+.pvc-dot {
+  width: calc(var(--u) * 17);
+  height: calc(var(--u) * 17);
+  border-radius: 50%;
+  background: #c68b2f;
+}
+
+.pvc-text {
+  min-width: 0;
+  flex: 1 1 auto;
+  margin-left: calc(var(--u) * 82);
+  margin-top: calc(var(--u) * 25.3);
+}
+.pvc-title {
+  margin: 0;
+  --sx: 0.88;
+  font-size: calc(var(--u) * 59);
+  line-height: 1;
+}
+.pvc-desc {
+  margin: calc(var(--u) * 16.3) 0 0 calc(var(--u) * 7);
+  font-size: calc(var(--u) * 44);
+  line-height: calc(var(--u) * 48);
+  font-weight: 400;
+  color: var(--gray);
+  max-width: calc(var(--u) * 548);
+}
+
+/* ── Note ─────────────────────────────────────────── */
+.pvc-note {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: calc(var(--u) * 984);
+  max-width: calc(100% + var(--u) * 0);
+  min-height: calc(var(--u) * 182);
+  margin: calc(var(--u) * 24) 0 0 calc(var(--u) * 2);
+  padding: calc(var(--u) * 20) calc(var(--u) * 8) calc(var(--u) * 20) calc(var(--u) * 48);
+  border-radius: calc(var(--u) * 19);
+  background: #e8ebd8;
+}
+.pvc-note-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(var(--u) * 88);
+  height: calc(var(--u) * 88);
+  border-radius: 50%;
+  background: #0c3d30;
+  color: #fff;
+  font-family: var(--font-serif), "Playfair Display", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: calc(var(--u) * 54);
+  line-height: 1;
+}
+.pvc-note-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0 0 0 calc(var(--u) * 56);
+  --sx: 0.915;
+  font-size: calc(var(--u) * 42);
+  line-height: calc(var(--u) * 49.5);
+  color: var(--gray);
+}
+
+/* ── Leaf (bottom right) ──────────────────────────── */
+/* The picture's background is white: `multiply` makes it disappear into the card colour */
+.pvc-leaf {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: calc(var(--u) * 373);
+  height: auto;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+}

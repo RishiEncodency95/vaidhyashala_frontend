@@ -157,10 +157,11 @@ export const defaultContact: ContactContent = {
   planVisit: {
     eyebrow: "Plan Your Visit",
     heading: "Plan your visit.",
-    description: "Here's what you need to know before coming to the clinic.",
+    description: "Here’s what you need to know before coming to the clinic.",
     note: "Please contact the clinic before visiting to confirm doctor availability.",
-    image: "/contct/c3.webp",
-    imageAlt: "Plan your visit - Here's what you need to know before coming to the clinic",
+    // Decorative leaf, bottom right of the panel
+    image: "/contct/plan-leaf.webp",
+    imageAlt: "",
     items: [
       { iconImage: "", title: "Clinic address", description: "[Confirmed clinic address]" },
       { iconImage: "", title: "Clinic timings", description: "Days and consultation hours to be confirmed." },
