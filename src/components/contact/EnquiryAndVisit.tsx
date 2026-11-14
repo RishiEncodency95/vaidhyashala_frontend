@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { useContactPage } from "@/lib/contactPage";
 import { postCmsPage } from "@/lib/cmsPage";
-import PlanVisitCard from "@/components/contact/PlanVisitCard";
+    import PlanVisitCard from "@/components/contact/PlanVisitCard";
 
 export default function EnquiryAndVisit() {
   const [formData, setFormData] = useState({
