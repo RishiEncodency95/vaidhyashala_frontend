@@ -3,9 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { usePanchakarma } from "@/lib/panchakarmaPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { usePanchakarma } from "@/lib/content/panchakarma";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function PanchakarmaCTA() {
   const { cta } = usePanchakarma();

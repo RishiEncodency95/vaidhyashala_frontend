@@ -3,9 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useProductsPage } from "@/lib/productsPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useProductsPage } from "@/lib/content/products";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function ProductsHero() {
   const { hero } = useProductsPage();
@@ -36,7 +36,7 @@ export default function ProductsHero() {
           <ol className="flex items-center space-x-2 text-[12.5px] font-normal">
             <li>
               <Link
-                href={hero.breadcrumbHomeHref || "/home"}
+                href={hero.breadcrumbHomeHref || "/"}
                 className="text-[#A3733F] transition-colors hover:text-[#0E3528]"
               >
                 {hero.breadcrumbHomeLabel}

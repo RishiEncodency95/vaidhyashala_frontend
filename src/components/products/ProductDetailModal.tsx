@@ -12,7 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import ProductEnquiryModal from "@/components/products/ProductEnquiryModal";
-import CmsImage from "@/components/CmsImage";
+import CmsImage from "@/components/common/CmsImage";
 
 export interface ProductDetailModalProps {
   isOpen?: boolean;

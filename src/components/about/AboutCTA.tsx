@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import CmsImage from "@/components/CmsImage";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function AboutCTA() {
   return (

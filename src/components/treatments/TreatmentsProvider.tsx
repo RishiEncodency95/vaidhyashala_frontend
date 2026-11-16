@@ -1,27 +1,38 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { TreatmentsContent, defaultTreatments, fetchTreatments } from "@/lib/treatmentsPage";
-import { withDefaultImages } from "@/lib/home2";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { TreatmentsContent, defaultTreatments, fetchTreatments } from "@/lib/content/treatments";
+import { withDefaultImages } from "@/lib/api";
+import { loadContent, useCachedContent } from "@/lib/content/contentCache";
 
 const TreatmentsContext = createContext<TreatmentsContent>(defaultTreatments);
 
 /** Loads the Treatments page content from the backend once, then shares it with the sections */
 export function TreatmentsProvider({ children }: { children: React.ReactNode }) {
-  const [content, setContent] = useState<TreatmentsContent>(defaultTreatments);
-  const [ready, setReady] = useState(false);
+  // Content already loaded in this tab shows at once (right after hydration, so the first render
+  // matches the server HTML); a fresh copy still loads in the background
+  const cached = useCachedContent<TreatmentsContent>("treatments");
+  const [fresh, setFresh] = useState<TreatmentsContent | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const content = useMemo(() => {
+    const source = fresh ?? cached;
+    return source ? withDefaultImages(source, defaultTreatments) : defaultTreatments;
+  }, [fresh, cached]);
+  const ready = answered || cached !== undefined;
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetchTreatments(controller.signal).then((live) => {
-      if (controller.signal.aborted) return;
+    let active = true;
+    loadContent("treatments", () => fetchTreatments()).then((live) => {
+      if (!active) return;
       if (live) {
-        setContent(withDefaultImages(live, defaultTreatments));
+        setFresh(live);
         if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
       }
-      setReady(true);
+      setAnswered(true);
     });
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Hold the page back until the CMS answers so default text never flashes before the real text

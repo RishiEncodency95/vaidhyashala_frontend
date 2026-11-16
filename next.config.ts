@@ -20,6 +20,25 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "res.cloudinary.com" }],
     minimumCacheTTL: 31536000,
   },
+  // Old and alternative addresses of pages, sent to the page's one real URL (query strings are kept)
+  async redirects() {
+    return [
+      { source: "/home", destination: "/", permanent: true },
+      { source: "/faqs", destination: "/#faqs", permanent: true },
+      { source: "/career", destination: "/careers", permanent: true },
+      { source: "/patient-testimonials", destination: "/testimonials", permanent: true },
+      { source: "/careers/apply-for-position", destination: "/careers/apply", permanent: true },
+      { source: "/careers/:step(apply|apply-for-position)/cv-analysis", destination: "/careers/cv-analysis", permanent: true },
+      {
+        source: "/careers/:step(apply|apply-for-position)/:result(ai-screening-result|eligibility-result)",
+        destination: "/careers/ai-screening-result",
+        permanent: true,
+      },
+      { source: "/careers/eligibility-result", destination: "/careers/ai-screening-result", permanent: true },
+      { source: "/careers/ai-screening-partial-match", destination: "/careers/partial-match", permanent: true },
+      { source: "/careers/ai-screening-not-eligible", destination: "/careers/not-eligible", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

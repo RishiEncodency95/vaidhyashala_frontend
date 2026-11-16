@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useAbout } from "./AboutProvider";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useAbout } from "@/components/about/AboutProvider";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function AboutApproach() {
   const { approach } = useAbout();

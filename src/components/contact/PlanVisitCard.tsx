@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { assetUrl } from "@/lib/home2";
+import { assetUrl } from "@/lib/api";
 import "./PlanVisitCard.css";
 
 export interface PlanVisitContent {

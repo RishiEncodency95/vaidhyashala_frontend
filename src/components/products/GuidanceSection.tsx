@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useProductsPage } from "@/lib/productsPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useProductsPage } from "@/lib/content/products";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function GuidanceSection() {
   const { guidance } = useProductsPage();

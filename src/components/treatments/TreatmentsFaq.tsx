@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
-import { useTreatments } from "./TreatmentsProvider";
+import { useTreatments } from "@/components/treatments/TreatmentsProvider";
 
 interface FaqItem {
   question: string;

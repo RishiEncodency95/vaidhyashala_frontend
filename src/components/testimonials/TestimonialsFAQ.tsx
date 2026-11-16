@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
-import { useTestimonialsPage } from "@/lib/testimonialsPage";
+import { useTestimonialsPage } from "@/lib/content/testimonials";
 
 export default function TestimonialsFAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);

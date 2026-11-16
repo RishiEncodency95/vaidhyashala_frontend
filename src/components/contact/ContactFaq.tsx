@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
-import { useContactPage } from "@/lib/contactPage";
+import { useContactPage } from "@/lib/content/contact";
 
 export default function ContactFaq() {
   // First item open by default as in reference image

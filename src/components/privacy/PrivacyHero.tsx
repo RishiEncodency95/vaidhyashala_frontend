@@ -2,9 +2,9 @@
 
 import React from "react";
 import { Shield } from "lucide-react";
-import { usePrivacyPage } from "@/lib/privacyPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { usePrivacyPage } from "@/lib/content/privacy";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function PrivacyHero() {
   const { hero } = usePrivacyPage();

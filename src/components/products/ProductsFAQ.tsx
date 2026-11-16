@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Plus, Minus, Leaf, ArrowRight } from "lucide-react";
-import { useProductsPage } from "@/lib/productsPage";
+import { useProductsPage } from "@/lib/content/products";
 
 
 export default function ProductsFAQ() {

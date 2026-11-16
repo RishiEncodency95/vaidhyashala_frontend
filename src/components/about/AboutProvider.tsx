@@ -1,27 +1,38 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { AboutContent, defaultAbout, fetchAbout } from "@/lib/aboutPage";
-import { withDefaultImages } from "@/lib/home2";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { AboutContent, defaultAbout, fetchAbout } from "@/lib/content/about";
+import { withDefaultImages } from "@/lib/api";
+import { loadContent, useCachedContent } from "@/lib/content/contentCache";
 
 const AboutContext = createContext<AboutContent>(defaultAbout);
 
 /** Loads the About page content from the backend once, then shares it with the sections */
 export function AboutProvider({ children }: { children: React.ReactNode }) {
-  const [content, setContent] = useState<AboutContent>(defaultAbout);
-  const [ready, setReady] = useState(false);
+  // Content already loaded in this tab shows at once (right after hydration, so the first render
+  // matches the server HTML); a fresh copy still loads in the background
+  const cached = useCachedContent<AboutContent>("about-us");
+  const [fresh, setFresh] = useState<AboutContent | null>(null);
+  const [answered, setAnswered] = useState(false);
+  const content = useMemo(() => {
+    const source = fresh ?? cached;
+    return source ? withDefaultImages(source, defaultAbout) : defaultAbout;
+  }, [fresh, cached]);
+  const ready = answered || cached !== undefined;
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetchAbout(controller.signal).then((live) => {
-      if (controller.signal.aborted) return;
+    let active = true;
+    loadContent("about-us", () => fetchAbout()).then((live) => {
+      if (!active) return;
       if (live) {
-        setContent(withDefaultImages(live, defaultAbout));
+        setFresh(live);
         if (live.seo?.metaTitle) document.title = live.seo.metaTitle;
       }
-      setReady(true);
+      setAnswered(true);
     });
-    return () => controller.abort();
+    return () => {
+      active = false;
+    };
   }, []);
 
   // Hold the page back until the CMS answers so default text never flashes before the real text

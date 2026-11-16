@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useTestimonialsPage } from "@/lib/testimonialsPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useTestimonialsPage } from "@/lib/content/testimonials";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function FeedbackImpact() {
   const { feedbackImpact } = useTestimonialsPage();

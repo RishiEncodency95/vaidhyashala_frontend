@@ -3,9 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useContactPage } from "@/lib/contactPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useContactPage } from "@/lib/content/contact";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function ContactCTA() {
   const { cta } = useContactPage();

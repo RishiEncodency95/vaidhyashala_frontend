@@ -2,9 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { useAbout } from "./AboutProvider";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useAbout } from "@/components/about/AboutProvider";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function AboutHero() {
   const { hero } = useAbout();
@@ -38,7 +38,7 @@ export default function AboutHero() {
           <ol className="flex items-center space-x-2 text-[12.5px] font-normal">
             <li>
               <Link
-                href={hero.breadcrumbHomeHref || "/home"}
+                href={hero.breadcrumbHomeHref || "/"}
                 className="text-[#A3733F] transition-colors hover:text-[#0E3528]"
               >
                 {hero.breadcrumbHomeLabel}

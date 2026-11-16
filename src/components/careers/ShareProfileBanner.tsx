@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { ArrowRight, FileText, Search } from "lucide-react";
-import JobModal from "./JobModal";
-import { useCareersPage } from "@/lib/careersPage";
+import JobModal from "@/components/careers/JobModal";
+import { useCareersPage } from "@/lib/content/careers";
 
 export default function ShareProfileBanner() {
   const [isModalOpen, setIsModalOpen] = useState(false);

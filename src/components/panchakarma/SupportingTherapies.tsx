@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { usePanchakarma } from "@/lib/panchakarmaPage";
-import { assetUrl } from "@/lib/home2";
+import { usePanchakarma } from "@/lib/content/panchakarma";
+import { assetUrl } from "@/lib/api";
 import AyurvedicConsultationModal from "@/components/consultation/AyurvedicConsultationModal";
-import CmsImage from "@/components/CmsImage";
+import CmsImage from "@/components/common/CmsImage";
 
 interface TherapyItem {
   title: string;

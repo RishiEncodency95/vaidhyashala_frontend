@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { useTreatments } from "./TreatmentsProvider";
+import { useTreatments } from "@/components/treatments/TreatmentsProvider";
 
 export default function TreatmentsHighlightsBar() {
   const { highlights } = useTreatments();

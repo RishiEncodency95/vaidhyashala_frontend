@@ -139,3 +139,12 @@ nextjs-portal {
 @media (prefers-reduced-motion: reduce) {
   [class*="footer-logo-shine"] { animation: none !important; opacity: 0; }
 }
+
+/* "May I help you?" bubble above the floating robot (HelpAssistant) */
+@keyframes helpFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [class*="helpFloat"] { animation: none !important; }
+}

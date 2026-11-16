@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
-import ScrollbarManager from "@/components/ScrollbarManager";
+import ScrollbarManager from "@/components/layout/ScrollbarManager";
+import ContentPrefetch from "@/components/layout/ContentPrefetch";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -43,6 +44,8 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-[#FBF9F5] text-[#22332A] flex flex-col font-sans">
         <ScrollbarManager />
+        <ContentPrefetch />
+        {/* Website pages add the navbar/footer in app/(site)/layout.tsx */}
         {children}
       </body>
     </html>

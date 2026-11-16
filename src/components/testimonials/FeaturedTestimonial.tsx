@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useTestimonialsPage } from "@/lib/testimonialsPage";
-import { assetUrl } from "@/lib/home2";
-import { ApiTestimonial, fetchFeaturedTestimonial } from "@/lib/catalogApi";
-import CmsImage from "@/components/CmsImage";
+import { useTestimonialsPage } from "@/lib/content/testimonials";
+import { assetUrl } from "@/lib/api";
+import { ApiTestimonial, fetchFeaturedTestimonial } from "@/lib/catalog";
+import CmsImage from "@/components/common/CmsImage";
 
 interface FeaturedTestimonialProps {
   imageSrc?: string;

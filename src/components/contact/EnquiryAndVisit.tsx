@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { ArrowRight } from "lucide-react";
-import { useContactPage } from "@/lib/contactPage";
-import { postCmsPage } from "@/lib/cmsPage";
+import { useContactPage } from "@/lib/content/contact";
+import { postCmsPage } from "@/lib/content/createCmsPage";
     import PlanVisitCard from "@/components/contact/PlanVisitCard";
 
 export default function EnquiryAndVisit() {

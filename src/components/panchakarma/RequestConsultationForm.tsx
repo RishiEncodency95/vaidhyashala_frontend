@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { ArrowRight, Calendar } from "lucide-react";
-import { usePanchakarma } from "@/lib/panchakarmaPage";
-import { postCmsPage } from "@/lib/cmsPage";
+import { usePanchakarma } from "@/lib/content/panchakarma";
+import { postCmsPage } from "@/lib/content/createCmsPage";
 
 export default function RequestConsultationForm() {
   const { requestForm } = usePanchakarma();

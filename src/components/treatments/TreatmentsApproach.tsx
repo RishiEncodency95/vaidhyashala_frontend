@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useTreatments } from "./TreatmentsProvider";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useTreatments } from "@/components/treatments/TreatmentsProvider";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function TreatmentsApproach() {
   const { approach } = useTreatments();

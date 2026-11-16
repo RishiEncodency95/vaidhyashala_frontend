@@ -2,9 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { useTestimonialsPage } from "@/lib/testimonialsPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useTestimonialsPage } from "@/lib/content/testimonials";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 interface TestimonialsHeroProps {
   heroImageSrc?: string;
@@ -41,7 +41,7 @@ export default function TestimonialsHero({ heroImageSrc }: TestimonialsHeroProps
             <ol className="flex items-center space-x-2 text-[14px] font-medium">
               <li>
                 <Link
-                  href={hero.breadcrumbHomeHref || "/home"}
+                  href={hero.breadcrumbHomeHref || "/"}
                   className="text-[#A3733F] transition-colors hover:text-[#0E3528]"
                 >
                   {hero.breadcrumbHomeLabel}

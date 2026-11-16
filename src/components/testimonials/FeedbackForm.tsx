@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { ArrowRight, Upload } from "lucide-react";
-import { useTestimonialsPage } from "@/lib/testimonialsPage";
-import { API_BASE, assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useTestimonialsPage } from "@/lib/content/testimonials";
+import { API_BASE, assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function FeedbackForm() {
   const [formData, setFormData] = useState({

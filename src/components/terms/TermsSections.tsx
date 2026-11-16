@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Mail, Phone } from "lucide-react";
-import type { PolicySectionItem } from "@/lib/privacyPage";
-import { useTermsPage } from "@/lib/termsPage";
+import type { PolicySectionItem } from "@/lib/content/privacy";
+import { useTermsPage } from "@/lib/content/terms";
 
 interface SectionData {
   id: string;

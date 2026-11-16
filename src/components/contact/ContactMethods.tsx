@@ -3,9 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, ArrowRight } from "lucide-react";
-import { useContactPage } from "@/lib/contactPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useContactPage } from "@/lib/content/contact";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (

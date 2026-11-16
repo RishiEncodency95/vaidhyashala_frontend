@@ -5,7 +5,7 @@
  * Public, read-only: GET {API}/website/seo-settings/advanced lists the uploads, stored on the backend
  * under /seo-files/<name>.
  */
-import { API_BASE } from "@/lib/home2";
+import { API_BASE } from "@/lib/api";
 
 /** Backend origin ("http://localhost:5001"), where uploaded root files are served from */
 export const BACKEND_ORIGIN = new URL(API_BASE).origin;

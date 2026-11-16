@@ -13,20 +13,29 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  Search,
 } from "lucide-react";
-import JobModal from "./JobModal";
-import { useCareersPage } from "@/lib/careersPage";
-import { API_BASE, assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import JobModal from "@/components/careers/JobModal";
+import { useCareersPage } from "@/lib/content/careers";
+import { API_BASE, assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 interface JobRole {
   title: string;
+  /** The job's slug: the apply page screens the CV against this job's requirements */
+  slug: string;
   location: string;
   type: string;
   description: string;
   imageSrc?: string;
   icon: React.ComponentType<{ className?: string }>;
+  /** Admin "Featured Job": listed first (by the API) and marked on its card */
+  featured: boolean;
+  /** Words the search box matches: department, skills and the admin's Tags */
+  keywords: string;
 }
+
+const strings = (v: unknown) => (Array.isArray(v) ? v.map((x) => String(x ?? "")) : []);
 
 // The icon on a job card, and its photo when the job has none of its own (Admin → Job Card Image), picked in turn
 const CARD_LOOKS: { imageSrc: string; icon: JobRole["icon"] }[] = [
@@ -49,11 +58,14 @@ async function fetchOpenJobs(signal: AbortSignal): Promise<JobRole[] | null> {
       const look = CARD_LOOKS[index % CARD_LOOKS.length];
       return {
         title: String(job.title ?? ""),
+        slug: String(job.slug ?? ""),
         location: String(job.location ?? ""),
         type: String(job.employmentType ?? ""),
         description: String(job.description ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim(),
         imageSrc: assetUrl(typeof job.image === "string" ? job.image : "") || look.imageSrc,
         icon: look.icon,
+        featured: job.featuredJob === true,
+        keywords: [job.department, ...strings(job.skills), ...strings(job.tags)].join(" "),
       };
     });
   } catch {
@@ -66,6 +78,15 @@ export default function ExploreOpportunities() {
   const [selectedJob, setSelectedJob] = useState<string | null>(null);
   const [jobs, setJobs] = useState<JobRole[]>([]);
   const hasJobs = jobs.length > 0;
+  // Search over title, location, type, department, skills and the admin's Tags
+  const [query, setQuery] = useState("");
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+  const shownJobs = terms.length
+    ? jobs.filter((job) => {
+        const text = `${job.title} ${job.location} ${job.type} ${job.keywords}`.toLowerCase();
+        return terms.every((t) => text.includes(t));
+      })
+    : jobs;
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -175,14 +196,42 @@ export default function ExploreOpportunities() {
             </div>
           </div>
 
+          {hasJobs && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <label className="relative w-full sm:w-[340px]">
+                <span className="sr-only">Search jobs</span>
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A9A90]" />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by role, skill or location"
+                  className="h-10 w-full rounded-md border border-[#E3DDCF] bg-white pl-9 pr-3 text-[14px] text-[#0D3226] outline-none placeholder:text-[#8A9A90] focus:border-[#A58351]"
+                />
+              </label>
+              {terms.length > 0 && (
+                <span className="text-[13px] font-medium text-[#4A5950]">
+                  {shownJobs.length} {shownJobs.length === 1 ? "opening" : "openings"} found
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Conditional Rendering: Either Left-to-Right Scrolling Job Cards OR Empty State Card */}
-          {hasJobs ? (
+          {hasJobs && shownJobs.length === 0 ? (
+            <p className="py-8 text-center text-[15px] font-medium text-[#4A5950]">
+              No openings match &ldquo;{query.trim()}&rdquo;.{" "}
+              <button type="button" onClick={() => setQuery("")} className="font-semibold text-[#0A3527] underline">
+                Show all openings
+              </button>
+            </p>
+          ) : hasJobs ? (
             /* Horizontal Left-to-Right Scrolling Container */
             <div
               ref={scrollContainerRef}
               className="flex gap-4 sm:gap-5 overflow-x-auto scroll-smooth pb-3 pt-1 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:none"
             >
-              {jobs.map((job, index) => {
+              {shownJobs.map((job, index) => {
                 const IconComp = job.icon;
                 return (
                   <div
@@ -202,6 +251,12 @@ export default function ExploreOpportunities() {
                           />
                         ) : (
                           <div className="h-full w-full bg-[#EAE4D8]" />
+                        )}
+
+                        {job.featured && (
+                          <span className="absolute left-3 top-3 rounded-full bg-[#D8B45D] px-2.5 py-0.5 text-[11.5px] font-bold uppercase tracking-[0.08em] text-[#0A3527] shadow-xs">
+                            Featured
+                          </span>
                         )}
 
                         {/* Floating Circular Badge overlapping bottom left */}
@@ -239,7 +294,7 @@ export default function ExploreOpportunities() {
                     {/* Card Action Button */}
                     <div className="px-4 sm:px-5 pb-4 pt-1">
                       <Link
-                        href={`/careers/apply?role=${encodeURIComponent(job.title)}`}
+                        href={`/careers/apply?role=${encodeURIComponent(job.title)}${job.slug ? `&job=${encodeURIComponent(job.slug)}` : ""}`}
                         className="group/btn flex w-full items-center justify-center gap-2 rounded-md bg-[#0A3527] py-2.5 text-[14.5px] font-semibold text-white shadow-xs transition-colors hover:bg-[#124534] cursor-pointer"
                       >
                         <span>{openings.buttonLabel}</span>

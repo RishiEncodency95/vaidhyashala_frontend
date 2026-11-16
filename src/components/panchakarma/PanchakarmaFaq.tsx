@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
-import { usePanchakarma } from "@/lib/panchakarmaPage";
+import { usePanchakarma } from "@/lib/content/panchakarma";
 
 export default function PanchakarmaFaq() {
   // First item open by default as shown in the reference image

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useTermsPage } from "@/lib/termsPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useTermsPage } from "@/lib/content/terms";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function TermsCards() {
   const { summaryCards } = useTermsPage();

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowRight, Calendar, ChevronDown, CheckCircle2 } from "lucide-react";
 import { useHome2 } from "@/components/home/Home2Provider";
-import { submitAppointment } from "@/lib/home2";
+import { submitAppointment } from "@/lib/consultation";
 
 export default function AppointmentBooking() {
   const [name, setName] = useState("");

@@ -2,12 +2,12 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { ArrowRight, ChevronDown, Search } from "lucide-react";
-import { useProductsPage } from "@/lib/productsPage";
-import { assetUrl } from "@/lib/home2";
-import { ApiProduct, fetchProducts } from "@/lib/catalogApi";
+import { useProductsPage } from "@/lib/content/products";
+import { assetUrl } from "@/lib/api";
+import { ApiProduct, fetchProducts } from "@/lib/catalog";
 import ProductDetailModal from "@/components/products/ProductDetailModal";
 import ProductEnquiryModal from "@/components/products/ProductEnquiryModal";
-import CmsImage from "@/components/CmsImage";
+import CmsImage from "@/components/common/CmsImage";
 
 interface Product {
   id: string;

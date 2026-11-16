@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { X, ChevronDown, ArrowRight, Check, Leaf } from "lucide-react";
-import { API_BASE } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { API_BASE } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export interface ProductEnquiryModalProps {
   isOpen: boolean;

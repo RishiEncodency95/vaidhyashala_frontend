@@ -2,9 +2,9 @@
 
 import React from "react";
 import { FileText, Pill, ClipboardList } from "lucide-react";
-import { useTreatments } from "./TreatmentsProvider";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useTreatments } from "@/components/treatments/TreatmentsProvider";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 // Used when a tip has no uploaded icon, in the order the tips are listed
 const FALLBACK_ICONS = [FileText, Pill, ClipboardList];

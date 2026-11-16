@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { useProductsPage } from "@/lib/productsPage";
-import { API_BASE } from "@/lib/home2";
+import { useProductsPage } from "@/lib/content/products";
+import { API_BASE } from "@/lib/api";
 
 export default function ProductEnquiryForm() {
   const [formData, setFormData] = useState({

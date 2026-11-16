@@ -2,10 +2,10 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import { ArrowDown } from "lucide-react";
-import { useTestimonialsPage } from "@/lib/testimonialsPage";
-import { assetUrl } from "@/lib/home2";
-import { fetchTestimonials } from "@/lib/catalogApi";
-import CmsImage from "@/components/CmsImage";
+import { useTestimonialsPage } from "@/lib/content/testimonials";
+import { assetUrl } from "@/lib/api";
+import { fetchTestimonials } from "@/lib/catalog";
+import CmsImage from "@/components/common/CmsImage";
 
 interface TestimonialItem {
   id: string;

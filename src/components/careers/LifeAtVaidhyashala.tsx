@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { useCareersPage } from "@/lib/careersPage";
-import { assetUrl } from "@/lib/home2";
-import CmsImage from "@/components/CmsImage";
+import { useCareersPage } from "@/lib/content/careers";
+import { assetUrl } from "@/lib/api";
+import CmsImage from "@/components/common/CmsImage";
 
 export default function LifeAtVaidhyashala() {
   const { life } = useCareersPage();
