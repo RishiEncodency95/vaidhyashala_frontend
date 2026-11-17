@@ -28,6 +28,10 @@ export interface ProductDetailModalProps {
     productInfo?: string;
     directions?: string;
     disclaimer?: string;
+    /** Lines of the green note box, one per line */
+    usageNotes?: string;
+    imageAlt?: string;
+    /** Main image first, then the extra popup images */
     images?: string[];
   };
   onEnquire?: () => void;
@@ -46,15 +50,11 @@ export default function ProductDetailModal({
   const [isDirectionsOpen, setIsDirectionsOpen] = useState(false);
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
 
-  // Gallery images - fallback to existing product image or placeholder
-  const defaultImages = [
-    product?.images?.[0] ||
-      "/product/vaidhyashala_product_page_images/05_ayurvedic_massage_oil.webp",
-    product?.images?.[1] ||
-      "/product/vaidhyashala_product_page_images/05_ayurvedic_massage_oil.webp",
-    product?.images?.[2] ||
-      "/product/vaidhyashala_product_page_images/14_product_guidance_consultation.webp",
-  ];
+  // The product's own pictures (Admin → Products: main image + up to 2 popup images)
+  const providedImages = (product?.images ?? []).filter(Boolean);
+  const galleryImages = providedImages.length
+    ? providedImages
+    : ["/product/vaidhyashala_product_page_images/14_product_guidance_consultation.webp"];
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -80,12 +80,11 @@ export default function ProductDetailModal({
 
   if (!isOpen) return null;
 
-  const title = product?.title || "Ayurvedic Massage Oil";
-  const categoryTag = product?.categoryTag || "THERAPY OILS";
-  const description =
-    product?.description ||
-    "An Ayurvedic oil preparation for external massage. Ask our team about the formulation, pack options and availability.";
-  const productType = product?.productType || "External-use oil";
+  // Empty fields get wording that is true for every product (keep in step with the admin's POPUP_DEFAULTS)
+  const title = product?.title || "Product";
+  const categoryTag = product?.categoryTag || "";
+  const description = product?.description || "";
+  const productType = product?.productType || "";
   const packOptions = product?.packOptions || "Confirm with the clinic";
   const availability = product?.availability || "Enquire with our team";
   const productInfo =
@@ -93,7 +92,12 @@ export default function ProductDetailModal({
     "Details of the available formulation and manufacturer will be shared by our clinic team.";
   const directions =
     product?.directions ||
-    "Use as directed by your physician or as indicated on the pack label. For external application only. Store in a cool, dry place away from direct sunlight.";
+    "Use as directed by your physician or as indicated on the pack label. Store in a cool, dry place away from direct sunlight.";
+  const usageNotes = (product?.usageNotes || "Use as directed by the product label or your treating doctor.")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const imageAlt = product?.imageAlt || title;
 
   return (
     <div
@@ -128,8 +132,8 @@ export default function ProductDetailModal({
               <CmsImage
                 fill
                 sizes="(min-width: 1024px) 400px, 90vw"
-                src={defaultImages[activeImageIndex]}
-                alt={title}
+                src={galleryImages[activeImageIndex] ?? galleryImages[0]}
+                alt={imageAlt}
                 className="h-full w-full object-cover object-center"
               />
             </div>
@@ -139,9 +143,10 @@ export default function ProductDetailModal({
               Illustrative product image
             </p>
 
-            {/* 3 Thumbnail Selection Cards */}
+            {/* Thumbnails (only when the product has more than one picture) */}
+            {galleryImages.length > 1 && (
             <div className="mt-3 grid grid-cols-3 gap-2.5 sm:gap-3">
-              {defaultImages.map((imgSrc, idx) => {
+              {galleryImages.map((imgSrc, idx) => {
                 const isActive = activeImageIndex === idx;
                 return (
                   <button
@@ -158,21 +163,24 @@ export default function ProductDetailModal({
                       fill
                       sizes="120px"
                       src={imgSrc}
-                      alt={`Thumbnail ${idx + 1}`}
+                      alt={`${imageAlt} – picture ${idx + 1}`}
                       className="h-full w-full object-cover object-center"
                     />
                   </button>
                 );
               })}
             </div>
+            )}
           </div>
 
           {/* ================= RIGHT COLUMN: PRODUCT INFO ================= */}
           <div className="lg:col-span-7 flex flex-col">
             {/* Category Eyebrow */}
-            <span className="text-[11.5px] sm:text-[12px] font-bold tracking-[1.4px] uppercase text-[#A07038]">
-              {categoryTag}
-            </span>
+            {categoryTag && (
+              <span className="text-[11.5px] sm:text-[12px] font-bold tracking-[1.4px] uppercase text-[#A07038]">
+                {categoryTag}
+              </span>
+            )}
 
             {/* Product Title */}
             <h2 className="mt-1 font-serif text-[28px] sm:text-[34px] lg:text-[38px] font-medium leading-[1.14] text-[#0A291F]">
@@ -180,16 +188,19 @@ export default function ProductDetailModal({
             </h2>
 
             {/* Brief Description */}
-            <p className="mt-2 text-[14px] sm:text-[14.5px] font-normal leading-[1.6] text-[#4A5950]">
-              {description}
-            </p>
+            {description && (
+              <p className="mt-2 whitespace-pre-line text-[14px] sm:text-[14.5px] font-normal leading-[1.6] text-[#4A5950]">
+                {description}
+              </p>
+            )}
 
             {/* Thin Divider */}
             <div className="my-4 border-t border-[#ECE5D8]" />
 
             {/* 3 Key Attributes List */}
             <div className="space-y-3">
-              {/* Attribute 1: Product Type */}
+              {/* Attribute 1: Product Type (only when the admin set one) */}
+              {productType && (
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[#D5CDC0] bg-[#FAF8F3] text-[#2D5A45]">
                   <Leaf className="h-4.5 w-4.5 stroke-[1.8]" />
@@ -203,6 +214,7 @@ export default function ProductDetailModal({
                   </span>
                 </div>
               </div>
+              )}
 
               {/* Attribute 2: Pack Options */}
               <div className="flex items-center gap-3">
@@ -255,7 +267,7 @@ export default function ProductDetailModal({
               </button>
               {isProductInfoOpen && (
                 <div className="px-4 pb-3.5 pt-0">
-                  <p className="text-[13px] sm:text-[13.5px] font-normal leading-[1.55] text-[#4A5950]">
+                  <p className="whitespace-pre-line text-[13px] sm:text-[13.5px] font-normal leading-[1.55] text-[#4A5950]">
                     {productInfo}
                   </p>
                 </div>
@@ -282,7 +294,7 @@ export default function ProductDetailModal({
               </button>
               {isDirectionsOpen && (
                 <div className="px-4 pb-3.5 pt-0">
-                  <p className="text-[13px] sm:text-[13.5px] font-normal leading-[1.55] text-[#4A5950]">
+                  <p className="whitespace-pre-line text-[13px] sm:text-[13.5px] font-normal leading-[1.55] text-[#4A5950]">
                     {directions}
                   </p>
                 </div>
@@ -293,8 +305,9 @@ export default function ProductDetailModal({
             <div className="mt-3.5 flex items-start gap-3 rounded-xl border border-[#D5E3D8] bg-[#EDF3EE] p-3.5 sm:p-4">
               <Info className="h-5 w-5 flex-shrink-0 text-[#2C5A42] mt-0.5" />
               <div className="text-[12.5px] sm:text-[13px] font-medium leading-[1.5] text-[#244E38]">
-                <p>Use as directed by the product label or your treating doctor.</p>
-                <p>For external use only.</p>
+                {usageNotes.map((line, idx) => (
+                  <p key={idx}>{line}</p>
+                ))}
               </div>
             </div>
 
@@ -339,7 +352,7 @@ export default function ProductDetailModal({
           id: product?.id,
           title: title,
           categoryTag: categoryTag,
-          imageSrc: defaultImages[0],
+          imageSrc: galleryImages[0],
         }}
       />
     </div>

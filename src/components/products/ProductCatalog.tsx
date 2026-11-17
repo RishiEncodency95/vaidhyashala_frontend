@@ -19,11 +19,15 @@ interface Product {
   imageSrc: string;
   /** Only set for products from the admin */
   detail?: {
+    /** The popup's paragraph (the card shows the short description) */
+    description?: string;
     productType?: string;
     packOptions?: string;
     availability?: string;
     productInfo?: string;
     directions?: string;
+    usageNotes?: string;
+    imageAlt?: string;
     gallery: string[];
   };
 }
@@ -227,21 +231,26 @@ const fromApi = (p: ApiProduct): Product => {
   const bundled = allProducts.find((s) => s.title.toLowerCase() === p.title.trim().toLowerCase());
   const imageSrc = assetUrl(p.image) || bundled?.imageSrc || GUIDANCE_IMAGE;
   const text = p.shortDescription || p.description || "";
+  // Main image, then the popup images the admin added (each picture once)
+  const gallery = Array.from(new Set([imageSrc, assetUrl(p.galleryImage1), assetUrl(p.galleryImage2)].filter(Boolean)));
   return {
     id: p._id,
     title: p.title,
     categoryTag: name.toUpperCase(),
     category: name,
     description: text,
-    searchText: text,
+    searchText: [p.shortDescription, p.description, p.productType].filter(Boolean).join(" "),
     imageSrc,
     detail: {
+      description: p.description || p.shortDescription,
       productType: p.productType,
       packOptions: p.packOptions,
       availability: p.availability,
       productInfo: p.productInfo,
       directions: p.directions,
-      gallery: [imageSrc, assetUrl(p.galleryImage1) || imageSrc, assetUrl(p.galleryImage2) || GUIDANCE_IMAGE],
+      usageNotes: p.usageNotes,
+      imageAlt: p.imageAlt,
+      gallery,
     },
   };
 };
@@ -419,13 +428,15 @@ export default function ProductCatalog() {
             id: selectedProduct.id,
             title: selectedProduct.title,
             categoryTag: selectedProduct.categoryTag,
-            description: selectedProduct.searchText,
-            ...selectedProduct.detail,
-            images: selectedProduct.detail?.gallery ?? [
-              selectedProduct.imageSrc,
-              selectedProduct.imageSrc,
-              GUIDANCE_IMAGE,
-            ],
+            description: selectedProduct.detail?.description || selectedProduct.searchText,
+            productType: selectedProduct.detail?.productType,
+            packOptions: selectedProduct.detail?.packOptions,
+            availability: selectedProduct.detail?.availability,
+            productInfo: selectedProduct.detail?.productInfo,
+            directions: selectedProduct.detail?.directions,
+            usageNotes: selectedProduct.detail?.usageNotes,
+            imageAlt: selectedProduct.detail?.imageAlt,
+            images: selectedProduct.detail?.gallery ?? [selectedProduct.imageSrc],
           }}
           onContactClinic={() => {
             setSelectedProduct(null);
