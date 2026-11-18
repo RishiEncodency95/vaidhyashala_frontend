@@ -18,6 +18,7 @@ export default function AppointmentBooking() {
   const [today, setToday] = useState("");
   useEffect(() => {
     const d = new Date();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the browser / an async result
     setToday(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10));
   }, []);
   const { appointment } = useHome2();

@@ -165,6 +165,7 @@ export default function CompleteApplicationForm({
   const [location, setLocation] = useState("");
   useEffect(() => {
     if (!result) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the browser / an async result
     setName((v) => v || result.candidateName);
     setEmail((v) => v || result.email);
     setPhone((v) => v || result.phone);
@@ -194,6 +195,7 @@ export default function CompleteApplicationForm({
   const [photoPreview, setPhotoPreview] = useState("");
   const photoInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the browser / an async result
     if (!photoFile) return setPhotoPreview("");
     const url = URL.createObjectURL(photoFile);
     setPhotoPreview(url);

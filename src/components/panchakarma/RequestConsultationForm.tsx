@@ -11,6 +11,7 @@ export default function RequestConsultationForm() {
   const [submitting, setSubmitting] = useState(false);
   // Today's date for the date picker's minimum; read in the browser only, never while prerendering
   const [today, setToday] = useState("");
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the browser / an async result
   useEffect(() => setToday(new Date().toISOString().slice(0, 10)), []);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({

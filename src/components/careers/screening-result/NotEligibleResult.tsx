@@ -6,29 +6,12 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Home,
   Check,
-  Download,
   Eye,
   RotateCw,
   Edit2,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Building,
-  Briefcase,
-  GraduationCap,
   Bookmark,
-  Lock,
   Leaf,
-  Users,
-  FileText,
-  Target,
-  Sparkles,
-  BarChart2,
-  CheckCircle2,
-  User,
   X,
 } from "lucide-react";
 
@@ -81,7 +64,6 @@ const SAMPLE_BREAKDOWN = [
 
 export default function NotEligibleResult({
   candidateName = "Vijay Sharma",
-  candidateRole = "Ayurvedic Doctor",
   email = "vijay.sharma@gmail.com",
   phone = "+91 98765 43210",
   location = "Delhi NCR",
@@ -105,7 +87,6 @@ export default function NotEligibleResult({
   showBreakdown = true,
   allowCvReplacement = true,
   applyHref = "/careers",
-  continueHref = "/careers",
   eligibleFrom = 70,
   partialFrom = 50,
 }: NotEligibleResultProps) {

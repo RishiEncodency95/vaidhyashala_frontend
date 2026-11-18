@@ -61,6 +61,7 @@ export default function ScreeningResultLoader({
 
   useEffect(() => {
     if (!analysisId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the browser / an async result
       setResult(null);
       return;
     }

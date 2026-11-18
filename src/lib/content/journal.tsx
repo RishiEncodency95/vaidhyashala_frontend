@@ -134,6 +134,7 @@ function withJournalDefaultImages(live: JournalContent): JournalContent {
   };
   // Hero and decorative images by position; article images by title, since the article list is editable
   const { featured, articlesSection, ...rest } = live;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- articlesSection is left out of dRest on purpose
   const { featured: dFeatured, articlesSection: dArticles, ...dRest } = defaultJournal;
   return {
     ...withDefaultImages(rest, dRest),

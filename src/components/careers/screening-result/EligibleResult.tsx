@@ -6,29 +6,13 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Home,
   Check,
   Download,
   Eye,
   RotateCw,
   Edit2,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Building,
-  Briefcase,
-  GraduationCap,
   Bookmark,
-  Lock,
-  Leaf,
-  Users,
-  FileText,
   Target,
-  Sparkles,
-  BarChart2,
-  CheckCircle2,
-  User,
 } from "lucide-react";
 
 interface EligibleResultProps {
@@ -80,7 +64,6 @@ const SAMPLE_BREAKDOWN = [
 
 export default function EligibleResult({
   candidateName = "Dr. Ananya Sharma",
-  candidateRole = "Ayurvedic Doctor",
   email = "ananya.sharma@gmail.com",
   phone = "+91 98765 43210",
   location = "Delhi NCR",
@@ -98,7 +81,6 @@ export default function EligibleResult({
   workLocation = "Delhi NCR",
   matchScore = 85,
   breakdown,
-  suggestions,
   strengths,
   explanation,
   showScore = true,

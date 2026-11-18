@@ -176,6 +176,7 @@ export default function CVAnalysis({
   // The AI screening runs while the steps animate; the bar waits at 92% until the result is in
   useEffect(() => {
     if (!candidateId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs state from the browser / an async result
       setError("We could not find your uploaded CV. Please upload it again.");
       return;
     }

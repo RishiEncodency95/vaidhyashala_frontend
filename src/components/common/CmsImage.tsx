@@ -18,6 +18,6 @@ export function canOptimize(src: string) {
  * the browser gets a copy sized for the screen, in AVIF/WebP. A link to another website still works,
  * it is just not resized.
  */
-export default function CmsImage({ src, unoptimized, ...props }: Omit<ImageProps, "src"> & { src: string }) {
-  return <Image src={src} unoptimized={unoptimized ?? !canOptimize(src)} {...props} />;
+export default function CmsImage({ src, alt, unoptimized, ...props }: Omit<ImageProps, "src"> & { src: string }) {
+  return <Image src={src} alt={alt} unoptimized={unoptimized ?? !canOptimize(src)} {...props} />;
 }

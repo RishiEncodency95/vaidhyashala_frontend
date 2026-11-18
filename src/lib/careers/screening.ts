@@ -59,6 +59,7 @@ export const cvFileProblem = (file: File) =>
 
 /** An API refusal, with the HTTP status and the rest of the reply (e.g. an earlier analysisId) */
 export class CareersApiError extends Error {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- loosely shaped API JSON
   constructor(message: string, readonly status: number, readonly details: Record<string, any> | null) {
     super(message);
   }
@@ -98,6 +99,7 @@ const AREA_LABELS: [key: string, label: string][] = [
 
 type ApiArea = { score?: number; evidence?: string[]; matched?: string[]; missing?: string[] };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- loosely shaped API JSON
 const toResult = (d: Record<string, any>): ScreeningResult => {
   const ext = d.extractedProfile ?? d.candidateProfile ?? {};
   const cand = ext.candidate ?? ext;

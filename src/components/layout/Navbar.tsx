@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X, ShoppingCart } from "lucide-react";
+import { useCart } from "@/lib/cart";
 import Logo from "@/components/common/Logo";
 import PlanConsultationModal from "@/components/consultation/PlanConsultationModal";
 
@@ -65,7 +66,8 @@ export default function Navbar() {
           </nav>
 
           {/* Right: CTA Button */}
-          <div className="hidden sm:flex items-center">
+          <div className="hidden sm:flex items-center gap-3">
+            <CartLink />
             <button
               type="button"
               onClick={() => setIsConsultModalOpen(true)}
@@ -75,6 +77,8 @@ export default function Navbar() {
               <ArrowRight className="h-4 w-4 text-[#D8B45D] transition-transform duration-200 group-hover:translate-x-0.5" />
             </button>
           </div>
+
+          <div className="sm:hidden ml-auto mr-1"><CartLink /></div>
 
           {/* Mobile menu toggle */}
           <button
@@ -125,5 +129,19 @@ export default function Navbar() {
         onClose={() => setIsConsultModalOpen(false)}
       />
     </>
+  );
+}
+
+function CartLink() {
+  const { count } = useCart();
+  return (
+    <Link href="/cart" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} className="relative rounded-md p-2 text-[#2F4439] hover:bg-[#EFE9DF]">
+      <ShoppingCart className="h-5 w-5" />
+      {count > 0 && (
+        <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#C4933F] px-1 text-[11px] font-bold text-white">
+          {count}
+        </span>
+      )}
+    </Link>
   );
 }

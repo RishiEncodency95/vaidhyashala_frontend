@@ -5,16 +5,17 @@ import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import { useProductsPage } from "@/lib/content/products";
 import { assetUrl } from "@/lib/api";
 import { ApiProduct, fetchProducts } from "@/lib/catalog";
-import ProductDetailModal from "@/components/products/ProductDetailModal";
-import ProductEnquiryModal from "@/components/products/ProductEnquiryModal";
+import Link from "next/link";
 import CmsImage from "@/components/common/CmsImage";
+import { builtinCategoryNames, builtinProducts, slugify } from "@/lib/builtinProducts";
 
-interface Product {
+export interface Product {
   id: string;
+  slug: string;
   title: string;
   categoryTag: string;
   category: string;
-  description: React.ReactNode;
+  description: string;
   searchText: string;
   imageSrc: string;
   /** Only set for products from the admin */
@@ -24,6 +25,8 @@ interface Product {
     productType?: string;
     packOptions?: string;
     availability?: string;
+    price?: number;
+    mrp?: number;
     productInfo?: string;
     directions?: string;
     usageNotes?: string;
@@ -34,199 +37,21 @@ interface Product {
 
 const GUIDANCE_IMAGE = "/product/vaidhyashala_product_page_images/14_product_guidance_consultation.webp";
 
-const allProducts: Product[] = [
-  {
-    id: "p1",
-    title: "Ayurvedic Tablets",
-    categoryTag: "AYURVEDIC PREPARATIONS",
-    category: "Ayurvedic Preparations",
-    description: (
-      <>
-        Classical Ayurvedic tablet
-        <br />
-        formulations.
-      </>
-    ),
-    searchText: "Classical Ayurvedic tablet formulations.",
-    imageSrc: "/product/vaidhyashala_product_page_images/01_ayurvedic_tablets.webp",
-  },
-  {
-    id: "p2",
-    title: "Ayurvedic Syrup",
-    categoryTag: "AYURVEDIC PREPARATIONS",
-    category: "Ayurvedic Preparations",
-    description: (
-      <>
-        Herbal syrup formulations
-        <br />
-        in convenient liquid form.
-      </>
-    ),
-    searchText: "Herbal syrup formulations in convenient liquid form.",
-    imageSrc: "/product/vaidhyashala_product_page_images/02_ayurvedic_syrup.webp",
-  },
-  {
-    id: "p3",
-    title: "Herbal Capsules",
-    categoryTag: "AYURVEDIC PREPARATIONS",
-    category: "Ayurvedic Preparations",
-    description: (
-      <>
-        Plant-based herbal
-        <br />
-        capsule formulations.
-      </>
-    ),
-    searchText: "Plant-based herbal capsule formulations.",
-    imageSrc: "/product/vaidhyashala_product_page_images/03_herbal_capsules.webp",
-  },
-  {
-    id: "p4",
-    title: "Herbal Powder",
-    categoryTag: "HERBAL POWDERS",
-    category: "Herbal Powders",
-    description: (
-      <>
-        Traditional herbal powders
-        <br />
-        for everyday use.
-      </>
-    ),
-    searchText: "Traditional herbal powders for everyday use.",
-    imageSrc: "/product/vaidhyashala_product_page_images/04_herbal_powder.webp",
-  },
-  {
-    id: "p5",
-    title: "Ayurvedic Massage Oil",
-    categoryTag: "THERAPY OILS",
-    category: "Therapy Oils",
-    description: (
-      <>
-        Traditional herbal oils for
-        <br />
-        abhyanga and external use.
-      </>
-    ),
-    searchText: "Traditional herbal oils for abhyanga and external use.",
-    imageSrc: "/product/vaidhyashala_product_page_images/05_ayurvedic_massage_oil.webp",
-  },
-  {
-    id: "p6",
-    title: "Hair Care Oil",
-    categoryTag: "PERSONAL CARE",
-    category: "Personal Care",
-    description: (
-      <>
-        Herbal hair care oil
-        <br />
-        formulations.
-      </>
-    ),
-    searchText: "Herbal hair care oil formulations.",
-    imageSrc: "/product/vaidhyashala_product_page_images/06_hair_care_oil.webp",
-  },
-  {
-    id: "p7",
-    title: "Herbal Skin Care Oil",
-    categoryTag: "PERSONAL CARE",
-    category: "Personal Care",
-    description: (
-      <>
-        Herbal oils for daily
-        <br />
-        skin care.
-      </>
-    ),
-    searchText: "Herbal oils for daily skin care.",
-    imageSrc: "/product/vaidhyashala_product_page_images/07_herbal_skin_care_oil.webp",
-  },
-  {
-    id: "p8",
-    title: "Herbal Bath Powder",
-    categoryTag: "PERSONAL CARE",
-    category: "Personal Care",
-    description: (
-      <>
-        Herbal powder for
-        <br />
-        cleansing and refreshing.
-      </>
-    ),
-    searchText: "Herbal powder for cleansing and refreshing.",
-    imageSrc: "/product/vaidhyashala_product_page_images/08_herbal_bath_powder.webp",
-  },
-  {
-    id: "p9",
-    title: "Herbal Face Care",
-    categoryTag: "PERSONAL CARE",
-    category: "Personal Care",
-    description: (
-      <>
-        Herbal formulations for
-        <br />
-        daily face care.
-      </>
-    ),
-    searchText: "Herbal formulations for daily face care.",
-    imageSrc: "/product/vaidhyashala_product_page_images/09_herbal_face_care.webp",
-  },
-  {
-    id: "p10",
-    title: "Herbal Hair Cleanser",
-    categoryTag: "PERSONAL CARE",
-    category: "Personal Care",
-    description: (
-      <>
-        Gentle herbal cleanser
-        <br />
-        for hair care.
-      </>
-    ),
-    searchText: "Gentle herbal cleanser for hair care.",
-    imageSrc: "/product/vaidhyashala_product_page_images/10_herbal_hair_cleanser.webp",
-  },
-  {
-    id: "p11",
-    title: "Herbal Tea",
-    categoryTag: "WELLNESS ESSENTIALS",
-    category: "Wellness Essentials",
-    description: (
-      <>
-        Aromatic herbal tea
-        <br />
-        blends.
-      </>
-    ),
-    searchText: "Aromatic herbal tea blends.",
-    imageSrc: "/product/vaidhyashala_product_page_images/11_herbal_tea.webp",
-  },
-  {
-    id: "p12",
-    title: "Wellness Essentials",
-    categoryTag: "WELLNESS ESSENTIALS",
-    category: "Wellness Essentials",
-    description: (
-      <>
-        Everyday wellness
-        <br />
-        support products.
-      </>
-    ),
-    searchText: "Everyday wellness support products.",
-    imageSrc: "/product/vaidhyashala_product_page_images/12_wellness_essentials.webp",
-  },
-];
+export const allProducts: Product[] = builtinProducts.map((p) => ({
+  id: p.id,
+  slug: slugify(p.title),
+  title: p.title,
+  categoryTag: p.category.toUpperCase(),
+  category: p.category,
+  description: p.description,
+  searchText: p.description,
+  imageSrc: p.image,
+}));
 
-const categoryNames = [
-  "Ayurvedic Preparations",
-  "Therapy Oils",
-  "Herbal Powders",
-  "Personal Care",
-  "Wellness Essentials",
-];
+const categoryNames = builtinCategoryNames;
 
 /** Admin product -> card. A product without an uploaded image keeps the website's own picture for it */
-const fromApi = (p: ApiProduct): Product => {
+export const fromApi = (p: ApiProduct): Product => {
   const name = p.category?.name ?? "";
   const bundled = allProducts.find((s) => s.title.toLowerCase() === p.title.trim().toLowerCase());
   const imageSrc = assetUrl(p.image) || bundled?.imageSrc || GUIDANCE_IMAGE;
@@ -235,6 +60,7 @@ const fromApi = (p: ApiProduct): Product => {
   const gallery = Array.from(new Set([imageSrc, assetUrl(p.galleryImage1), assetUrl(p.galleryImage2)].filter(Boolean)));
   return {
     id: p._id,
+    slug: p.slug || slugify(p.title),
     title: p.title,
     categoryTag: name.toUpperCase(),
     category: name,
@@ -246,6 +72,8 @@ const fromApi = (p: ApiProduct): Product => {
       productType: p.productType,
       packOptions: p.packOptions,
       availability: p.availability,
+      price: p.price,
+      mrp: p.mrp,
       productInfo: p.productInfo,
       directions: p.directions,
       usageNotes: p.usageNotes,
@@ -277,8 +105,6 @@ export default function ProductCatalog() {
   const [searchQuery, setSearchQuery] = useState("");
   const [shown, setShown] = useState<number | null>(null);
   const visibleCount = shown ?? catalog?.initialCount ?? 12;
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [enquiryProduct, setEnquiryProduct] = useState<Product | null>(null);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -355,9 +181,9 @@ export default function ProductCatalog() {
         {/* 12 Product Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
           {filteredProducts.slice(0, visibleCount).map((product) => (
-            <div
+            <Link
               key={product.id}
-              onClick={() => setSelectedProduct(product)}
+              href={`/products/${product.slug}`}
               className="group flex flex-col transition-all duration-200 cursor-pointer"
             >
               {/* Product Image Frame */}
@@ -388,19 +214,12 @@ export default function ProductCatalog() {
 
               {/* Action Link with Gold Underline */}
               <div className="mt-2.5">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedProduct(product);
-                  }}
-                  className="inline-flex items-center gap-1.5 pb-1 border-b border-[#C5A265] text-[13.5px] sm:text-[14px] font-medium text-[#0D3226] transition-all hover:border-[#0D3226] hover:text-[#184838]"
-                >
+                <span className="inline-flex items-center gap-1.5 pb-1 border-b border-[#C5A265] text-[13.5px] sm:text-[14px] font-medium text-[#0D3226] transition-all group-hover:border-[#0D3226] group-hover:text-[#184838]">
                   <span>{catalog.viewDetailsLabel}</span>
                   <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </button>
+                </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -419,45 +238,6 @@ export default function ProductCatalog() {
         </div>
       </div>
 
-      {/* Product Detail Modal Popup */}
-      {selectedProduct && (
-        <ProductDetailModal
-          isOpen={!!selectedProduct}
-          onClose={() => setSelectedProduct(null)}
-          product={{
-            id: selectedProduct.id,
-            title: selectedProduct.title,
-            categoryTag: selectedProduct.categoryTag,
-            description: selectedProduct.detail?.description || selectedProduct.searchText,
-            productType: selectedProduct.detail?.productType,
-            packOptions: selectedProduct.detail?.packOptions,
-            availability: selectedProduct.detail?.availability,
-            productInfo: selectedProduct.detail?.productInfo,
-            directions: selectedProduct.detail?.directions,
-            usageNotes: selectedProduct.detail?.usageNotes,
-            imageAlt: selectedProduct.detail?.imageAlt,
-            images: selectedProduct.detail?.gallery ?? [selectedProduct.imageSrc],
-          }}
-          onContactClinic={() => {
-            setSelectedProduct(null);
-            window.location.href = "/contact";
-          }}
-        />
-      )}
-
-      {/* Product Enquiry Modal Popup */}
-      {enquiryProduct && (
-        <ProductEnquiryModal
-          isOpen={!!enquiryProduct}
-          onClose={() => setEnquiryProduct(null)}
-          product={{
-            id: enquiryProduct.id,
-            title: enquiryProduct.title,
-            categoryTag: enquiryProduct.categoryTag,
-            imageSrc: enquiryProduct.imageSrc,
-          }}
-        />
-      )}
     </section>
   );
 }

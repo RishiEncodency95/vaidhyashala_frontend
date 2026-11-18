@@ -91,8 +91,6 @@ export default function ApplicationSubmitted({
   email = "ananya.sharma@gmail.com",
   phone = "+91 98765 43210",
   location = "Delhi NCR",
-  dob = "14 Nov 1995",
-  gender = "Female",
   preferredLocations = "Delhi NCR, Kalkaji Clinic",
   applicationId = "VS-CAR-2026-00187",
   submittedOn = "17 Oct 2026, 10:24 AM",

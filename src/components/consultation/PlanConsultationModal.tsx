@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Calendar, ChevronDown, ArrowRight, Info, CheckCircle2, Check } from "lucide-react";
+import { X, Calendar, ChevronDown, ArrowRight, Info, Check } from "lucide-react";
 import { submitConsultation } from "@/lib/consultation";
 import CmsImage from "@/components/common/CmsImage";
 

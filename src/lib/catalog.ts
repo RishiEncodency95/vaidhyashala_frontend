@@ -17,6 +17,8 @@ export interface ApiProduct {
   productType?: string;
   packOptions?: string;
   availability?: string;
+  price?: number;
+  mrp?: number;
   productInfo?: string;
   directions?: string;
   usageNotes?: string;

@@ -6,29 +6,11 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Home,
   Check,
-  Download,
   Eye,
   RotateCw,
   Edit2,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  Building,
-  Briefcase,
-  GraduationCap,
   Bookmark,
-  Lock,
-  Leaf,
-  Users,
-  FileText,
-  Target,
-  Sparkles,
-  BarChart2,
-  CheckCircle2,
-  User,
   Lightbulb,
 } from "lucide-react";
 
@@ -81,7 +63,6 @@ const SAMPLE_BREAKDOWN = [
 
 export default function PartialMatchResult({
   candidateName = "Vijay Sharma",
-  candidateRole = "Ayurvedic Doctor",
   email = "vijay.sharma@gmail.com",
   phone = "+91 98765 43210",
   location = "Delhi NCR",

@@ -57,6 +57,7 @@ export interface CareerJob {
 const list = (v: unknown) => (Array.isArray(v) ? v.map((x) => String(x ?? "").trim()).filter(Boolean) : []);
 const text = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- loosely shaped API JSON
 const toJob = (d: Record<string, any>): CareerJob => {
   const min = Number(d.experienceMin ?? 0);
   const max = Number(d.experienceMax ?? 0);
