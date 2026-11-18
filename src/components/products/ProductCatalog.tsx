@@ -57,7 +57,7 @@ export const fromApi = (p: ApiProduct): Product => {
   const imageSrc = assetUrl(p.image) || bundled?.imageSrc || GUIDANCE_IMAGE;
   const text = p.shortDescription || p.description || "";
   // Main image, then the popup images the admin added (each picture once)
-  const gallery = Array.from(new Set([imageSrc, assetUrl(p.galleryImage1), assetUrl(p.galleryImage2)].filter(Boolean)));
+  const gallery = Array.from(new Set([imageSrc, assetUrl(p.galleryImage1), assetUrl(p.galleryImage2), assetUrl(p.galleryImage3)].filter(Boolean)));
   return {
     id: p._id,
     slug: p.slug || slugify(p.title),
