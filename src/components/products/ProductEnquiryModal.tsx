@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, ChevronDown, ArrowRight, Check, Leaf } from "lucide-react";
 import { API_BASE } from "@/lib/api";
 import CmsImage from "@/components/common/CmsImage";
@@ -54,7 +55,7 @@ export default function ProductEnquiryModal({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || typeof document === "undefined") return null;
 
   const productTitle = product?.title || "Ayurvedic Massage Oil";
   const productCategory = product?.categoryTag || "THERAPY OILS";
@@ -115,11 +116,14 @@ export default function ProductEnquiryModal({
     onClose();
   };
 
-  return (
+  // Rendered straight into <body>: opened from the product popup, it would otherwise sit inside that
+  // popup, whose backdrop blur makes it the frame for `fixed` children — the form then moved with the
+  // popup's scroll and was cut off. From <body> it always covers the screen and the popup stays still.
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/60 backdrop-blur-xs overflow-y-auto"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/60 backdrop-blur-xs overflow-y-auto overscroll-contain"
     >
       {/* Click outside to close backdrop */}
       <div
@@ -468,6 +472,7 @@ export default function ProductEnquiryModal({
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

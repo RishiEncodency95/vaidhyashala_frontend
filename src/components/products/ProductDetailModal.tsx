@@ -103,11 +103,7 @@ export default function ProductDetailModal({
     <div
       role="dialog"
       aria-modal="true"
-      // While the enquiry form is open on top, this popup must not scroll behind it
-      // (the form sits inside this box, so its wheel/touch scrolling would otherwise reach it)
-      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 lg:p-8 bg-black/60 backdrop-blur-xs ${
-        isEnquiryModalOpen ? "overflow-hidden" : "overflow-y-auto"
-      }`}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 lg:p-8 bg-black/60 backdrop-blur-xs overflow-y-auto"
     >
       {/* Click outside to close backdrop */}
       <div
