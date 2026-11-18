@@ -45,8 +45,8 @@ export default function ProductDetailModal({
   onEnquire,
   onContactClinic,
 }: ProductDetailModalProps) {
-  // Accordion states: 1st is open by default, 2nd is closed
-  const [isProductInfoOpen, setIsProductInfoOpen] = useState(true);
+  // Accordion states: both start closed; the visitor opens the one they want
+  const [isProductInfoOpen, setIsProductInfoOpen] = useState(false);
   const [isDirectionsOpen, setIsDirectionsOpen] = useState(false);
   const [isEnquiryModalOpen, setIsEnquiryModalOpen] = useState(false);
 
@@ -103,7 +103,11 @@ export default function ProductDetailModal({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 lg:p-8 bg-black/60 backdrop-blur-xs overflow-y-auto"
+      // While the enquiry form is open on top, this popup must not scroll behind it
+      // (the form sits inside this box, so its wheel/touch scrolling would otherwise reach it)
+      className={`fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 lg:p-8 bg-black/60 backdrop-blur-xs ${
+        isEnquiryModalOpen ? "overflow-hidden" : "overflow-y-auto"
+      }`}
     >
       {/* Click outside to close backdrop */}
       <div
