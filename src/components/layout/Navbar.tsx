@@ -135,7 +135,7 @@ export default function Navbar() {
 function CartLink() {
   const { count } = useCart();
   return (
-    <Link href="/cart" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} className="relative rounded-md p-2 text-[#2F4439] hover:bg-[#EFE9DF]">
+    <Link href="/checkout" aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} className="relative rounded-md p-2 text-[#2F4439] hover:bg-[#EFE9DF]">
       <ShoppingCart className="h-5 w-5" />
       {count > 0 && (
         <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#C4933F] px-1 text-[11px] font-bold text-white">

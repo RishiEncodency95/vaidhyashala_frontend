@@ -51,6 +51,7 @@ export default function ProductDetailPage({ slug }: { slug: string }) {
       product={{
         id: product.id,
         title: product.title,
+        category: product.category,
         categoryTag: product.categoryTag,
         description: product.detail?.description || product.searchText,
         productType: product.detail?.productType,

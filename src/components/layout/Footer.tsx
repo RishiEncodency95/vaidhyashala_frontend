@@ -1,536 +1,587 @@
 "use client";
 
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import Link from "next/link";
-import { ArrowRight, ArrowUp, CalendarDays, ChevronRight, Phone } from "lucide-react";
-import { useState } from "react";
+import { useState, type CSSProperties, type ReactNode } from "react";
+import { hind } from "@/lib/fonts";
 import PlanConsultationModal from "@/components/consultation/PlanConsultationModal";
 
-// The footer's text is set in Inter, the font of the Arogya Sangoshthi footer
-const inter = Inter({ subsets: ["latin"], display: "swap" });
-
-/**
- * Sizes are written in "design pixels" of a 1600px wide layout and scale with the screen
- * (--u = one design pixel), so the footer keeps the same proportions at every desktop width.
+/*
+ * Desktop footer is laid out on the reference design's own coordinate grid.
+ * The design's content spans 2447 units, mapped onto the same 1440px / lg:px-12
+ * container the Navbar uses, so every position and font size scales together.
+ * Horizontal positions below are design units from the content's left edge.
  */
-const u = (n: number) => `calc(var(--u) * ${n})`;
+const u = (n: number) => `calc(var(--fu) * ${n})`;
+const box = (left: number, top: number, extra: CSSProperties = {}): CSSProperties => ({
+  position: "absolute",
+  left: u(left),
+  top: u(top),
+  ...extra,
+});
+/** A single text line whose glyphs are vertically centred on `cy` (Hind sits high in its line box, hence the +3). */
+const line = (left: number, cy: number, size: number, lh = size * 1.3): CSSProperties =>
+  box(left, cy + 3 - lh / 2, { fontSize: u(size), lineHeight: u(lh), whiteSpace: "nowrap" });
 
-type FooterLink = { label: string; href: string };
-type TreatmentLink = FooterLink & { icon: string };
+const TEXT = "#C9D6EC";
+const GOLD = "#CDB54C";
+const GOLD_LINE = "#C6AD39";
 
-const quickLinks: FooterLink[] = [
-  { label: "Home", href: "/" },
-  { label: "About Us", href: "/about" },
-  { label: "Our Doctors", href: "/about" },
-  { label: "Treatments", href: "/treatments" },
-  { label: "Panchakarma", href: "/panchakarma" },
-  { label: "Our Products", href: "/products" },
-  { label: "Patient Testimonials", href: "/testimonials" },
-  { label: "Blog", href: "/blog" },
-  { label: "Careers", href: "/careers" },
-  { label: "Contact Us", href: "/contact" },
+const CONTAINER = "mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-12";
+const STAGE: CSSProperties = { containerType: "inline-size" };
+const FU = { "--fu": "calc(100cqw / 2447)" } as CSSProperties;
+
+const features = [
+  { icon: "/footer-v3/top1.png", x: 740, top: 28, w: 75, h: 64, tx: 838, a: "Personalised", b: "Treatment" },
+  { icon: "/footer-v3/top2.png", x: 1055, top: 28, w: 85, h: 64, tx: 1161, a: "Traditional", b: "Wisdom" },
+  { icon: "/footer-v3/top3.png", x: 1373, top: 26, w: 72, h: 68, tx: 1467, a: "Holistic", b: "Wellness" },
+  { icon: "/footer-v3/top4.png", x: 1653, top: 26, w: 64, h: 68, tx: 1738, a: "Natural &", b: "Safe Care" },
 ];
 
-const treatmentLinks: TreatmentLink[] = [
-  { label: "Panchakarma Therapies", href: "/panchakarma", icon: "panchakarma" },
-  { label: "Ayurvedic Consultation", href: "/treatments", icon: "consultation" },
-  { label: "Pain Management", href: "/treatments", icon: "pain" },
-  { label: "Stress Management", href: "/treatments", icon: "stress" },
-  { label: "Skin & Hair Care", href: "/treatments", icon: "skin" },
-  { label: "Lifestyle Disorders", href: "/treatments", icon: "lifestyle" },
-  { label: "Women's Health", href: "/treatments", icon: "women" },
-  { label: "Digestive Health", href: "/treatments", icon: "digestive" },
-  { label: "Immunity & Wellness", href: "/treatments", icon: "immunity" },
+const exploreLinks = [
+  { label: "Home", href: "/", cy: 133 },
+  { label: "About Us", href: "/about", cy: 189 },
+  { label: "Treatments", href: "/treatments", cy: 245 },
+  { label: "Our Products", href: "/products", cy: 301 },
+  { label: "Patient Testimonials", href: "/testimonials", cy: 356 },
+  { label: "Blog", href: "/blog", cy: 412 },
+  { label: "Contact Us", href: "/contact", cy: 467 },
 ];
 
-// "Book an Appointment" opens the consultation window instead of a page
-const supportLinks: (FooterLink | { label: string; action: "book" })[] = [
-  { label: "Book an Appointment", action: "book" },
-  { label: "FAQs", href: "/#faqs" },
-  { label: "Patient Guidelines", href: "/treatments" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms & Conditions", href: "/terms" },
-  { label: "Refund Policy", href: "/terms" },
-  { label: "Disclaimer", href: "/terms" },
-  { label: "Sitemap", href: "/" },
+const services = [
+  { label: "Doctor Consultation", href: "/treatments", cy: 132 },
+  { label: "Panchakarma Therapies", href: "/panchakarma", cy: 189 },
+  { label: "Ayurvedic Treatments", href: "/treatments", cy: 249 },
+  { label: "Yoga & Lifestyle Care", href: "/treatments", cy: 307 },
+  { label: "Ayurvedic Medicines", href: "/products", cy: 365 },
+  { label: "Diet & Nutrition Guidance", href: "/treatments", cy: 423 },
+  { label: "Wellness Programs", href: "/treatments", cy: 479 },
 ];
 
-const presence: { icon: string; title: string; lines: string[] }[] = [
+const socials = [
+  { label: "Instagram", href: "https://www.instagram.com/vaidhyashala" },
+  { label: "Facebook", href: "https://www.facebook.com/vaidhyashala" },
+  { label: "YouTube", href: "https://www.youtube.com/@vaidhyashala" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/vaidhyashala" },
+  { label: "WhatsApp", href: "https://wa.me/919654900525" },
+];
+
+const offices = [
   {
-    icon: "pin",
-    title: "Delhi Clinic (Kalkaji)",
-    lines: ["Vaidhyashala Clinic, 1st Floor, E-1, Main Market,", "opposite KFC, Block E, Kalkaji, Delhi 110019, India."],
-  },
-  {
-    icon: "head",
     title: "Head Office – Delhi-NCR, India",
-    lines: [
-      "Namo Gange Wellness Pvt. Ltd.",
-      "Plot No. 12/29, Site II Industrial Area, Mohan Nagar,",
-      "Ghaziabad 201007, Uttar Pradesh, India.",
-      "Email: info@vaidhyashala.com",
-    ],
+    company: "Namo Gange Wellness Pvt. Ltd.",
+    lines: ["Plot No. 12/29, Site II Industrial Area,", "Mohan Nagar, Ghaziabad – 201007, Uttar Pradesh, India."],
+    email: "info@namogangewellness.com",
   },
   {
-    icon: "regional",
     title: "Regional Office – Visakhapatnam, India",
-    lines: [
-      "Namo Gange Wellness Pvt. Ltd.",
-      "Door No. 36-46-51, 2nd Floor, Main Road, Kancharapalem,",
-      "Visakhapatnam 530008, Andhra Pradesh, India.",
-    ],
+    company: "Namo Gange Wellness Pvt. Ltd.",
+    lines: ["Door No. 36-46-51, 2nd Floor, Main Road,", "Kancharapalem, Visakhapatnam – 530008, Andhra Pradesh, India."],
   },
   {
-    icon: "london",
-    title: "International Office – London, UK",
-    lines: ["Namo Gange Wellness Ltd.", "6 Liddel Close, Luton, Bedfordshire LU3 1TW, UK."],
+    title: "Global Office – London (UK)",
+    company: "Namo Gange Wellness Ltd.",
+    lines: ["6 Liddel Close, Luton, Bedfordshire, LU3 1TW, UK."],
   },
 ];
 
-/** Text size of an address line; the long Door No line is set a little smaller so it fits the column */
-const lineSize = (line: string) => (line.startsWith("Door No") ? 12.3 : 12.8);
+const legalLinks = [
+  { label: "Privacy Policy", href: "/privacy", x: 602, sep: 547 },
+  { label: "Terms & Conditions", href: "/terms", x: 853, sep: 800 },
+  { label: "Refund Policy", href: "/terms", x: 1172, sep: 1116 },
+  { label: "Sitemap", href: "/sitemap.xml", x: 1424, sep: 1370 },
+];
 
-function FooterHeading({ children, className = "", size = 21 }: { children: React.ReactNode; className?: string; size?: number }) {
+/* eslint-disable @next/next/no-img-element -- fixed-size decorative crops; next/image adds nothing here */
+function Img({ src, style, alt = "" }: { src: string; style: CSSProperties; alt?: string }) {
+  return <img src={src} alt={alt} draggable={false} style={{ display: "block", ...style }} />;
+}
+
+function Chevron({ double = false, style }: { double?: boolean; style: CSSProperties }) {
   return (
-    <div className={className}>
-      <h3
-        className="font-semibold leading-none text-[#F6F3E8]"
-        style={{ fontSize: u(size * 0.88), letterSpacing: "0.01em" }}
+    <svg viewBox={double ? "0 0 24 24" : "0 0 14 24"} fill="none" stroke={GOLD} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={style} aria-hidden>
+      {double ? (
+        <>
+          <path d="M4 5l7 7-7 7" />
+          <path d="M13 5l7 7-7 7" />
+        </>
+      ) : (
+        <path d="M4 5l7 7-7 7" />
+      )}
+    </svg>
+  );
+}
+
+function HLine({ left, top, width, color = "rgba(140,165,150,0.22)" }: { left: number; top: number; width: number; color?: string }) {
+  return <span aria-hidden style={box(left, top, { width: u(width), height: u(2), background: color })} />;
+}
+
+function VLine({ left, top, height, color }: { left: number; top: number; height: number; color: string }) {
+  return <span aria-hidden style={box(left, top, { width: u(2), height: u(height), background: color })} />;
+}
+
+function Heading({ children, left, cy, size = 35.5 }: { children: ReactNode; left: number; cy: number; size?: number }) {
+  return (
+    <h3 className="font-bold" style={{ ...line(left, cy + 2, size), color: TEXT, margin: 0 }}>
+      {children}
+    </h3>
+  );
+}
+
+function Underline({ left, top, width }: { left: number; top: number; width: number }) {
+  return <span aria-hidden style={box(left, top, { width: u(width), height: u(5), background: GOLD_LINE, borderRadius: u(2) })} />;
+}
+
+const hoverGold = "transition-colors hover:!text-[#E3C55A]";
+
+/* ------------------------------------------------------------------ */
+/* Desktop (lg and up): replica of the reference footer               */
+/* ------------------------------------------------------------------ */
+function DesktopFooter({ onBook }: { onBook: () => void }) {
+  return (
+    <div className="hidden lg:block" style={{ color: TEXT }}>
+      {/* ---------------- 1. Top bar ---------------- */}
+      <div className="relative w-full" style={{ background: "linear-gradient(90deg,#01160a 0%,#001d0b 45%,#00150a 100%)" }}>
+        <div className={CONTAINER}>
+          <div style={STAGE}>
+            <div className="relative" style={{ ...FU, height: u(128) }}>
+              <span aria-hidden style={box(10, 25, { width: u(5), height: u(73), background: GOLD_LINE, borderRadius: u(3) })} />
+              <p style={{ ...line(40, 40, 38.5), color: TEXT, margin: 0 }}>Your Partner in</p>
+              <p className="font-bold" style={{ ...line(40, 82, 44), color: GOLD, margin: 0 }}>
+                Holistic Ayurvedic Wellness
+              </p>
+
+              {[698, 1015, 1330, 1613, 1897].map((x) => (
+                <VLine key={x} left={x} top={25} height={73} color="rgba(79,102,100,0.9)" />
+              ))}
+
+              {features.map((f) => (
+                <div key={f.a}>
+                  <Img src={f.icon} alt={`${f.a} ${f.b}`} style={box(f.x, f.top, { width: u(f.w), height: u(f.h) })} />
+                  <p style={{ ...line(f.tx, 43, 24.6, 33), color: TEXT, margin: 0 }}>{f.a}</p>
+                  <p style={{ ...line(f.tx, 76, 24.6, 33), color: TEXT, margin: 0 }}>{f.b}</p>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={onBook}
+                className="group cursor-pointer font-semibold transition-[filter] hover:brightness-110"
+                style={box(1981, 26, {
+                  width: u(404),
+                  height: u(67),
+                  borderRadius: u(12),
+                  background: "linear-gradient(180deg,#CDBE8E 0%,#BFA866 50%,#B39342 100%)",
+                  boxShadow: `inset 0 ${u(1)} 0 rgba(255,245,210,0.55), 0 ${u(2)} ${u(6)} rgba(0,0,0,0.35)`,
+                  color: "#0E1B0E",
+                  border: "none",
+                  padding: 0,
+                  zIndex: 2,
+                })}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={box(32, 16, { width: u(34), height: u(34) })}
+                  aria-hidden
+                >
+                  <rect x="3" y="4.5" width="18" height="16.5" rx="1.5" />
+                  <line x1="16" y1="2.5" x2="16" y2="6.5" />
+                  <line x1="8" y1="2.5" x2="8" y2="6.5" />
+                  <line x1="3" y1="9.5" x2="21" y2="9.5" />
+                  <path d="M7 13h2M11 13h2M15 13h2M7 17h2M11 17h2M15 17h2" />
+                </svg>
+                <span style={{ ...line(86, 34, 28), textAlign: "left" }}>Book a Consultation</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="transition-transform group-hover:translate-x-0.5"
+                  style={box(344, 20, { width: u(30), height: u(28) })}
+                  aria-hidden
+                >
+                  <path d="M3 12h17M14 6l6 6-6 6" />
+                </svg>
+              </button>
+
+              {/* Divider line + gold swoosh at the bar's right end */}
+              <span
+                aria-hidden
+                style={box(-85, 126, {
+                  width: u(2576),
+                  height: u(2),
+                  background: "linear-gradient(90deg, rgba(118,140,125,0.35) 0%, rgba(118,140,125,0.75) 50%, rgba(118,140,125,0.25) 82%, rgba(0,0,0,0) 100%)",
+                })}
+              />
+              <Img src="/footer-v3/topswoosh.png" style={box(1965, 97, { width: u(526), height: u(34), zIndex: 1 })} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------- 2. Main five columns ---------------- */}
+      <div
+        className="relative w-full"
+        style={{ background: "radial-gradient(ellipse 60% 90% at 50% 40%, #001b0c 0%, #00170b 55%, #00130a 100%)" }}
       >
-        {children}
-      </h3>
-      <span className="block bg-[#E0A92E]" style={{ marginTop: u(8), height: u(2.5), width: u(33) }} />
+        <div className={CONTAINER}>
+          <div style={STAGE}>
+            <div className="relative" style={{ ...FU, height: u(517) }}>
+              {/* Column dividers */}
+              {[495, 815, 1296, 1804].map((x) => (
+                <span
+                  key={x}
+                  aria-hidden
+                  style={box(x, 34, {
+                    width: u(2),
+                    height: u(478),
+                    background: "linear-gradient(180deg, rgba(80,95,87,0) 0%, rgba(80,95,87,0.9) 12%, rgba(80,95,87,0.9) 88%, rgba(80,95,87,0) 100%)",
+                  })}
+                />
+              ))}
+
+              {/* Column 1: brand */}
+              <Link href="/" aria-label="Vaidhyashala Home">
+                <Img src="/footer-v3/logo.png?v=2" alt="Vaidhyashala – Innovative Healing" style={box(-5, 17, { width: u(455), height: u(300) })} />
+              </Link>
+              {["Authentic Ayurvedic care, personalised", "therapies and holistic wellness solutions", "for a healthier, balanced and happier you."].map(
+                (t, i) => (
+                  <p key={t} style={{ ...line(2, 344 + i * 33, 25.8, 33), color: TEXT, margin: 0 }}>
+                    {t}
+                  </p>
+                ),
+              )}
+              {socials.map((s, i) => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.label}
+                  className="transition-transform hover:scale-110"
+                  style={box([46, 132, 219, 306, 393][i] - 33, 449, { width: u(66), height: u(66) })}
+                >
+                  <Img src={`/footer-v3/soc${i + 1}.png`} alt={s.label} style={{ width: "100%", height: "100%", borderRadius: "50%" }} />
+                </a>
+              ))}
+
+              {/* Column 2: explore */}
+              <Heading left={537} cy={57}>Explore</Heading>
+              <Underline left={537} top={87} width={70} />
+              {exploreLinks.map((l) => (
+                <Link key={l.label} href={l.href} className={hoverGold} style={{ color: TEXT }}>
+                  <span style={line(544, l.cy, 25)}>{l.label}</span>
+                  <Chevron style={box(770, l.cy - 11, { width: u(13), height: u(22) })} />
+                </Link>
+              ))}
+
+              {/* Column 3: services */}
+              <Heading left={858} cy={54}>Our Services</Heading>
+              <Underline left={858} top={86} width={67} />
+              {services.map((s, i) => (
+                <Link key={s.label} href={s.href} className={hoverGold} style={{ color: TEXT }}>
+                  <Img src={`/footer-v3/svc${i + 1}.png`} style={box(856, s.cy - 24, { width: u(78), height: u(48) })} />
+                  <span style={line(957, s.cy, 25.3)}>{s.label}</span>
+                  {i === 0 ? (
+                    <Chevron double style={box(1240, s.cy - 12, { width: u(24), height: u(24) })} />
+                  ) : (
+                    <Chevron style={box(1251, s.cy - 11, { width: u(13), height: u(22) })} />
+                  )}
+                </Link>
+              ))}
+
+              {/* Column 4: clinic */}
+              <Heading left={1345} cy={50} size={36}>Clinic (Kalkaji, Delhi)</Heading>
+              <Underline left={1345} top={84} width={68} />
+              {[140, 270, 359, 458].map((cy, i) => (
+                <Img key={cy} src={`/footer-v3/clinic${i + 1}.png`} style={box(1343, cy - 34, { width: u(74), height: u(68) })} />
+              ))}
+              <p className="font-semibold" style={{ ...line(1440, 115, 25), margin: 0 }}>Address</p>
+              {["First Floor, E-1, Opposite KFC,", "Kalkaji Main Market, Kalkaji", "Delhi – 110019"].map((t, i) => (
+                <p key={t} style={{ ...line(1440, 143 + i * 28.5, 23.2, 28.5), margin: 0 }}>{t}</p>
+              ))}
+              <HLine left={1415} top={227} width={345} />
+
+              <p className="font-semibold" style={{ ...line(1440, 252, 25), margin: 0 }}>Phone</p>
+              <HLine left={1560} top={245} width={215} />
+              <a href="tel:+919654900525" className={hoverGold} style={{ ...line(1440, 280, 23.2), color: TEXT }}>
+                +91 9654900525
+              </a>
+              <VLine left={1605} top={249} height={55} color="rgba(140,160,150,0.55)" />
+              <a href="tel:+919811979147" className={hoverGold} style={{ ...line(1615, 280, 23.2), color: TEXT }}>
+                +91 9811979147
+              </a>
+
+              <p className="font-semibold" style={{ ...line(1440, 332, 25), margin: 0 }}>Mail</p>
+              <a href="mailto:kalka@theyogshala.com" className={hoverGold} style={{ ...line(1440, 360, 23.2, 28), color: TEXT }}>
+                kalka@theyogshala.com
+              </a>
+              <a href="mailto:customercare@theyogshala.com" className={hoverGold} style={{ ...line(1440, 388, 23.2, 28), color: TEXT }}>
+                customercare@theyogshala.com
+              </a>
+              <HLine left={1415} top={412} width={345} />
+
+              <p className="font-semibold" style={{ ...line(1440, 438, 25), margin: 0 }}>Opening Hours</p>
+              <p style={{ ...line(1440, 472, 25.6, 31), margin: 0 }}>Mon to Sat: 6am to 7pm</p>
+              <p style={{ ...line(1440, 503, 25.6, 31), margin: 0 }}>Sun: Closed</p>
+
+              {/* Column 5: global presence */}
+              <Img src="/footer-v3/globe.png" style={box(1861, 29, { width: u(48), height: u(48) })} />
+              <Heading left={1935} cy={50} size={35.4}>Our Global Presence</Heading>
+              <Underline left={1935} top={81} width={75} />
+
+              {offices.map((o, i) => {
+                const base = [111, 279, 425][i];
+                const pinCy = [132, 293, 440][i];
+                const tx = i === 0 ? 1940 : 1942;
+                return (
+                  <div key={o.title}>
+                    <Img src={`/footer-v3/pin${i + 1}.png`} style={box(1848, pinCy - 34, { width: u(69), height: u(68) })} />
+                    <p className="font-semibold" style={{ ...line(tx, base, 24), color: GOLD, margin: 0 }}>{o.title}</p>
+                    <p style={{ ...line(tx, base + 30, 21.5, 25.5), margin: 0 }}>{o.company}</p>
+                    {o.lines.map((t, j) => (
+                      <p
+                        key={t}
+                        style={{
+                          ...line(tx, base + (i === 2 ? 59 : 55) + j * 26, 21, 25.5),
+                          letterSpacing: i === 1 && j === 1 ? "-0.035em" : "-0.01em",
+                          margin: 0,
+                        }}
+                      >
+                        {t}
+                      </p>
+                    ))}
+                    {o.email && (
+                      <a href={`mailto:${o.email}`} className={hoverGold} style={{ color: TEXT }}>
+                        <Img src="/footer-v3/mail.png" style={box(1941, base + 100, { width: u(28), height: u(20) })} />
+                        <span style={line(1977, base + 110, 21.5)}>{o.email}</span>
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+              <HLine left={1910} top={249} width={535} />
+              <HLine left={1910} top={394} width={535} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ---------------- Gold ribbon ---------------- */}
+      <div className={CONTAINER} style={{ maxWidth: "none", paddingLeft: 0, paddingRight: 0 }}>
+        <div style={STAGE}>
+          <div
+            aria-hidden
+            style={{
+              height: "calc(100cqw / 2576 * 80)",
+              maxHeight: "calc(1440px / 2576 * 80)",
+              backgroundImage: "url(/footer-v3/ribbon.png?v=2)",
+              backgroundSize: "100% 100%",
+              backgroundColor: "#00150a",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* ---------------- 3. Bottom bar ---------------- */}
+      <div className="w-full" style={{ background: "linear-gradient(180deg,#001309 0%,#011108 100%)" }}>
+        <div className={CONTAINER}>
+          <div style={STAGE}>
+            <div className="relative" style={{ ...FU, height: u(130) }}>
+              <span style={{ ...line(27, 56, 26.3), color: TEXT }}>&copy; 2026 Vaidhyashala. All Rights Reserved.</span>
+              {legalLinks.map((l) => (
+                <span key={l.label}>
+                  <VLine left={l.sep} top={38} height={36} color="#8999A5" />
+                  <Link href={l.href} className={hoverGold} style={{ ...line(l.x, 56, 26.3), color: TEXT }}>
+                    {l.label}
+                  </Link>
+                </span>
+              ))}
+              <span style={{ ...line(1738, 56, 25), color: TEXT }}>Designed, Developed &amp; Maintained By:</span>
+              <a
+                href="https://encodency.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="enCodency Pvt. Ltd."
+                className="font-bold transition-[filter] hover:brightness-110"
+                style={box(2183, 27, {
+                  width: u(202),
+                  height: u(63),
+                  borderRadius: u(10),
+                  background: "linear-gradient(180deg,#D4161C 0%,#B80F14 55%,#A70C0F 100%)",
+                  boxShadow: `0 ${u(2)} ${u(6)} rgba(0,0,0,0.4)`,
+                  color: "#F1F3F6",
+                })}
+              >
+                <span style={line(18, 32, 31.7)}>
+                  enCodency
+                  <sup style={{ fontSize: u(12), fontWeight: 400, verticalAlign: "top", position: "relative", top: u(-4), marginLeft: u(1) }}>®</sup>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-/** Thin line between two columns (desktop only) */
-function Divider() {
+/* ------------------------------------------------------------------ */
+/* Mobile / tablet (below lg): same content, stacked                   */
+/* ------------------------------------------------------------------ */
+function MobileFooter({ onBook }: { onBook: () => void }) {
+  const h = "text-[18px] font-bold leading-none";
+  const ul = <span className="mt-2 mb-3 block h-[3px] w-[36px] rounded-sm" style={{ background: GOLD_LINE }} />;
   return (
-    <span
-      aria-hidden="true"
-      className="absolute left-0 hidden w-px bg-[#8E8A5A]/45 lg:block"
-      style={{ top: u(36), bottom: u(24) }}
-    />
-  );
-}
+    <div className="lg:hidden" style={{ color: TEXT, background: "#00170b" }}>
+      <div className="border-b border-[#768C7D]/40 px-4 py-4 sm:px-6">
+        <div className="flex items-center gap-3">
+          <span className="h-10 w-[3px] rounded-full" style={{ background: GOLD_LINE }} />
+          <div className="leading-tight">
+            <p className="text-[16px]">Your Partner in</p>
+            <p className="text-[19px] font-bold" style={{ color: GOLD }}>Holistic Ayurvedic Wellness</p>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {features.map((f) => (
+            <div key={f.a} className="flex items-center gap-2">
+              <Img src={f.icon} alt="" style={{ height: 30, width: "auto" }} />
+              <span className="text-[13px] leading-tight">
+                {f.a}
+                <br />
+                {f.b}
+              </span>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onBook}
+          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-[15px] font-semibold text-[#0E1B0E] sm:w-auto sm:px-6"
+          style={{ background: "linear-gradient(180deg,#CDBE8E 0%,#BFA866 50%,#B39342 100%)" }}
+        >
+          Book a Consultation →
+        </button>
+      </div>
 
-const rowLink = "group flex items-center justify-between text-[#EDEEE6] transition-colors hover:text-[#E0A92E]";
+      <div className="grid gap-8 px-4 py-8 sm:grid-cols-2 sm:px-6">
+        <div>
+          <Img src="/footer-v3/logo.png?v=2" alt="Vaidhyashala – Innovative Healing" style={{ width: 210, height: "auto" }} />
+          <p className="mt-3 max-w-[300px] text-[14px] leading-relaxed">
+            Authentic Ayurvedic care, personalised therapies and holistic wellness solutions for a healthier, balanced and happier you.
+          </p>
+          <div className="mt-4 flex gap-3">
+            {socials.map((s, i) => (
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label}>
+                <Img src={`/footer-v3/soc${i + 1}.png`} alt={s.label} style={{ width: 36, height: 36, borderRadius: "50%" }} />
+              </a>
+            ))}
+          </div>
+        </div>
+        <div>
+          <h3 className={h}>Explore</h3>
+          {ul}
+          {exploreLinks.map((l) => (
+            <Link key={l.label} href={l.href} className="flex items-center justify-between py-1.5 text-[14px]">
+              {l.label}
+              <Chevron style={{ width: 8, height: 14 }} />
+            </Link>
+          ))}
+        </div>
+        <div>
+          <h3 className={h}>Our Services</h3>
+          {ul}
+          {services.map((s, i) => (
+            <Link key={s.label} href={s.href} className="flex items-center gap-3 py-1 text-[14px]">
+              <Img src={`/footer-v3/svc${i + 1}.png`} style={{ width: 40, height: 25 }} />
+              {s.label}
+            </Link>
+          ))}
+        </div>
+        <div className="space-y-3 text-[14px]">
+          <h3 className={h}>Clinic (Kalkaji, Delhi)</h3>
+          {ul}
+          <p>
+            <b>Address</b>
+            <br />
+            First Floor, E-1, Opposite KFC,
+            <br />
+            Kalkaji Main Market, Kalkaji
+            <br />
+            Delhi – 110019
+          </p>
+          <p>
+            <b>Phone</b>
+            <br />
+            <a href="tel:+919654900525">+91 9654900525</a> | <a href="tel:+919811979147">+91 9811979147</a>
+          </p>
+          <p>
+            <b>Mail</b>
+            <br />
+            <a href="mailto:kalka@theyogshala.com">kalka@theyogshala.com</a>
+            <br />
+            <a href="mailto:customercare@theyogshala.com">customercare@theyogshala.com</a>
+          </p>
+          <p>
+            <b>Opening Hours</b>
+            <br />
+            Mon to Sat: 6am to 7pm
+            <br />
+            Sun: Closed
+          </p>
+        </div>
+        <div className="space-y-4 text-[13px] sm:col-span-2">
+          <h3 className={h}>Our Global Presence</h3>
+          {ul}
+          {offices.map((o) => (
+            <div key={o.title}>
+              <p className="text-[14px] font-semibold" style={{ color: GOLD }}>{o.title}</p>
+              <p>{o.company}</p>
+              {o.lines.map((t) => (
+                <p key={t}>{t}</p>
+              ))}
+              {o.email && <a href={`mailto:${o.email}`}>{o.email}</a>}
+            </div>
+          ))}
+        </div>
+      </div>
 
-function Chevron() {
-  return (
-    <ChevronRight
-      className="shrink-0 text-[#F3B71B] transition-transform duration-200 group-hover:translate-x-1"
-      style={{ width: u(15), height: u(15) }}
-      strokeWidth={2}
-    />
+      <div aria-hidden className="h-6 w-full" style={{ backgroundImage: "url(/footer-v3/ribbon.png?v=2)", backgroundSize: "100% 100%" }} />
+      <div className="flex flex-col items-center gap-3 px-4 py-4 text-center text-[13px]" style={{ background: "#011108" }}>
+        <p>&copy; 2026 Vaidhyashala. All Rights Reserved.</p>
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1">
+          {legalLinks.map((l) => (
+            <Link key={l.label} href={l.href}>
+              {l.label}
+            </Link>
+          ))}
+        </div>
+        <div className="flex items-center gap-2">
+          <span>Designed, Developed &amp; Maintained By:</span>
+          <a href="https://encodency.com" target="_blank" rel="noopener noreferrer" className="rounded-md px-2.5 py-1 font-bold text-white" style={{ background: "#B80F14" }}>
+            enCodency<sup>®</sup>
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
 
 export default function Footer() {
   const [isConsultModalOpen, setIsConsultModalOpen] = useState(false);
+  const open = () => setIsConsultModalOpen(true);
 
   return (
     <>
-      <footer
-        className={`${inter.className} relative w-full overflow-hidden text-[#F0EFE7] [--u:1px] lg:[--u:max(0.8px,calc(100vw/1600))]`}
-      >
-        {/* 1. Top Consultation Banner */}
-        <section aria-label="Ayurvedic Consultation CTA" className="relative w-full overflow-hidden bg-[#F8F6F0]">
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: 'url("/footer-ref/banner-bg-v3.webp")', backgroundSize: "100% 100%", backgroundPosition: "center" }}
-          />
-
-          <div
-            className="relative z-10 mx-auto flex max-w-[1920px] flex-col items-center gap-4 px-6 py-5 lg:flex-row lg:justify-start lg:gap-0 lg:px-0 lg:py-0 lg:pt-[calc(var(--u)*4)]"
-            style={{ minHeight: u(77), height: undefined }}
-          >
-            <div className="text-center lg:text-left lg:ml-[calc(var(--u)*190)] lg:max-w-none">
-              <h2
-                className="font-bold leading-none text-[#112D23] lg:whitespace-nowrap"
-                style={{ fontSize: u(23), letterSpacing: "0.005em" }}
-              >
-                Begin Your Healing Journey with Expert Ayurvedic Care
-              </h2>
-              <p
-                className="font-semibold uppercase text-[#1E2B25]"
-                style={{ marginTop: u(9), marginLeft: u(3), fontSize: u(12.6), letterSpacing: u(1.6) }}
-              >
-                Personalised Treatment <span className="font-normal text-[#E8B04A]" style={{ margin: `0 ${u(11)}`, fontSize: "0.9em" }}>|</span>
-                Traditional Wisdom <span className="font-normal text-[#E8B04A]" style={{ margin: `0 ${u(11)}`, fontSize: "0.9em" }}>|</span>
-                Holistic Wellness
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setIsConsultModalOpen(true)}
-              className="group inline-flex shrink-0 items-center justify-center rounded-[6px] bg-[#0B3D29] font-medium text-white transition-colors duration-300 hover:bg-[#10523A] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D4AF37] cursor-pointer lg:ml-[calc(var(--u)*43)]"
-              style={{ height: u(40), width: u(240), fontSize: u(16.8), gap: u(12) }}
-            >
-              <CalendarDays className="text-[#E0A92E] shrink-0" style={{ width: u(19), height: u(19) }} />
-              <span>Book a Consultation</span>
-              <ArrowRight
-                className="text-[#E0A92E] shrink-0 transition-transform duration-300 group-hover:translate-x-1"
-                style={{ width: u(17), height: u(17) }}
-              />
-            </button>
-
-            <p
-              className="font-normal text-[#1F1F1B] lg:whitespace-nowrap lg:ml-[calc(var(--u)*21)]"
-              style={{ fontSize: u(11.9) }}
-            >
-              Take the first step towards a healthier, happier you.
-            </p>
-          </div>
-        </section>
-
-        {/* 2. Main Footer Body */}
-        <div
-          className="relative w-full bg-[#002116]"
-        >
-          <div className="relative z-10 mx-auto max-w-[1920px] px-6 pb-7 sm:px-8 lg:px-0 lg:pb-[calc(var(--u)*6)]">
-            <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[23.75%_14.5%_18.25%_13.75%_29.75%] lg:gap-0">
-              {/* Column 1: Brand */}
-              <section className="flex flex-col items-center pt-8 lg:items-start lg:pt-0 lg:pl-[calc(var(--u)*78)] lg:pr-4" style={{ paddingTop: undefined }}>
-                <div className="lg:pt-[calc(var(--u)*14)] flex flex-col items-center lg:items-start">
-                  <Link href="/" aria-label="Vaidhyashala home" className="relative block lg:-ml-[calc(var(--u)*15)]">
-                    {/* Soft white glows behind the lettering and the tree, as on the Design House footer logo */}
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute rounded-full bg-white/[0.08]"
-                      style={{ left: "4%", top: "62%", width: "92%", height: "30%", filter: `blur(${u(24)})` }}
-                    />
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute rounded-full bg-white/[0.025]"
-                      style={{ left: "25%", top: "2%", width: "50%", height: "62%", filter: `blur(${u(40)})` }}
-                    />
-                    <Image
-                      src="/footerlogo-light-text.png"
-                      alt="Vaidhyashala Innovative Healing"
-                      width={324}
-                      height={207}
-                      sizes="(min-width: 1024px) 17vw, 270px"
-                      className="relative block h-auto max-w-full select-none object-contain"
-                      style={{ width: u(270), filter: "drop-shadow(0 0 4px rgba(255,255,255,0.12))" }}
-                    />
-                    {/* Shine sweep across the logo, masked to its shape */}
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 animate-[footer-logo-shine_4s_ease-in-out_infinite]"
-                      style={{
-                        background: "linear-gradient(110deg, transparent 38%, rgba(255,255,255,0.85) 50%, transparent 62%)",
-                        backgroundSize: "260% 100%",
-                        WebkitMaskImage: "url(/footerlogo-light-text.png)",
-                        maskImage: "url(/footerlogo-light-text.png)",
-                        WebkitMaskSize: "100% 100%",
-                        maskSize: "100% 100%",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                      }}
-                    />
-                  </Link>
-                  <div className="text-center lg:-ml-[calc(var(--u)*15)]" style={{ width: u(270), marginTop: u(4) }}>
-                    <p className="text-[#E4E3D8]" style={{ fontSize: u(13.25), lineHeight: u(16) }}>
-                      A Brand of
-                    </p>
-                    <p className="font-normal text-[#F6F3E8]" style={{ fontSize: u(14.8), lineHeight: u(20), marginTop: u(1) }}>
-                      Namo Gange Wellness Pvt. Ltd.
-                    </p>
-                  </div>
-
-                  <p
-                    className="text-left text-[#E4E5DC]"
-                    style={{ marginTop: u(12), width: u(262), fontSize: u(13.3), lineHeight: u(19) }}
-                  >
-                    Vaidhyashala offers authentic Ayurvedic care, personalised therapies and holistic wellness solutions to
-                    support a healthier, more balanced life.
-                  </p>
-
-                  <a
-                    href="tel:+919811979147"
-                    className="group flex items-center rounded-[12px] border-[#DDB540] transition-colors hover:bg-[#DDB540]/10"
-                    style={{ borderWidth: u(2), borderStyle: "solid", marginTop: u(9), width: u(255), height: u(52), paddingLeft: u(9), gap: u(16) }}
-                  >
-                    <span
-                      className="flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FFE9B3] to-[#FAB92E] text-[#1F1600]"
-                      style={{ width: u(40), height: u(40) }}
-                    >
-                      <Phone className="fill-current" strokeWidth={1.2} style={{ width: u(19), height: u(19) }} />
-                    </span>
-                    <span>
-                      <span className="block font-normal leading-none text-[#F6F3E8]" style={{ fontSize: u(16.5) }}>
-                        Call Us
-                      </span>
-                      <span
-                        className="block font-semibold leading-none text-white"
-                        style={{ fontSize: u(19.2), marginTop: u(5), letterSpacing: "0.01em" }}
-                      >
-                        +91 98119 79147
-                      </span>
-                    </span>
-                  </a>
-                </div>
-              </section>
-
-              {/* Column 2: Quick Links */}
-              <nav
-                aria-label="Quick links"
-                className="relative lg:pl-[calc(var(--u)*31)] lg:pr-[calc(var(--u)*20)] lg:pt-[calc(var(--u)*34)]"
-              >
-                <Divider />
-                <FooterHeading>Quick Links</FooterHeading>
-                <ul style={{ marginTop: u(6) }}>
-                  {quickLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className={rowLink} style={{ height: u(28.5), fontSize: u(13.3) }}>
-                        <span>{link.label}</span>
-                        <Chevron />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-
-              {/* Column 3: Our Treatments */}
-              <nav
-                aria-label="Our treatments"
-                className="relative lg:pl-[calc(var(--u)*28)] lg:pr-[calc(var(--u)*21)] lg:pt-[calc(var(--u)*34)]"
-              >
-                <Divider />
-                <FooterHeading>Our Treatments</FooterHeading>
-                <ul style={{ marginTop: u(5) }}>
-                  {treatmentLinks.map(({ label, href, icon }) => (
-                    <li key={label}>
-                      <Link href={href} className={rowLink} style={{ height: u(32), fontSize: u(13.3) }}>
-                        <Image
-                          src={`/footer-ref/${icon}.png`}
-                          alt=""
-                          width={38}
-                          height={38}
-                          className="shrink-0 object-contain transition-transform duration-200 group-hover:scale-110"
-                          style={{ width: u(31), height: u(31), marginRight: u(26) }}
-                        />
-                        <span className="flex-1">{label}</span>
-                        <Chevron />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-
-              {/* Column 4: Patient Support */}
-              <nav
-                aria-label="Patient support"
-                className="relative lg:pl-[calc(var(--u)*28)] lg:pr-[calc(var(--u)*20)] lg:pt-[calc(var(--u)*34)]"
-              >
-                <Divider />
-                <FooterHeading>Patient Support</FooterHeading>
-                <ul style={{ marginTop: u(6) }}>
-                  {supportLinks.map((link) => (
-                    <li key={link.label}>
-                      {"action" in link ? (
-                        <button
-                          type="button"
-                          onClick={() => setIsConsultModalOpen(true)}
-                          className={`${rowLink} w-full cursor-pointer text-left`}
-                          style={{ height: u(30.5), fontSize: u(13.3) }}
-                        >
-                          <span>{link.label}</span>
-                          <Chevron />
-                        </button>
-                      ) : (
-                        <Link href={link.href} className={rowLink} style={{ height: u(30.5), fontSize: u(13.3) }}>
-                          <span>{link.label}</span>
-                          <Chevron />
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-
-              {/* Column 5: Our Global Presence */}
-              <section
-                aria-label="Our global presence"
-                className="relative lg:pl-[calc(var(--u)*24)] lg:pr-0 lg:pt-[calc(var(--u)*7)]"
-              >
-                <Divider />
-                <FooterHeading size={23} className="lg:ml-[calc(var(--u)*7)]">Our Global Presence</FooterHeading>
-                <ol className="relative" style={{ marginTop: u(10) }}>
-                  {/* vertical timeline through the icons */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute bg-[#D9A91A]"
-                    style={{ left: u(24.5), width: u(1), top: u(34), bottom: u(36) }}
-                  />
-                  {presence.map(({ icon, title, lines }, index) => (
-                    <li key={title} className="relative flex" style={{ gap: u(19.5), paddingBottom: u(index === 3 ? 0 : 7) }}>
-                      <span
-                        className="relative z-10 flex shrink-0 items-center justify-center rounded-full bg-[#002116]"
-                        style={{ width: u(59), height: u(59), marginTop: u(-8.5), marginLeft: u(-4.5) }}
-                      >
-                        <span
-                          className="flex items-center justify-center rounded-full"
-                          style={{ width: u(47), height: u(47), border: `${u(1)} solid #D9A91A` }}
-                        >
-                          <Image
-                            src={`/footer-ref/disc-${icon}.png`}
-                            alt=""
-                            width={40}
-                            height={40}
-                            className="block rounded-full select-none"
-                            style={{ width: u(32.6), height: u(32.6) }}
-                          />
-                        </span>
-                      </span>
-                      <div className="min-w-0" style={{ marginTop: u(-4) }}>
-                        <h4 className="font-normal leading-none text-[#F3B71B]" style={{ fontSize: u(14.8), lineHeight: u(18.5) }}>
-                          {title}
-                        </h4>
-                        <p className="text-[#EDEEE6]" style={{ marginTop: u(1.5), lineHeight: u(17), whiteSpace: "nowrap" }}>
-                          {lines.map((line, i) => (
-                            <span key={i} className="block" style={{ fontSize: u(lineSize(line)) }}>
-                              {line}
-                            </span>
-                          ))}
-                        </p>
-
-                        {/* Clinic hours sit inside the Delhi Clinic entry */}
-                        {index === 0 && (
-                          <div className="flex items-start" style={{ marginTop: u(3), gap: u(15), marginLeft: u(1) }}>
-                            <Image
-                              src="/footer-ref/clock.png"
-                              alt=""
-                              width={44}
-                              height={44}
-                              className="shrink-0 select-none"
-                              style={{ width: u(36), height: u(36), marginTop: u(-3), marginLeft: u(-3) }}
-                            />
-                            <div>
-                              <h5 className="font-normal text-[#F3B71B]" style={{ fontSize: u(14.8), lineHeight: u(18.5) }}>
-                                Clinic Hours
-                              </h5>
-                              <p className="text-[#EDEEE6]" style={{ marginTop: u(1), fontSize: u(12.8), lineHeight: u(17), whiteSpace: "nowrap" }}>
-                                <span className="block">Monday – Saturday &nbsp;|&nbsp; 9:00 AM – 6:00 PM</span>
-                                <span className="block">Sunday: By Appointment Only</span>
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            </div>
-          </div>
-
-          {/* 3. Bottom Bar */}
-          <div className="relative bg-[#002116]">
-            {/* thin pale-gold line along the top of the bar */}
-            <span
-              aria-hidden="true"
-              className="absolute inset-x-0 top-0"
-              style={{
-                height: u(2),
-                background:
-                  "linear-gradient(90deg, #B8913C 0%, #F3EFD8 7%, #C9A23A 14%, #E9DFA8 25%, #FFFFFF 33%, #C9A23A 42%, #D9B64C 52%, #F5F0DA 62%, #C9A23A 71%, #EFE6B8 82%, #FFFFFF 90%, #B8913C 100%)",
-              }}
-            />
-            {/* Corner leaves */}
-            <Image
-              src="/footer-ref/leaf-left-v2.png"
-              alt=""
-              width={34}
-              height={50}
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-0 left-0 hidden h-full w-auto select-none lg:block"
-            />
-            <Image
-              src="/footer-ref/leaf-right-v2.png"
-              alt=""
-              width={30}
-              height={50}
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-0 right-0 hidden h-full w-auto select-none lg:block"
-            />
-
-            <div
-              className="relative mx-auto flex max-w-[1920px] flex-col items-center gap-3 px-6 py-4 text-[#E4E5DC] lg:flex-row lg:justify-between lg:gap-[calc(var(--u)*20)] lg:px-[calc(var(--u)*55)] lg:py-[calc(var(--u)*8)]"
-              style={{ fontSize: u(12.48), height: undefined }}
-            >
-              <div className="flex flex-wrap items-center justify-center lg:flex-nowrap">
-                <span className="whitespace-nowrap">
-                  <span style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>&copy;</span> 2026 Vaidhyashala
-                </span>
-                <span className="inline-block w-px bg-white/55" style={{ height: u(12), margin: `0 ${u(15)}` }} aria-hidden="true" />
-                <span className="whitespace-nowrap">A Brand of Namo Gange Wellness Pvt. Ltd.</span>
-                <span className="inline-block w-px bg-white/55" style={{ height: u(12), margin: `0 ${u(15)}` }} aria-hidden="true" />
-                <span className="whitespace-nowrap">All Rights Reserved.</span>
-              </div>
-
-              <nav
-                aria-label="Legal"
-                className="flex flex-wrap items-center justify-center lg:flex-nowrap"
-              >
-                {[
-                  { label: "Sitemap", href: "/" },
-                  { label: "Privacy Policy", href: "/privacy" },
-                  { label: "Terms & Conditions", href: "/terms" },
-                  { label: "Refund Policy", href: "/terms" },
-                  { label: "Disclaimer", href: "/terms" },
-                ].map((link, i) => (
-                  <span key={link.label} className="flex items-center">
-                    {i > 0 && (
-                      <span className="inline-block w-px bg-white/55" style={{ height: u(12), margin: `0 ${u(16)}` }} aria-hidden="true" />
-                    )}
-                    <Link href={link.href} className="whitespace-nowrap transition-colors hover:text-[#E0A92E]">
-                      {link.label}
-                    </Link>
-                  </span>
-                ))}
-              </nav>
-
-              <div className="flex shrink-0 items-center" style={{ gap: u(18) }}>
-                <span className="whitespace-nowrap" style={{ fontSize: u(11.71) }}>Designed &amp; Developed by</span>
-                <a
-                  href="https://encodency.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="enCodency Pvt. Ltd."
-                  className="relative block shrink-0 transition-opacity hover:opacity-90"
-                  style={{ width: u(83.35), height: u(28) }}
-                >
-                  {/* The link keeps its original footprint, so nothing around it moves; the logo is
-                      wider than that and grows into the gaps on both sides (object-cover trims only
-                      the empty red band above and below the text). */}
-                  <Image
-                    src="/enc.webp"
-                    alt="enCodency Pvt. Ltd. - Raise the Bar"
-                    // Its largest on-screen size (110u wide, --u up to 1.2px): a small copy, not the 2164px file
-                    width={132}
-                    height={44}
-                    className="absolute top-0 max-w-none rounded-[3px] object-cover"
-                    style={{ left: u(-12), width: u(110), height: u(28) }}
-                  />
-                </a>
-                <button
-                  type="button"
-                  aria-label="Back to top"
-                  onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                  className="flex shrink-0 cursor-pointer items-center justify-center rounded-full border-[#F3B71B] text-[#F3B71B] transition-colors hover:bg-[#F3B71B] hover:text-black"
-                  style={{ width: u(32), height: u(32), borderWidth: u(2), borderStyle: "solid", marginLeft: u(6) }}
-                >
-                  <ArrowUp style={{ width: u(14), height: u(14) }} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      <footer className={`${hind.className} relative w-full select-none overflow-hidden`} style={{ background: "#00170b" }}>
+        <DesktopFooter onBook={open} />
+        <MobileFooter onBook={open} />
       </footer>
       <PlanConsultationModal isOpen={isConsultModalOpen} onClose={() => setIsConsultModalOpen(false)} />
     </>
