@@ -10,6 +10,10 @@ export interface CartItem {
   price: number;
   mrp: number;
   qty: number;
+  /** Short line under the name in the order summary (e.g. "Ayurvedic Herbal Juice") */
+  subtitle?: string;
+  /** Pack size, e.g. "750 ml" */
+  size?: string;
 }
 
 interface CartValue {

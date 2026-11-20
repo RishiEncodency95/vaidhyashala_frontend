@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState, type ReactNode } from "react";
+import React, { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Building2,
+  Check,
   ChevronDown,
   ChevronRight,
   CreditCard,
   FileText,
   House,
   Info,
-  Landmark,
   Leaf,
   Lock,
   Mail,
@@ -24,6 +24,7 @@ import {
   ShieldCheck,
   ShoppingBag,
   ShoppingCart,
+  TicketPercent,
   Trash2,
   Truck,
   User,
@@ -32,7 +33,7 @@ import { API_BASE } from "@/lib/api";
 import { useCart, rupees } from "@/lib/cart";
 import CmsImage from "@/components/common/CmsImage";
 import { readLastOrderRaw, saveLastOrder } from "@/lib/lastOrder";
-import { hind, poppins } from "@/lib/fonts";
+import { poppins } from "@/lib/fonts";
 
 declare global {
   interface Window {
@@ -40,13 +41,26 @@ declare global {
   }
 }
 
+const RAZORPAY_SRC = "https://checkout.razorpay.com/v1/checkout.js";
+
+/** Loads Razorpay's checkout script; gives up after 15 s (blocked by an ad blocker, offline …) */
 const loadRazorpay = () =>
   new Promise<boolean>((resolve) => {
     if (window.Razorpay) return resolve(true);
+    // A failed earlier attempt leaves a dead tag behind: start clean
+    document.querySelectorAll(`script[src="${RAZORPAY_SRC}"]`).forEach((el) => el.remove());
     const s = document.createElement("script");
-    s.src = "https://checkout.razorpay.com/v1/checkout.js";
-    s.onload = () => resolve(true);
-    s.onerror = () => resolve(false);
+    const timer = window.setTimeout(() => resolve(false), 15000);
+    s.src = RAZORPAY_SRC;
+    s.async = true;
+    s.onload = () => {
+      window.clearTimeout(timer);
+      resolve(Boolean(window.Razorpay));
+    };
+    s.onerror = () => {
+      window.clearTimeout(timer);
+      resolve(false);
+    };
     document.body.appendChild(s);
   });
 
@@ -59,6 +73,8 @@ const PREVIEW_MODE = process.env.NODE_ENV !== "production" && process.env.NEXT_P
 
 /* Palette sampled from the design */
 const GREEN = "#0A3314";
+/** Crisp 1px highlight under the banner text (no blurred halo behind it) */
+const TEXT_GLOW = "0 1px 0 rgba(255,255,255,0.75)";
 const GREEN_BTN = "linear-gradient(180deg,#0B5A22 0%,#074619 55%,#043A14 100%)";
 const BORDER = "#DCE8D3";
 
@@ -72,13 +88,6 @@ const STATES = [
 const CITIES = [
   "Delhi", "New Delhi", "Noida", "Gurugram", "Ghaziabad", "Faridabad", "Lucknow", "Kanpur", "Jaipur", "Mumbai", "Pune",
   "Ahmedabad", "Bengaluru", "Hyderabad", "Chennai", "Kolkata", "Visakhapatnam", "Chandigarh", "Indore", "Bhopal", "Patna",
-];
-
-type PayMethod = "upi" | "card" | "netbanking";
-const PAY_OPTIONS: { key: PayMethod; title: string; sub: string; icon?: ReactNode }[] = [
-  { key: "upi", title: "UPI", sub: "(GPay, PhonePe, Paytm, etc.)" },
-  { key: "card", title: "Credit / Debit Card", sub: "Visa, MasterCard, RuPay", icon: <CreditCard className="h-[26px] w-[30px] text-[#1F5F2A]" strokeWidth={1.6} /> },
-  { key: "netbanking", title: "Net Banking", sub: "All Major Banks", icon: <Landmark className="h-[28px] w-[30px] text-[#1F5F2A]" strokeWidth={1.6} /> },
 ];
 
 const STRIP = [
@@ -125,29 +134,78 @@ export default function CheckoutPage() {
   const { items, subtotal, savings, count, clear, setQty, remove } = useCart();
   const [f, setF] = useState({ name: "", mobile: "", email: "", line1: "", city: "", state: "", pincode: "", notes: "" });
   const [delivery, setDelivery] = useState<"home" | "same">("home");
-  const [method, setMethod] = useState<PayMethod>("upi");
   const [agree, setAgree] = useState(true);
-  const [pinMsg, setPinMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [couponInput, setCouponInput] = useState("");
+  const [coupon, setCoupon] = useState<{ code: string; discount: number } | null>(null);
+  const [couponMsg, setCouponMsg] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const couponOff = coupon ? Math.min(coupon.discount, subtotal) : 0;
+  const payable = Math.max(0, subtotal - couponOff);
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setF((v) => ({ ...v, [k]: e.target.value }));
 
   const post = async (path: string, body: unknown) => {
-    const res = await fetch(`${API_BASE}/website/orders${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    // Never leave the button stuck on "Please wait…": give up after 25 s
+    const ctrl = new AbortController();
+    const timer = window.setTimeout(() => ctrl.abort(), 25000);
+    let res: Response;
+    try {
+      res = await fetch(`${API_BASE}/website/orders${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: ctrl.signal,
+      });
+    } catch {
+      throw new Error("Could not reach our server. Please check your internet connection and try again.");
+    } finally {
+      window.clearTimeout(timer);
+    }
     const json = await res.json().catch(() => null);
     if (!res.ok) throw new Error(json?.errors?.[0] || json?.message || "Something went wrong. Please try again.");
     return json.data;
   };
 
-  const checkPin = () => {
-    if (!/^[1-9]\d{5}$/.test(f.pincode)) return setPinMsg({ ok: false, text: "Please enter a valid 6-digit PIN code." });
-    setPinMsg({ ok: true, text: "PIN code looks good. Our team confirms delivery to your area once the order is placed." });
+  const lines = items.map((i) => ({ id: i.id, qty: i.qty }));
+  const cartKey = lines.map((l) => `${l.id}:${l.qty}`).join(",");
+
+  const quote = async (code: string) => {
+    setCouponBusy(true);
+    try {
+      const q = await post("/coupon", { code, items: lines });
+      setCoupon({ code: q.code, discount: q.discount });
+      setCouponInput(q.code);
+      setCouponMsg(`Coupon applied: you save ${rupees(q.discount)}.`);
+    } catch (err) {
+      setCoupon(null);
+      setCouponMsg(err instanceof Error ? err.message : "This coupon code is not valid.");
+    } finally {
+      setCouponBusy(false);
+    }
   };
+  const applyCode = () => {
+    if (couponInput.trim() && !couponBusy) void quote(couponInput.trim());
+  };
+  const removeCode = () => {
+    setCoupon(null);
+    setCouponInput("");
+    setCouponMsg("");
+  };
+
+  // Cart changed while a coupon is applied: ask the server again so the discount stays exact
+  const quotedFor = useRef("");
+  useEffect(() => {
+    if (!coupon) {
+      quotedFor.current = cartKey;
+      return;
+    }
+    if (quotedFor.current === cartKey || !cartKey) return;
+    quotedFor.current = cartKey;
+    void quote(coupon.code);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- re-quote only when the cart itself changes
+  }, [cartKey]);
 
   const pay = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,8 +217,8 @@ export default function CheckoutPage() {
       saveLastOrder({
         orderNumber: `VDS-PREVIEW-${Date.now().toString(36).toUpperCase()}`,
         placedAt: new Date().toISOString(),
-        total: subtotal,
-        savings,
+        total: payable,
+        savings: savings + couponOff,
         items: items.map((i) => ({ title: i.title, image: i.image, qty: i.qty, price: i.price, mrp: i.mrp })),
       });
       const number = readLastOrderRaw() && JSON.parse(readLastOrderRaw()).orderNumber;
@@ -169,13 +227,16 @@ export default function CheckoutPage() {
       return;
     }
     try {
-      if (!(await loadRazorpay())) throw new Error("Could not load the payment window. Check your internet and try again.");
+      if (!(await loadRazorpay())) {
+        throw new Error("The Razorpay payment window could not load. Please turn off any ad blocker for this site, check your internet, and try again.");
+      }
       const mobile = `+91${f.mobile.replace(/\D/g, "").slice(-10)}`;
       const order = await post("", {
         customer: { name: f.name, mobile, email: f.email },
         address: { line1: f.line1, city: f.city, state: f.state, pincode: f.pincode },
         items: items.map((i) => ({ id: i.id, qty: i.qty })),
         ...(f.notes.trim() ? { notes: f.notes.trim() } : {}),
+        ...(coupon ? { couponCode: coupon.code } : {}),
       });
       const rz = new window.Razorpay!({
         key: order.razorpay.keyId,
@@ -186,8 +247,6 @@ export default function CheckoutPage() {
         description: `Order ${order.orderNumber}`,
         prefill: { name: f.name, email: f.email, contact: mobile },
         theme: { color: "#0D382B" },
-        // Show only the payment method the customer picked
-        method: { upi: method === "upi", card: method === "card", netbanking: method === "netbanking", wallet: false, emi: false, paylater: false },
         modal: { ondismiss: () => setBusy(false) },
         handler: async (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
           try {
@@ -196,7 +255,8 @@ export default function CheckoutPage() {
               orderNumber: done.orderNumber,
               placedAt: new Date().toISOString(),
               total: done.total,
-              savings,
+              // Product discounts plus the coupon, so the summary adds up to what was paid
+              savings: savings + (order.couponDiscount ?? 0),
               items: items.map((i) => ({ title: i.title, image: i.image, qty: i.qty, price: i.price, mrp: i.mrp })),
             });
             clear();
@@ -219,24 +279,24 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className={`${hind.className} w-full bg-white text-[#1A1A1A]`}>
+    <div className={`${poppins.className} w-full bg-white text-[#1A1A1A]`}>
       {/* ============ Banner ============ */}
-      <div className="relative h-[64px] w-full overflow-hidden bg-[linear-gradient(180deg,#FBF4E3_0%,#F8ECD6_100%)] sm:h-[78px]">
-        <img src="/checkout-v2/banner-left.png" alt="" aria-hidden className="absolute left-0 top-0 hidden h-full w-auto max-w-[32%] object-cover object-left md:block" />
-        <img src="/checkout-v2/banner-right.png" alt="" aria-hidden className="absolute right-0 top-0 hidden h-full w-auto max-w-[28%] object-cover object-right md:block" />
+      <div className="w-full bg-[#EEF4D6]">
+      <div className="relative h-[136px] w-full max-w-[1440px] overflow-hidden bg-[url(/checkout-v2/banner-bg.jpg)] bg-[length:100%_100%] bg-center sm:h-[170px]">
         <div className="relative flex h-full flex-col items-center justify-center text-center">
-          <p className={`${poppins.className} text-[20px] font-normal leading-tight sm:text-[27px]`} style={{ color: GREEN }}>
+          <p className={`${poppins.className} text-[20px] font-normal leading-tight sm:text-[27px]`} >
             Pure Ayurveda for a <b className="font-bold italic">Healthier You</b>
           </p>
-          <p className="mt-0.5 flex items-center gap-3 text-[12px] text-[#222] sm:mt-1 sm:text-[14.5px]">
+          <p className="mt-0.5 flex items-center gap-3 text-[12px] text-[#222] sm:mt-1 sm:text-[14.5px]" style={{ textShadow: TEXT_GLOW }}>
             <span className="hidden h-px w-[60px] bg-[#C9A640] sm:block" />
             Authentic <span className="text-[#555]">|</span> Natural <span className="text-[#555]">|</span> Effective
             <span className="hidden h-px w-[60px] bg-[#C9A640] sm:block" />
           </p>
         </div>
       </div>
+      </div>
 
-      <div className="mx-auto min-h-[40vh] max-w-[1440px] px-4 pb-4 sm:px-6 lg:px-12">
+      <div className="mx-auto min-h-[40vh] max-w-[1440px] px-4 pb-4 pt-2 sm:pt-3 sm:px-6 lg:px-12">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="flex h-[28px] items-center gap-[10px] text-[13px]">
           <House className="h-[17px] w-[17px]" strokeWidth={1.9} />
@@ -246,15 +306,15 @@ export default function CheckoutPage() {
         </nav>
 
         {/* Title */}
-        <div className="mt-[2px] flex items-start gap-[12px]">
-          <ShoppingCart className="mt-[2px] h-[34px] w-[38px] shrink-0 text-[#0A5A22]" strokeWidth={1.7} />
+        <div className="mt-2 flex items-center gap-[12px]">
+          <ShoppingCart className="h-[34px] w-[38px] shrink-0 text-[#0A5A22]" strokeWidth={1.7} />
           <div className="min-w-0">
             <div className="flex items-center gap-[14px]">
-              <h1 className={`${poppins.className} text-[30px] font-bold leading-none`} style={{ color: GREEN }}>Checkout</h1>
+              <h1 className={`${poppins.className} text-[28px] font-medium leading-tight tracking-[-0.01em]`} style={{ color: GREEN }}>Checkout</h1>
               <span className="hidden h-[2px] w-[240px] bg-[linear-gradient(90deg,#7FA96B,rgba(127,169,107,0))] sm:block" />
             </div>
-            <p className="mt-[3px] text-[13.5px] text-[#222]">
-              Complete your order, add delivery details and <b>proceed</b> to secure payment.
+            <p className="mt-1 text-[14px] leading-snug text-[#4A4A4A]">
+              Complete your order, add delivery details and <span className="font-semibold text-[#222]">proceed</span> to secure payment.
             </p>
           </div>
         </div>
@@ -264,7 +324,7 @@ export default function CheckoutPage() {
             Your cart is empty. <Link href="/products" className="font-semibold underline">Browse products</Link>
           </p>
         ) : (
-          <form onSubmit={pay} className="mt-[8px] grid grid-cols-1 items-start gap-[12px] lg:grid-cols-[692fr_461fr] xl:grid-cols-[692fr_461fr_303fr]">
+          <form onSubmit={pay} className="mt-[8px] grid grid-cols-1 items-start gap-[12px] lg:grid-cols-[692fr_461fr] lg:items-stretch xl:grid-cols-[692fr_461fr_303fr]">
             {/* ================= Left: details ================= */}
             <div className="flex flex-col gap-[8px]">
               <Section n={1} title="Contact Information">
@@ -306,11 +366,10 @@ export default function CheckoutPage() {
               </Section>
 
               <Section n={2} title="Delivery Address">
-                <div className="grid gap-[12px] sm:grid-cols-[minmax(0,330px)_1fr] sm:items-end">
+                <div className="grid gap-[12px] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:gap-[24px]">
                   <div>
                     <Label required htmlFor="co-pin">PIN Code</Label>
-                    <div className="flex">
-                      <div className={`${inputBox} min-w-0 flex-1 rounded-r-none border-r-0`}>
+                    <div className={inputBox}>
                         <MapPin className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                         <input
                           id="co-pin"
@@ -318,22 +377,15 @@ export default function CheckoutPage() {
                           className={inputEl}
                           placeholder="Enter 6-digit PIN code"
                           value={f.pincode}
-                          onChange={(e) => {
-                            setF((v) => ({ ...v, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) }));
-                            setPinMsg(null);
-                          }}
+                          onChange={(e) => setF((v) => ({ ...v, pincode: e.target.value.replace(/\D/g, "").slice(0, 6) }))}
                           inputMode="numeric"
                           pattern="[1-9]\d{5}"
                           title="Enter a 6-digit PIN code"
                           autoComplete="postal-code"
                         />
-                      </div>
-                      <button type="button" onClick={checkPin} className="h-[36px] w-[64px] shrink-0 rounded-r-[8px] text-[13px] font-bold text-white hover:brightness-110" style={{ background: GREEN_BTN }}>
-                        Check
-                      </button>
                     </div>
                   </div>
-                  <div role="radiogroup" aria-label="Delivery type" className="flex flex-wrap items-center gap-x-[20px] gap-y-1 pb-[6px] text-[12.5px] text-[#1A1A1A]">
+                  <div role="radiogroup" aria-label="Delivery type" className="flex flex-wrap items-center gap-x-[20px] gap-y-1 pb-[8px] text-[12.5px] text-[#1A1A1A] sm:flex-nowrap sm:whitespace-nowrap">
                     {([["home", "Home / Office Delivery"], ["same", "Same as Contact"]] as const).map(([k, label]) => (
                       <label key={k} className="flex cursor-pointer items-center gap-[8px]">
                         <input type="radio" name="delivery" checked={delivery === k} onChange={() => setDelivery(k)} className="peer sr-only" />
@@ -345,7 +397,6 @@ export default function CheckoutPage() {
                     ))}
                   </div>
                 </div>
-                {pinMsg && <p className={`mt-1 text-[12.5px] ${pinMsg.ok ? "text-[#2C7A32]" : "text-[#B3402D]"}`}>{pinMsg.text}</p>}
 
                 <div className="mt-[6px]">
                   <Label required htmlFor="co-address">Address</Label>
@@ -394,30 +445,6 @@ export default function CheckoutPage() {
                 </div>
               </Section>
 
-              <Section n={4} title="Payment Method">
-                <div role="radiogroup" aria-label="Payment method" className="grid gap-[10px] sm:grid-cols-3">
-                  {PAY_OPTIONS.map((o) => {
-                    const on = method === o.key;
-                    return (
-                      <label
-                        key={o.key}
-                        className={`relative flex min-h-[42px] cursor-pointer items-center gap-[8px] rounded-[8px] border px-[8px] py-[5px] transition-colors ${on ? "border-[#2C8A2C] bg-[#F1F8E6] shadow-[0_0_0_1px_#2C8A2C]" : "border-[#DADADA] bg-[#F8F9FB] hover:border-[#9DC293]"}`}
-                      >
-                        <input type="radio" name="method" checked={on} onChange={() => setMethod(o.key)} className="peer sr-only" />
-                        <span className={`flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full border-2 peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 ${on ? "border-[#074619]" : "border-[#B8B8B8]"}`}>
-                          {on && <i className="h-[10px] w-[10px] rounded-full bg-[#074619]" />}
-                        </span>
-                        {o.key === "upi" ? <img src="/checkout-v2/upi.png" alt="" className="h-[22px] w-[44px] object-contain mix-blend-multiply" /> : o.icon}
-                        <span className="min-w-0 leading-tight">
-                          <b className="block whitespace-nowrap text-[12px] text-[#111]">{o.title}</b>
-                          <span className="block text-[10px] leading-[13px] text-[#444]">{o.sub}</span>
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </Section>
-
               <ul className="mt-[0px] grid grid-cols-2 gap-y-2 rounded-[10px] bg-[#F1F8E6] px-[12px] py-[7px] sm:grid-cols-4">
                 {STRIP.map(({ icon: Icon, a, b }, i) => (
                   <li key={a} className={`flex items-center gap-[10px] ${i ? "sm:border-l sm:border-[#D3E2C6] sm:pl-[8px]" : ""}`}>
@@ -429,68 +456,112 @@ export default function CheckoutPage() {
             </div>
 
             {/* ================= Middle: summary ================= */}
-            <div className="overflow-hidden rounded-[14px] border bg-white shadow-[0_3px_12px_rgba(60,100,40,0.12)] lg:sticky lg:top-24" style={{ borderColor: BORDER }}>
-              <h2 className={`${poppins.className} flex h-[36px] items-center gap-[10px] px-[16px] text-[16.5px] font-semibold text-white`} style={{ background: "linear-gradient(90deg,#063E19,#004A17 55%,#004016)" }}>
-                <ShoppingBag className="h-[22px] w-[22px]" strokeWidth={1.8} />
+            <div className="flex flex-col overflow-hidden rounded-[14px] border bg-white shadow-[0_3px_12px_rgba(60,100,40,0.12)] lg:[contain:size]" style={{ borderColor: BORDER }}>
+              <h2 className={`${poppins.className} flex h-[44px] items-center gap-[12px] px-[16px] text-[18px] font-semibold text-white`} style={{ background: "linear-gradient(90deg,#063E19,#004A17 55%,#004016)" }}>
+                <ShoppingBag className="h-[24px] w-[24px]" strokeWidth={1.7} />
                 <span>Order Summary <span className="text-[15px] font-normal">({count} {count === 1 ? "Item" : "Items"})</span></span>
               </h2>
-              <ul className="px-[14px]">
+
+              <ul className="px-[12px] lg:min-h-[64px] lg:flex-1 lg:overflow-y-auto">
                 {items.map((i) => (
-                  <li key={i.id} className="flex items-center gap-[10px] border-b border-[#E7EEE0] py-[5px]">
-                    <span className="relative h-[38px] w-[38px] shrink-0 overflow-hidden rounded-[7px] bg-[#FBF3E6]">
-                      <CmsImage fill sizes="48px" src={i.image} alt="" className="object-cover" />
+                  <li key={i.id} className="flex items-center gap-[12px] border-b border-[#E7EEE0] py-[7px]">
+                    <span className="relative h-[48px] w-[48px] shrink-0 overflow-hidden rounded-[8px] bg-[#FBF3E6]">
+                      <CmsImage fill sizes="56px" src={i.image} alt="" className="object-cover" />
                     </span>
-                    <span className="min-w-0 flex-1 leading-tight">
-                      <b className="block truncate text-[13px] text-[#111]">{i.title}</b>
-                      <span className="block text-[11.5px] text-[#555]">
-                        {rupees(i.price)} each{i.mrp > i.price && <s className="ml-1.5 text-[#999]">{rupees(i.mrp)}</s>}
-                      </span>
+                    <span className="min-w-0 flex-1 leading-[1.25]">
+                      <b className="block truncate text-[13.5px] font-semibold text-[#111]">{i.title}</b>
+                      {i.subtitle && <span className="block truncate text-[11.5px] text-[#444]">{i.subtitle}</span>}
+                      {i.size && <span className="block text-[11.5px] text-[#444]">{i.size}</span>}
                     </span>
-                    <span className="inline-flex h-[24px] shrink-0 items-center rounded-[6px] border border-[#BAC4B9] bg-white">
-                      <button type="button" aria-label={`Decrease ${i.title}`} onClick={() => setQty(i.id, i.qty - 1)} className="px-[7px] text-[#111]"><Minus className="h-[13px] w-[13px]" strokeWidth={2.4} /></button>
-                      <span className="min-w-[18px] text-center text-[13px] font-bold">{i.qty}</span>
-                      <button type="button" aria-label={`Increase ${i.title}`} onClick={() => setQty(i.id, i.qty + 1)} className="px-[7px] text-[#111]"><Plus className="h-[13px] w-[13px]" strokeWidth={2.4} /></button>
+                    <span className="inline-flex h-[26px] shrink-0 items-center rounded-[7px] border border-[#BFD3B4] bg-white">
+                      <button type="button" aria-label={`Decrease ${i.title}`} onClick={() => setQty(i.id, i.qty - 1)} className="flex h-full items-center px-[7px] text-[#111]"><Minus className="h-[13px] w-[13px]" strokeWidth={2.6} /></button>
+                      <span className="min-w-[18px] text-center text-[13.5px] font-bold">{i.qty}</span>
+                      <button type="button" aria-label={`Increase ${i.title}`} onClick={() => setQty(i.id, i.qty + 1)} className="flex h-full items-center px-[7px] text-[#0B5A22]"><Plus className="h-[13px] w-[13px]" strokeWidth={2.6} /></button>
                     </span>
-                    <b className="w-[58px] shrink-0 text-right text-[14px] text-[#111]">{rupees(i.price * i.qty)}</b>
+                    <b className="w-[62px] shrink-0 text-right text-[15px] font-bold text-[#111]">{rupees(i.price * i.qty)}</b>
                     <button type="button" aria-label={`Remove ${i.title}`} onClick={() => remove(i.id)} className="shrink-0 text-[#0B5A22] hover:text-[#B3402D]">
-                      <Trash2 className="h-[18px] w-[18px]" strokeWidth={1.8} />
+                      <Trash2 className="h-[19px] w-[19px]" strokeWidth={1.8} />
                     </button>
                   </li>
                 ))}
               </ul>
 
-              <dl className="px-[14px] pt-[4px] text-[12.5px] text-[#222]">
-                <div className="flex justify-between py-[1px]"><dt>Subtotal ({count} {count === 1 ? "Item" : "Items"})</dt><dd>{rupees(subtotal + savings)}</dd></div>
-                <div className="flex justify-between py-[1px]"><dt>Delivery Charges</dt><dd className="font-semibold text-[#2C7A32]">Free</dd></div>
-                {savings > 0 && (
-                  <div className="flex justify-between py-[1px]"><dt>Discount</dt><dd className="font-semibold text-[#1F8A2B]">− {rupees(savings)}</dd></div>
+              <dl className="px-[12px] pt-[4px] text-[13px] text-[#222]">
+                <div className="flex justify-between border-b border-[#EEF2EA] py-[4px]"><dt>Subtotal ({count} {count === 1 ? "Item" : "Items"})</dt><dd className="font-semibold">{rupees(subtotal)}</dd></div>
+                <div className="flex justify-between border-b border-[#EEF2EA] py-[4px]"><dt>Delivery Charges</dt><dd className="font-semibold text-[#2C7A32]">Free</dd></div>
+                {coupon && (
+                  <div className="flex justify-between py-[4px]">
+                    <dt>Discount <span className="text-[#2C7A32]">(Coupon: {coupon.code})</span></dt>
+                    <dd className="font-semibold text-[#2C7A32]">− {rupees(couponOff)}</dd>
+                  </div>
                 )}
               </dl>
-              <div className="mx-[8px] mt-[4px] flex items-center justify-between rounded-[8px] bg-[#EAF4D6] px-[10px] py-[5px]">
+              <div className="mx-[8px] mt-[2px] flex items-center justify-between rounded-[8px] bg-[#EAF4D6] px-[10px] py-[3px]">
                 <span className="flex items-baseline gap-2">
                   <b className={`${poppins.className} text-[15.5px] font-semibold`} style={{ color: GREEN }}>Total Payable</b>
                   <span className="text-[11px] text-[#333]">(Inclusive of all taxes)</span>
                 </span>
-                <b className={`${poppins.className} text-[20px] font-bold`} style={{ color: "#003000" }}>{rupees(subtotal)}</b>
+                <b className={`${poppins.className} text-[19px] font-bold leading-tight`} style={{ color: "#003000" }}>{rupees(payable)}</b>
               </div>
 
-              <label className="mx-[14px] mt-[8px] flex cursor-pointer items-start gap-[8px] text-[12px] text-[#222]">
+              {/* Coupon: the server checks the code and works out the discount, and charges that amount */}
+              <div className="mx-[8px] mt-[6px] rounded-[10px] border border-[#E3E8DE] bg-[#FCFDFB] px-[10px] pb-[7px] pt-[5px]">
+                <label htmlFor="co-coupon" className="flex items-center gap-[8px] text-[12.5px] font-semibold text-[#111]">
+                  <TicketPercent className="h-[17px] w-[17px] text-[#0B5A22]" strokeWidth={1.8} />
+                  Apply Coupon Code
+                </label>
+                <div className="mt-[4px] flex gap-[8px]">
+                  <div className={`${inputBox} !h-[32px] min-w-0 flex-1`}>
+                    <input
+                      id="co-coupon"
+                      className={`${inputEl} uppercase placeholder:normal-case`}
+                      placeholder="Enter coupon code"
+                      value={couponInput}
+                      onChange={(e) => {
+                        setCouponInput(e.target.value.toUpperCase().replace(/\s/g, "").slice(0, 30));
+                        setCouponMsg("");
+                        if (coupon) setCoupon(null);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          applyCode();
+                        }
+                      }}
+                      autoComplete="off"
+                    />
+                    {coupon && <Check className="h-[18px] w-[18px] shrink-0 text-[#2C8A2C]" strokeWidth={2.6} aria-label="Coupon applied" />}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={coupon ? removeCode : applyCode}
+                    disabled={couponBusy || (!coupon && !couponInput)}
+                    className="h-[32px] w-[92px] shrink-0 rounded-[8px] text-[13.5px] font-semibold text-white shadow-[0_2px_5px_rgba(4,58,20,0.3)] hover:brightness-110 disabled:opacity-60"
+                    style={{ background: GREEN_BTN }}
+                  >
+                    {couponBusy ? "…" : coupon ? "Remove" : "Apply"}
+                  </button>
+                </div>
+                {couponMsg && <p role="status" className={`mt-[3px] text-[11.5px] ${coupon ? "text-[#2C7A32]" : "text-[#B3402D]"}`}>{couponMsg}</p>}
+              </div>
+
+              <label className="mx-[12px] mt-[7px] flex cursor-pointer items-center gap-[8px] text-[12px] text-[#222]">
                 <input type="checkbox" required checked={agree} onChange={(e) => setAgree(e.target.checked)} className="peer sr-only" />
-                <span className="mt-[1px] flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-[4px] border-2 border-[#074619] text-white peer-checked:bg-[#074619] peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
+                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[4px] border-2 border-[#074619] text-white peer-checked:bg-[#074619] peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
                   <svg viewBox="0 0 12 12" className="h-[12px] w-[12px]" aria-hidden><path d="M2.2 6.3l2.6 2.5 5-5.3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
                 <span>
-                  I agree to the <Link href="/terms" className="text-[#1F6FD6] underline">Terms &amp; Conditions</Link> and <Link href="/privacy" className="text-[#1F6FD6] underline">Privacy Policy</Link>.
+                  I agree to the <Link href="/terms" className="text-[#1F7A2E] underline">Terms &amp; Conditions</Link> and <Link href="/privacy" className="text-[#1A1A1A] underline">Privacy Policy</Link>.
                 </span>
               </label>
 
-              {error && <p role="alert" className="mx-[14px] mt-3 rounded-md bg-[#FBEDEA] px-3 py-2 text-[13px] font-medium text-[#B3402D]">{error}</p>}
+              {error && <p role="alert" className="mx-[12px] mt-3 rounded-md bg-[#FBEDEA] px-3 py-2 text-[13px] font-medium text-[#B3402D]">{error}</p>}
 
-              <div className="p-[10px]">
+              <div className="px-[10px] pb-[6px] pt-[7px]">
                 <button
                   type="submit"
-                  disabled={busy}
-                  className="flex h-[42px] w-full items-center justify-center gap-[10px] rounded-[10px] text-[15px] font-semibold text-white shadow-[0_3px_8px_rgba(4,58,20,0.35)] transition-[filter] hover:brightness-110 disabled:opacity-60"
+                  disabled={busy || couponBusy}
+                  className="flex h-[40px] w-full items-center justify-center gap-[12px] rounded-[10px] text-[15px] font-semibold text-white shadow-[0_3px_8px_rgba(4,58,20,0.35)] transition-[filter] hover:brightness-110 disabled:opacity-60"
                   style={{ background: GREEN_BTN }}
                 >
                   <Lock className="h-[20px] w-[20px]" strokeWidth={1.8} />
@@ -498,17 +569,17 @@ export default function CheckoutPage() {
                   {!busy && (
                     <>
                       <span className="h-[22px] w-px bg-white/50" />
-                      <span>{rupees(subtotal)}</span>
+                      <span>{rupees(payable)}</span>
                       <ArrowRight className="h-[20px] w-[20px]" strokeWidth={2.2} />
                     </>
                   )}
                 </button>
-                <p className="mt-1 text-center text-[11px] text-[#777]">{PREVIEW_MODE ? "Preview mode: no payment is taken" : "Secure payment by Razorpay (UPI, cards, netbanking)"}</p>
+                <p className="mt-[3px] text-center text-[10.5px] leading-tight text-[#777]">{PREVIEW_MODE ? "Preview mode: no payment is taken" : "Secure payment by Razorpay (UPI, cards, netbanking)"}</p>
               </div>
             </div>
 
             {/* ================= Right: guidelines ================= */}
-            <aside className="flex flex-col gap-[8px] lg:col-span-2 lg:grid lg:grid-cols-2 xl:col-span-1 xl:flex">
+            <aside className="flex flex-col gap-[8px] lg:col-span-2 lg:grid lg:grid-cols-2 xl:col-span-1 xl:flex xl:[contain:size]">
               <div className="overflow-hidden rounded-[14px] border bg-white shadow-[0_2px_8px_rgba(60,100,40,0.08)]" style={{ borderColor: BORDER }}>
                 <h2 className={`${poppins.className} flex items-center gap-[8px] bg-[#E9F1E3] px-[14px] py-[8px] text-[15px] font-semibold`} style={{ color: GREEN }}>
                   <Info className="h-[26px] w-[26px] shrink-0" strokeWidth={1.5} />
@@ -534,7 +605,7 @@ export default function CheckoutPage() {
                   <img src="/checkout-v2/leaf.png" alt="" className="h-[28px] w-[30px] shrink-0 object-contain mix-blend-multiply" />
                   Why Shop at Vaidhyashala?
                 </h2>
-                <ul className="px-[14px] pb-[150px] pt-[4px]">
+                <ul className="relative z-[1] px-[14px] pb-[110px] pt-[4px] xl:pb-[8px]">
                   {["Authentic Ayurvedic Formulations", "High-Quality, Natural Ingredients", "Safe & Trusted for Daily Use", "Secure & Multiple Payment Options", "Reliable & On-Time Delivery"].map((t) => (
                     <li key={t} className="flex items-center gap-[10px] py-[4px]">
                       <span className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
@@ -544,7 +615,7 @@ export default function CheckoutPage() {
                     </li>
                   ))}
                 </ul>
-                <img src="/checkout-v2/mortar.png" alt="" aria-hidden className="pointer-events-none absolute bottom-0 right-0 w-[80%] max-w-[250px] object-contain mix-blend-multiply [mask-image:linear-gradient(180deg,transparent_0%,#000_22%),linear-gradient(90deg,transparent_0%,#000_18%)] [mask-composite:intersect] [-webkit-mask-composite:source-in] [-webkit-mask-image:linear-gradient(180deg,transparent_0%,#000_22%),linear-gradient(90deg,transparent_0%,#000_18%)]" />
+                <img src="/checkout-v2/mortar.png" alt="" aria-hidden className="pointer-events-none absolute bottom-0 right-0 w-[80%] max-w-[250px] object-contain xl:w-[44%] mix-blend-multiply [mask-image:linear-gradient(180deg,transparent_0%,#000_22%),linear-gradient(90deg,transparent_0%,#000_18%)] [mask-composite:intersect] [-webkit-mask-composite:source-in] [-webkit-mask-image:linear-gradient(180deg,transparent_0%,#000_22%),linear-gradient(90deg,transparent_0%,#000_18%)]" />
               </div>
             </aside>
           </form>

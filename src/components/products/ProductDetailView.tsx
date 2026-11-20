@@ -38,7 +38,7 @@ import PlanConsultationModal from "@/components/consultation/PlanConsultationMod
 import ProductUsageGuide from "@/components/products/ProductUsageGuide";
 import ProductTestimonials from "@/components/products/ProductTestimonials";
 import ProductExplore from "@/components/products/ProductExplore";
-import { hind } from "@/lib/fonts";
+import { poppins } from "@/lib/fonts";
 import { firstSentence, ingredients, netQuantity, productExtras, type BenefitIcon } from "@/lib/productExtras";
 
 export interface ProductDetailViewProps {
@@ -130,7 +130,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
   const addToCart = () => {
     if (!hasPrice || !product?.id) return false;
-    add({ id: product.id, slug: product.slug || "", title, image: galleryImages[0], price, mrp: hasDiscount ? mrp : price }, qty);
+    add({ id: product.id, slug: product.slug || "", title, image: galleryImages[0], price, mrp: hasDiscount ? mrp : price, subtitle: extras.guideSubtitle || badge, size: qtyLabel }, qty);
     return true;
   };
   const onAdd = () => {
@@ -161,7 +161,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     key === "reviews" && extras.reviewCount ? `${label} (${extras.reviewCount})` : label;
 
   return (
-    <div className={`${hind.className} w-full bg-white text-[#252729]`}>
+    <div className={`${poppins.className} w-full bg-white text-[#252729]`}>
       <div className="mx-auto max-w-[1440px] px-4 pb-0 pt-2 sm:px-6 lg:px-12">
         {/* ============ Breadcrumb ============ */}
         <nav aria-label="Breadcrumb" className="flex h-[34px] flex-wrap items-center gap-x-3 text-[13.1px] text-[#1E1E22]">

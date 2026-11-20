@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { fetchProducts } from "@/lib/catalog";
 import { slugify } from "@/lib/builtinProducts";
-import { hind, poppins } from "@/lib/fonts";
+import { poppins } from "@/lib/fonts";
 
 export interface ExploreItem {
   title: string;
@@ -31,9 +31,9 @@ export const EXPLORE_ITEMS: ExploreItem[] = [
 /* Design grid: the card row spans 1416 units, mapped onto the page container. */
 const u = (n: number) => `calc(var(--eu) * ${n})`;
 const at = (left: number, top: number, extra: CSSProperties = {}): CSSProperties => ({ position: "absolute", left: u(left), top: u(top), ...extra });
-/** Text line whose glyphs are vertically centred on `cy` (Hind sits high, hence +2). */
+/** Text line whose glyphs are vertically centred on `cy` (Poppins sits high, hence +2). */
 const line = (left: number, cy: number, size: number, extra: CSSProperties = {}): CSSProperties =>
-  at(left, cy + 2 - size * 0.65, { fontSize: u(size), lineHeight: u(size * 1.3), whiteSpace: "nowrap", ...extra });
+  at(left, cy + 2 - size * 0.65, { fontSize: u(size * 0.87), lineHeight: u(size * 1.3), whiteSpace: "nowrap", ...extra });
 const cline = (cx: number, cy: number, size: number, extra: CSSProperties = {}): CSSProperties =>
   line(cx, cy, size, { transform: "translateX(-50%)", textAlign: "center", ...extra });
 
@@ -71,7 +71,7 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
   };
 
   return (
-    <section aria-labelledby="explore-title" className={`${hind.className} w-full bg-white`}>
+    <section aria-labelledby="explore-title" className={`${poppins.className} w-full bg-white`}>
       {/* ================= Desktop ================= */}
       <div className="mx-auto hidden max-w-[1440px] px-12 xl:block">
         <div style={{ containerType: "inline-size", width: "100%", margin: "0 auto" }}>
@@ -82,7 +82,7 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
             <span aria-hidden style={at(744, 28, { width: u(54), height: u(2), background: "#B1CD7C" })} />
             <span aria-hidden style={at(258, 65, { width: u(80), height: u(2), background: "linear-gradient(90deg,rgba(177,205,124,0),#8DB64F)" })} />
             <span aria-hidden style={at(1078, 65, { width: u(80), height: u(2), background: "linear-gradient(90deg,#8DB64F,rgba(177,205,124,0))" })} />
-            <h2 id="explore-title" className={`${poppins.className} font-bold`} style={cline(708, 66, 38, { color: INK, margin: 0 })}>
+            <h2 id="explore-title" className={`${poppins.className} font-semibold`} style={cline(708, 66, 38, { color: INK, margin: 0 })}>
               Explore More <span style={{ color: GREEN }}>Ayurvedic Essentials</span>
             </h2>
             <p style={cline(706, 104, 21, { color: "#2B2B2B", margin: 0 })}>Discover wellness products that complement your healing journey.</p>
@@ -111,7 +111,7 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
                       paddingRight: u(14),
                       borderRadius: u(13),
                       background: "#E8F1D6",
-                      fontSize: u(14.5),
+                      fontSize: u(12.62),
                       color: "#222",
                       whiteSpace: "nowrap",
                     })}
@@ -145,7 +145,7 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
                       alignItems: "center",
                       justifyContent: "center",
                       gap: u(6),
-                      fontSize: u(16),
+                      fontSize: u(13.92),
                     })}
                   >
                     <span style={{ paddingTop: u(2) }}>View Product</span>
@@ -160,7 +160,7 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
 
       {/* ================= Mobile / tablet ================= */}
       <div className="px-4 py-4 sm:px-6 xl:hidden">
-        <h2 className={`${poppins.className} text-center text-[26px] font-bold leading-tight`} style={{ color: INK }}>
+        <h2 className={`${poppins.className} text-center text-[26px] font-semibold leading-tight`} style={{ color: INK }}>
           Explore More <span style={{ color: GREEN }}>Ayurvedic Essentials</span>
         </h2>
         <p className="mt-1 text-center text-[16px] text-[#2B2B2B]">Discover wellness products that complement your healing journey.</p>

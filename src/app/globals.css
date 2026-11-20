@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-serif: var(--font-serif), "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-sans: var(--font-sans), Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --color-forest-deep: #07261D;
   --color-forest-primary: #0D3226;
   --color-forest-hover: #164D3C;
@@ -25,22 +25,22 @@
 body {
   background-color: #FBF9F5;
   color: #62645F;
-  font-family: var(--font-sans), Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 .font-serif {
-  font-family: var(--font-serif), "Playfair Display", Georgia, Cambria, "Times New Roman", Times, serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .font-sans {
-  font-family: var(--font-sans), Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 /* Typography System Utility Classes */
 .hero-h1 {
-  font-family: var(--font-serif), "Playfair Display", Georgia, serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: clamp(34px, 5vw, 52px);
   font-weight: 400;
   line-height: 1.08;
@@ -49,7 +49,7 @@ body {
 }
 
 .section-h2 {
-  font-family: var(--font-serif), "Playfair Display", Georgia, serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: clamp(29px, 4vw, 40px);
   font-weight: 400;
   line-height: 1.15;
@@ -58,7 +58,7 @@ body {
 }
 
 .card-h3 {
-  font-family: var(--font-serif), "Playfair Display", Georgia, serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: clamp(20px, 2.5vw, 24px);
   font-weight: 400;
   line-height: 1.2;
@@ -66,7 +66,7 @@ body {
 }
 
 .eyebrow-label {
-  font-family: var(--font-sans), Lato, sans-serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
@@ -75,7 +75,7 @@ body {
 }
 
 .body-paragraph {
-  font-family: var(--font-sans), Lato, sans-serif;
+  font-family: var(--font-poppins), Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 15.5px;
   font-weight: 400;
   line-height: 1.6;
@@ -122,13 +122,6 @@ html.is-scrolling::-webkit-scrollbar-thumb:hover {
 div[data-nextjs-toast],
 nextjs-portal {
   display: none !important;
-}
-
-/* Careers section: force Lato on every element, including the shared navbar,
-   footer and heading utility classes rendered inside /careers routes. */
-.careers-lato,
-.careers-lato * {
-  font-family: var(--careers-font), Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
 /* Footer logo: a light band sweeps across, then rests before the next pass */

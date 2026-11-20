@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type CSSProperties, type ReactNode } from "react";
-import { hind } from "@/lib/fonts";
+import { poppins } from "@/lib/fonts";
 import PlanConsultationModal from "@/components/consultation/PlanConsultationModal";
 
 /*
@@ -18,13 +18,13 @@ const box = (left: number, top: number, extra: CSSProperties = {}): CSSPropertie
   top: u(top),
   ...extra,
 });
-/** A single text line whose glyphs are vertically centred on `cy` (Hind sits high in its line box, hence the +3). */
+/** A single text line whose glyphs are vertically centred on `cy` (Poppins sits high in its line box, hence the +3). */
 const line = (left: number, cy: number, size: number, lh = size * 1.3): CSSProperties =>
-  box(left, cy + 3 - lh / 2, { fontSize: u(size), lineHeight: u(lh), whiteSpace: "nowrap" });
+  box(left, cy + 3 - lh / 2, { fontSize: u(size * 0.87), lineHeight: u(lh), whiteSpace: "nowrap" });
 
-const TEXT = "#C9D6EC";
-const GOLD = "#CDB54C";
-const GOLD_LINE = "#C6AD39";
+const TEXT = "#F6F8F5";
+const GOLD = "#F8D65F";
+const GOLD_LINE = "#F0C640";
 
 const CONTAINER = "mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-12";
 const STAGE: CSSProperties = { containerType: "inline-size" };
@@ -93,7 +93,7 @@ const legalLinks = [
 
 /* eslint-disable @next/next/no-img-element -- fixed-size decorative crops; next/image adds nothing here */
 function Img({ src, style, alt = "" }: { src: string; style: CSSProperties; alt?: string }) {
-  return <img src={src} alt={alt} draggable={false} style={{ display: "block", ...style }} />;
+  return <img src={src} alt={alt} draggable={false} style={{ display: "block", mixBlendMode: "lighten", ...style }} />;
 }
 
 function Chevron({ double = false, style }: { double?: boolean; style: CSSProperties }) {
@@ -140,7 +140,7 @@ function DesktopFooter({ onBook }: { onBook: () => void }) {
   return (
     <div className="hidden lg:block" style={{ color: TEXT }}>
       {/* ---------------- 1. Top bar ---------------- */}
-      <div className="relative w-full" style={{ background: "linear-gradient(90deg,#01160a 0%,#001d0b 45%,#00150a 100%)" }}>
+      <div className="relative w-full" style={{ background: "linear-gradient(90deg,#001b0b 0%,#00250d 18%,#00200d 38%,#001d0c 55%,#001a0b 78%,#001a0b 100%)" }}>
         <div className={CONTAINER}>
           <div style={STAGE}>
             <div className="relative" style={{ ...FU, height: u(128) }}>
@@ -170,7 +170,7 @@ function DesktopFooter({ onBook }: { onBook: () => void }) {
                   width: u(404),
                   height: u(67),
                   borderRadius: u(12),
-                  background: "linear-gradient(180deg,#CDBE8E 0%,#BFA866 50%,#B39342 100%)",
+                  background: "linear-gradient(180deg,#F9D98C 0%,#F7CF6E 50%,#EBB64C 100%)",
                   boxShadow: `inset 0 ${u(1)} 0 rgba(255,245,210,0.55), 0 ${u(2)} ${u(6)} rgba(0,0,0,0.35)`,
                   color: "#0E1B0E",
                   border: "none",
@@ -216,7 +216,7 @@ function DesktopFooter({ onBook }: { onBook: () => void }) {
                 style={box(-85, 126, {
                   width: u(2576),
                   height: u(2),
-                  background: "linear-gradient(90deg, rgba(118,140,125,0.35) 0%, rgba(118,140,125,0.75) 50%, rgba(118,140,125,0.25) 82%, rgba(0,0,0,0) 100%)",
+                  background: "linear-gradient(90deg,#2b5316 0%,#7f9a45 14%,#c5cc70 30%,#c9d5bc 50%,#a2bc64 72%,#5d6618 90%,#16360e 100%)", boxShadow: "0 0 6px rgba(190,205,120,0.35)",
                 })}
               />
               <Img src="/footer-v3/topswoosh.png" style={box(1965, 97, { width: u(526), height: u(34), zIndex: 1 })} />
@@ -228,7 +228,7 @@ function DesktopFooter({ onBook }: { onBook: () => void }) {
       {/* ---------------- 2. Main five columns ---------------- */}
       <div
         className="relative w-full"
-        style={{ background: "radial-gradient(ellipse 60% 90% at 50% 40%, #001b0c 0%, #00170b 55%, #00130a 100%)" }}
+        style={{ background: "radial-gradient(ellipse 22% 60% at 0% 100%, rgba(0,58,16,0.75) 0%, rgba(0,58,16,0) 100%), radial-gradient(ellipse 22% 60% at 100% 100%, rgba(0,58,16,0.75) 0%, rgba(0,58,16,0) 100%), linear-gradient(90deg,#00210e 0%,#001d0c 14%,#001a0b 45%,#001c0c 70%,#00200d 100%)" }}
       >
         <div className={CONTAINER}>
           <div style={STAGE}>
@@ -383,14 +383,14 @@ function DesktopFooter({ onBook }: { onBook: () => void }) {
               maxHeight: "calc(1440px / 2576 * 80)",
               backgroundImage: "url(/footer-v3/ribbon.png?v=2)",
               backgroundSize: "100% 100%",
-              backgroundColor: "#00150a",
+              backgroundColor: "#001d0c",
             }}
           />
         </div>
       </div>
 
       {/* ---------------- 3. Bottom bar ---------------- */}
-      <div className="w-full" style={{ background: "linear-gradient(180deg,#001309 0%,#011108 100%)" }}>
+      <div className="w-full" style={{ background: "linear-gradient(180deg,#00180a 0%,#001a0b 100%)" }}>
         <div className={CONTAINER}>
           <div style={STAGE}>
             <div className="relative" style={{ ...FU, height: u(130) }}>
@@ -421,7 +421,7 @@ function DesktopFooter({ onBook }: { onBook: () => void }) {
               >
                 <span style={line(18, 32, 31.7)}>
                   enCodency
-                  <sup style={{ fontSize: u(12), fontWeight: 400, verticalAlign: "top", position: "relative", top: u(-4), marginLeft: u(1) }}>®</sup>
+                  <sup style={{ fontSize: u(10.44), fontWeight: 400, verticalAlign: "top", position: "relative", top: u(-4), marginLeft: u(1) }}>®</sup>
                 </span>
               </a>
             </div>
@@ -464,7 +464,7 @@ function MobileFooter({ onBook }: { onBook: () => void }) {
           type="button"
           onClick={onBook}
           className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-[15px] font-semibold text-[#0E1B0E] sm:w-auto sm:px-6"
-          style={{ background: "linear-gradient(180deg,#CDBE8E 0%,#BFA866 50%,#B39342 100%)" }}
+          style={{ background: "linear-gradient(180deg,#F9D98C 0%,#F7CF6E 50%,#EBB64C 100%)" }}
         >
           Book a Consultation →
         </button>
@@ -579,7 +579,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className={`${hind.className} relative w-full select-none overflow-hidden`} style={{ background: "#00170b" }}>
+      <footer className={`${poppins.className} relative w-full select-none overflow-hidden`} style={{ background: "#001a0b" }}>
         <DesktopFooter onBook={open} />
         <MobileFooter onBook={open} />
       </footer>

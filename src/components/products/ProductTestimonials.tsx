@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { MapPin, Star } from "lucide-react";
-import { hind, poppins } from "@/lib/fonts";
+import { poppins } from "@/lib/fonts";
 
 export interface ProductTestimonial {
   name: string;
@@ -32,9 +32,9 @@ export const SAMPLE_TESTIMONIALS: ProductTestimonial[] = [
 /* Design grid: the card row spans 1344 units, mapped onto the page container. */
 const u = (n: number) => `calc(var(--tu) * ${n})`;
 const at = (left: number, top: number, extra: CSSProperties = {}): CSSProperties => ({ position: "absolute", left: u(left), top: u(top), ...extra });
-/** Text line whose glyphs are vertically centred on `cy` (Hind sits high, hence +2). */
+/** Text line whose glyphs are vertically centred on `cy` (Poppins sits high, hence +2). */
 const line = (left: number, cy: number, size: number, extra: CSSProperties = {}): CSSProperties =>
-  at(left, cy + 2 - size * 0.65, { fontSize: u(size), lineHeight: u(size * 1.3), whiteSpace: "nowrap", ...extra });
+  at(left, cy + 2 - size * 0.65, { fontSize: u(size * 0.87), lineHeight: u(size * 1.3), whiteSpace: "nowrap", ...extra });
 /** Decorations sit at the screen edges, outside the container: scale them with the viewport. */
 const dv = (n: number) => `min(calc(100vw * ${n} / 1474), ${((n * 1440) / 1474).toFixed(1)}px)`;
 
@@ -114,7 +114,7 @@ function Card({ t, left, top = 136 }: { t: ProductTestimonial; left: number; top
           borderRadius: "50%",
           background: "#566704",
           color: "#fff",
-          fontSize: u(17),
+          fontSize: u(14.79),
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -142,7 +142,7 @@ function Card({ t, left, top = 136 }: { t: ProductTestimonial; left: number; top
         style={at(27, 81.4 + 2, {
           margin: 0,
           width: u(222),
-          fontSize: u(18.1),
+          fontSize: u(15.75),
           lineHeight: u(19.2),
           color: "#fff",
           display: "-webkit-box",
@@ -206,7 +206,7 @@ export default function ProductTestimonials({ items = SAMPLE_TESTIMONIALS }: { i
   return (
     <section
       aria-labelledby="product-testimonials-title"
-      className={`${hind.className} relative mt-[16px] w-full overflow-hidden`}
+      className={`${poppins.className} relative mt-[16px] w-full overflow-hidden`}
       style={{ background: "radial-gradient(ellipse 70% 90% at 50% 25%, #00290E 0%, #00220B 55%, #001A08 100%)" }}
     >
       {/* Edge decorations (desktop) */}
@@ -222,7 +222,7 @@ export default function ProductTestimonials({ items = SAMPLE_TESTIMONIALS }: { i
             <span aria-hidden style={at(948, 68, { width: u(134), height: u(2), background: "linear-gradient(90deg, #FFE504 0%, rgba(248,205,15,0) 100%)" })} />
             <h2
               id="product-testimonials-title"
-              className={`${poppins.className} font-bold`}
+              className={`${poppins.className} font-semibold`}
               style={line(668, 55, 38, { transform: "translateX(-50%)", color: "#fff", margin: 0, letterSpacing: "0.005em" })}
             >
               Customer <span style={{ color: GOLD }}>Testimonials</span>
@@ -268,7 +268,7 @@ export default function ProductTestimonials({ items = SAMPLE_TESTIMONIALS }: { i
 
       {/* ================= Mobile / tablet ================= */}
       <div className="px-4 py-6 text-white sm:px-6 xl:hidden">
-        <h2 className={`${poppins.className} text-center text-[28px] font-bold leading-tight`}>
+        <h2 className={`${poppins.className} text-center text-[28px] font-semibold leading-tight`}>
           Customer <span style={{ color: GOLD }}>Testimonials</span>
         </h2>
         <p className="mt-1 text-center text-[17px]">Trusted by Our Wellness Community</p>
