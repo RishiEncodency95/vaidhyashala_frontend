@@ -32,6 +32,8 @@ export interface Product {
     usageNotes?: string;
     imageAlt?: string;
     gallery: string[];
+    /** Uploaded video or YouTube link, shown after the pictures */
+    video?: string;
   };
 }
 
@@ -79,6 +81,7 @@ export const fromApi = (p: ApiProduct): Product => {
       usageNotes: p.usageNotes,
       imageAlt: p.imageAlt,
       gallery,
+      video: assetUrl(p.video?.trim()),
     },
   };
 };

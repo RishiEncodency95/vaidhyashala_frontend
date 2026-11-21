@@ -21,6 +21,7 @@ import {
   MessageCircleMore,
   Milk,
   Minus,
+  Play,
   Plus,
   RefreshCw,
   ShieldCheck,
@@ -61,8 +62,14 @@ export interface ProductDetailViewProps {
     imageAlt?: string;
     /** Main image first, then the extra images */
     images?: string[];
+    /** Uploaded video file or a YouTube link; shown after the pictures */
+    video?: string;
   };
 }
+
+/** The YouTube video id of a youtube.com / youtu.be link, or "" */
+const youTubeId = (url: string) =>
+  url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([\w-]{11})/)?.[1] ?? "";
 
 /* Palette sampled from the design */
 const GREEN = "#0A3314";
@@ -104,6 +111,12 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const galleryImages = providedImages.length
     ? providedImages
     : ["/product/vaidhyashala_product_page_images/14_product_guidance_consultation.webp"];
+  // The video (when the admin added one) comes after the pictures, as the last thumbnail
+  const video = product?.video?.trim() || "";
+  const ytId = video ? youTubeId(video) : "";
+  const mediaCount = galleryImages.length + (video ? 1 : 0);
+  const videoIndex = video ? galleryImages.length : -1;
+  const showingVideo = activeImageIndex === videoIndex;
 
   const title = product?.title || "Product";
   const category = product?.category || "";
@@ -152,7 +165,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   };
 
   const scrollThumbs = (dir: 1 | -1) => {
-    const next = Math.min(galleryImages.length - 1, Math.max(0, activeImageIndex + dir));
+    const next = Math.min(mediaCount - 1, Math.max(0, activeImageIndex + dir));
     setActiveImageIndex(next);
     thumbsRef.current?.children[next]?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   };
@@ -216,6 +229,31 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                       </span>
                     </button>
                   ))}
+                  {video && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveImageIndex(videoIndex)}
+                      aria-label="Play product video"
+                      className={`relative h-[56px] w-[56px] shrink-0 overflow-hidden rounded-[10px] bg-[#FBF3E6] transition-all ${
+                        showingVideo
+                          ? "border-2 border-[#163217] p-[3px] shadow-[0_2px_6px_rgba(0,0,0,0.12)]"
+                          : "border border-[#ECE8E0] opacity-90 hover:opacity-100"
+                      }`}
+                    >
+                      <span className="relative block h-full w-full overflow-hidden rounded-[7px] bg-[#1d2a1f]">
+                        {ytId ? (
+                          <img src={`https://i.ytimg.com/vi/${ytId}/mqdefault.jpg`} alt="" className="h-full w-full object-cover" />
+                        ) : (
+                          <video src={`${video}#t=0.5`} muted playsInline preload="metadata" className="pointer-events-none h-full w-full object-cover" />
+                        )}
+                        <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                          <span className="flex h-[24px] w-[24px] items-center justify-center rounded-full bg-white/95 shadow-[0_1px_4px_rgba(0,0,0,0.3)]">
+                            <Play className="ml-[2px] h-[11px] w-[11px] fill-[#0B5924] text-[#0B5924]" />
+                          </span>
+                        </span>
+                      </span>
+                    </button>
+                  )}
                 </div>
                 <button
                   type="button"
@@ -226,15 +264,42 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   <ChevronDown className="h-[22px] w-[22px]" strokeWidth={2} />
                 </button>
               </div>
-              <div className="relative aspect-[384/385] w-full self-start overflow-hidden rounded-[16px] bg-[#F7DDBA] sm:w-[384px] sm:shrink-0">
-                <CmsImage
-                  fill
-                  priority
-                  sizes="(min-width: 640px) 384px, 100vw"
-                  src={galleryImages[activeImageIndex] ?? galleryImages[0]}
-                  alt={imageAlt}
-                  className="object-cover object-center"
-                />
+              <div
+                className={`relative aspect-[384/385] w-full self-start overflow-hidden rounded-[16px] sm:w-[384px] sm:shrink-0 ${
+                  showingVideo ? "bg-black" : "bg-[#F7DDBA]"
+                }`}
+              >
+                {showingVideo ? (
+                  ytId ? (
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&playsinline=1`}
+                      title={`${title} video`}
+                      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                      allowFullScreen
+                      className="absolute inset-0 h-full w-full border-0"
+                    />
+                  ) : (
+                    <video
+                      key={video}
+                      src={video}
+                      controls
+                      autoPlay
+                      playsInline
+                      preload="metadata"
+                      aria-label={`${title} video`}
+                      className="absolute inset-0 h-full w-full object-contain"
+                    />
+                  )
+                ) : (
+                  <CmsImage
+                    fill
+                    priority
+                    sizes="(min-width: 640px) 384px, 100vw"
+                    src={galleryImages[activeImageIndex] ?? galleryImages[0]}
+                    alt={imageAlt}
+                    className="object-cover object-center"
+                  />
+                )}
               </div>
             </div>
 

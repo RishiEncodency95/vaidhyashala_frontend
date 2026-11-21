@@ -27,6 +27,7 @@ export interface ApiProduct {
   galleryImage1?: string;
   galleryImage2?: string;
   galleryImage3?: string;
+  video?: string;
 }
 
 export interface ApiTestimonial {

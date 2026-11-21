@@ -65,6 +65,7 @@ export default function ProductDetailPage({ slug }: { slug: string }) {
         usageNotes: product.detail?.usageNotes,
         imageAlt: product.detail?.imageAlt,
         images: product.detail?.gallery ?? [product.imageSrc],
+        video: product.detail?.video,
       }}
     />
   );
