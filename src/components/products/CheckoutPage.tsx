@@ -99,30 +99,30 @@ const STRIP = [
 
 const inputBox =
   "flex h-[36px] items-center gap-[8px] rounded-[8px] border border-[#CFCFCF] bg-white px-[10px] text-[#6C6C6C] focus-within:border-[#0B5A22] focus-within:ring-1 focus-within:ring-[#0B5A22]/30";
-const inputEl = "min-w-0 flex-1 bg-transparent text-[13px] text-[#111] outline-none placeholder:text-[#8A8A8A]";
+const inputEl = "min-w-0 flex-1 bg-transparent text-[13px] font-medium text-[#111] outline-none placeholder:text-[#8A8A8A] placeholder:font-normal";
 
 /* eslint-disable @next/next/no-img-element -- small fixed-size design crops */
 
 function Section({ n, title, note, children }: { n: number; title: string; note?: string; children: ReactNode }) {
   return (
-    <section className="rounded-[12px] border bg-white px-[14px] pb-[10px] pt-[8px] shadow-[0_2px_8px_rgba(60,100,40,0.06)]" style={{ borderColor: BORDER }}>
-      <h2 className={`${poppins.className} flex items-center gap-[10px] text-[16.5px] font-semibold`} style={{ color: GREEN }}>
-        <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full text-[14.5px] font-bold text-white" style={{ background: "#074619" }}>
+    <section className="rounded-[12px] border bg-white px-[14px] pb-[12px] pt-[10px] shadow-[0_2px_8px_rgba(60,100,40,0.06)]" style={{ borderColor: BORDER }}>
+      <h2 className={`${poppins.className} flex items-center gap-[8px] text-[15.5px] font-semibold`} style={{ color: GREEN }}>
+        <span className="flex h-[24px] w-[24px] shrink-0 items-center justify-center rounded-full text-[13px] font-semibold text-white" style={{ background: "#074619" }}>
           {n}
         </span>
         <span>
           {title}
-          {note && <span className="ml-1.5 text-[14px] font-normal text-[#555]">{note}</span>}
+          {note && <span className="ml-1.5 text-[12.5px] font-medium text-[#666]">{note}</span>}
         </span>
       </h2>
-      <div className="mt-[6px]">{children}</div>
+      <div className="mt-[8px]">{children}</div>
     </section>
   );
 }
 
 function Label({ children, required = false, htmlFor }: { children: ReactNode; required?: boolean; htmlFor?: string }) {
   return (
-    <label htmlFor={htmlFor} className="mb-[2px] block text-[12.5px] font-bold text-[#1A1A1A]">
+    <label htmlFor={htmlFor} className="mb-[3px] block text-[12px] font-medium text-[#2A2A2A]">
       {children}
       {required && <span className="text-[#D6362B]"> *</span>}
     </label>
@@ -282,46 +282,46 @@ export default function CheckoutPage() {
     <div className={`${poppins.className} w-full bg-white text-[#1A1A1A]`}>
       {/* ============ Banner ============ */}
       <div className="w-full bg-[#EEF4D6]">
-      <div className="relative h-[136px] w-full max-w-[1440px] overflow-hidden bg-[url(/checkout-v2/banner-bg.jpg)] bg-[length:100%_100%] bg-center sm:h-[170px]">
-        <div className="relative flex h-full flex-col items-center justify-center text-center">
-          <p className={`${poppins.className} text-[20px] font-normal leading-tight sm:text-[27px]`} >
-            Pure Ayurveda for a <b className="font-bold italic">Healthier You</b>
-          </p>
-          <p className="mt-0.5 flex items-center gap-3 text-[12px] text-[#222] sm:mt-1 sm:text-[14.5px]" style={{ textShadow: TEXT_GLOW }}>
-            <span className="hidden h-px w-[60px] bg-[#C9A640] sm:block" />
-            Authentic <span className="text-[#555]">|</span> Natural <span className="text-[#555]">|</span> Effective
-            <span className="hidden h-px w-[60px] bg-[#C9A640] sm:block" />
-          </p>
+        <div className="relative h-[130px] w-full max-w-[1440px] overflow-hidden bg-[url(/checkout-v2/banner-bg.jpg)] bg-[length:100%_100%] bg-center sm:h-[155px]">
+          <div className="relative flex h-full flex-col items-center justify-center text-center">
+            <p className={`${poppins.className} text-[19px] font-medium leading-tight text-[#1A381F] sm:text-[25px]`}>
+              Pure Ayurveda for a <span className="font-semibold italic text-[#084516]">Healthier You</span>
+            </p>
+            <p className="mt-1 flex items-center gap-2.5 text-[11.5px] font-medium text-[#333] sm:text-[13.5px]" style={{ textShadow: TEXT_GLOW }}>
+              <span className="hidden h-px w-[50px] bg-[#C9A640] sm:block" />
+              Authentic <span className="text-[#777]">|</span> Natural <span className="text-[#777]">|</span> Effective
+              <span className="hidden h-px w-[50px] bg-[#C9A640] sm:block" />
+            </p>
+          </div>
         </div>
       </div>
-      </div>
 
-      <div className="mx-auto min-h-[40vh] max-w-[1440px] px-4 pb-4 pt-2 sm:pt-3 sm:px-6 lg:px-12">
+      <div className="mx-auto min-h-[40vh] max-w-[1440px] px-4 pb-4 pt-2 sm:px-6 sm:pt-3 lg:px-12">
         {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="flex h-[28px] items-center gap-[10px] text-[13px]">
-          <House className="h-[17px] w-[17px]" strokeWidth={1.9} />
+        <nav aria-label="Breadcrumb" className="flex h-[28px] items-center gap-[8px] text-[12.5px] font-medium text-[#555]">
+          <House className="h-[16px] w-[16px] text-[#444]" strokeWidth={1.8} />
           <Link href="/" className="hover:text-[#0B5A22]">Home</Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="font-bold">Checkout</span>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <span className="font-semibold text-[#111]">Checkout</span>
         </nav>
 
         {/* Title */}
-        <div className="mt-2 flex items-center gap-[12px]">
-          <ShoppingCart className="h-[34px] w-[38px] shrink-0 text-[#0A5A22]" strokeWidth={1.7} />
+        <div className="mt-2 flex items-center gap-[10px]">
+          <ShoppingCart className="h-[28px] w-[28px] shrink-0 text-[#0A5A22]" strokeWidth={1.8} />
           <div className="min-w-0">
-            <div className="flex items-center gap-[14px]">
-              <h1 className={`${poppins.className} text-[28px] font-medium leading-tight tracking-[-0.01em]`} style={{ color: GREEN }}>Checkout</h1>
+            <div className="flex items-center gap-[12px]">
+              <h1 className={`${poppins.className} text-[24px] sm:text-[26px] font-semibold leading-tight tracking-[-0.01em]`} style={{ color: GREEN }}>Checkout</h1>
               <span className="hidden h-[2px] w-[240px] bg-[linear-gradient(90deg,#7FA96B,rgba(127,169,107,0))] sm:block" />
             </div>
-            <p className="mt-1 text-[14px] leading-snug text-[#4A4A4A]">
-              Complete your order, add delivery details and <span className="font-semibold text-[#222]">proceed</span> to secure payment.
+            <p className="mt-0.5 text-[13px] font-medium leading-snug text-[#555] sm:text-[13.5px]">
+              Complete your order, add delivery details and proceed to secure payment.
             </p>
           </div>
         </div>
 
         {items.length === 0 ? (
-          <p className="mt-8 text-[15px]">
-            Your cart is empty. <Link href="/products" className="font-semibold underline">Browse products</Link>
+          <p className="mt-8 text-[14.5px] font-medium text-[#444]">
+            Your cart is empty. <Link href="/products" className="font-semibold text-[#0B5A22] underline">Browse products</Link>
           </p>
         ) : (
           <form onSubmit={pay} className="mt-[8px] grid grid-cols-1 items-start gap-[12px] lg:grid-cols-[692fr_461fr] lg:items-stretch xl:grid-cols-[692fr_461fr_303fr]">
@@ -332,22 +332,22 @@ export default function CheckoutPage() {
                   <div>
                     <Label required htmlFor="co-name">Full Name</Label>
                     <div className={inputBox}>
-                      <User className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                      <User className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                       <input id="co-name" required className={inputEl} placeholder="Enter your full name" value={f.name} onChange={set("name")} maxLength={100} autoComplete="name" />
                     </div>
                   </div>
                   <div>
                     <Label required htmlFor="co-email">Email Address</Label>
                     <div className={inputBox}>
-                      <Mail className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                      <Mail className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                       <input id="co-email" required type="email" className={inputEl} placeholder="Enter your email address" value={f.email} onChange={set("email")} maxLength={200} autoComplete="email" />
                     </div>
                   </div>
                   <div>
                     <Label required htmlFor="co-mobile">Mobile Number</Label>
                     <div className={inputBox}>
-                      <Phone className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
-                      <span className="text-[14px] font-bold text-[#111]">+91</span>
+                      <Phone className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                      <span className="text-[13px] font-normal text-[#555]">+91</span>
                       <input
                         id="co-mobile"
                         required
@@ -370,7 +370,7 @@ export default function CheckoutPage() {
                   <div>
                     <Label required htmlFor="co-pin">PIN Code</Label>
                     <div className={inputBox}>
-                        <MapPin className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                        <MapPin className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                         <input
                           id="co-pin"
                           required
@@ -385,12 +385,12 @@ export default function CheckoutPage() {
                         />
                     </div>
                   </div>
-                  <div role="radiogroup" aria-label="Delivery type" className="flex flex-wrap items-center gap-x-[20px] gap-y-1 pb-[8px] text-[12.5px] text-[#1A1A1A] sm:flex-nowrap sm:whitespace-nowrap">
+                  <div role="radiogroup" aria-label="Delivery type" className="flex flex-wrap items-center gap-x-[18px] gap-y-1 pb-[6px] text-[12px] font-medium text-[#333] sm:flex-nowrap sm:whitespace-nowrap">
                     {([["home", "Home / Office Delivery"], ["same", "Same as Contact"]] as const).map(([k, label]) => (
-                      <label key={k} className="flex cursor-pointer items-center gap-[8px]">
+                      <label key={k} className="flex cursor-pointer items-center gap-[6px]">
                         <input type="radio" name="delivery" checked={delivery === k} onChange={() => setDelivery(k)} className="peer sr-only" />
-                        <span className="flex h-[20px] w-[20px] items-center justify-center rounded-full border-2 border-[#B8B8B8] peer-checked:border-[#074619] peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 [&>i]:scale-0 peer-checked:[&>i]:scale-100">
-                          <i className="h-[10px] w-[10px] rounded-full bg-[#074619] transition-transform" />
+                        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-[#B8B8B8] peer-checked:border-[#074619] peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 [&>i]:scale-0 peer-checked:[&>i]:scale-100">
+                          <i className="h-[9px] w-[9px] rounded-full bg-[#074619] transition-transform" />
                         </span>
                         {label}
                       </label>
@@ -401,7 +401,7 @@ export default function CheckoutPage() {
                 <div className="mt-[6px]">
                   <Label required htmlFor="co-address">Address</Label>
                   <div className={inputBox}>
-                    <House className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                    <House className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                     <input id="co-address" required className={inputEl} placeholder="House / Flat No., Building, Street, Area" value={f.line1} onChange={set("line1")} maxLength={200} autoComplete="address-line1" />
                   </div>
                 </div>
@@ -410,21 +410,21 @@ export default function CheckoutPage() {
                   <div>
                     <Label required htmlFor="co-city">City / Town</Label>
                     <div className={inputBox}>
-                      <Building2 className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                      <Building2 className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                       <input id="co-city" required list="co-cities" className={inputEl} placeholder="Select city / town" value={f.city} onChange={set("city")} maxLength={100} autoComplete="address-level2" />
                       <datalist id="co-cities">{CITIES.map((c) => <option key={c} value={c} />)}</datalist>
-                      <ChevronDown className="h-[18px] w-[18px] shrink-0 text-[#111]" />
+                      <ChevronDown className="h-[16px] w-[16px] shrink-0 text-[#444]" />
                     </div>
                   </div>
                   <div>
                     <Label required htmlFor="co-state">State</Label>
                     <div className={`${inputBox} relative`}>
-                      <MapPin className="h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                      <MapPin className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                       <select id="co-state" required className={`${inputEl} appearance-none ${f.state ? "" : "text-[#8A8A8A]"}`} value={f.state} onChange={set("state")} autoComplete="address-level1">
                         <option value="">Select state</option>
                         {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
                       </select>
-                      <ChevronDown className="pointer-events-none h-[18px] w-[18px] shrink-0 text-[#111]" />
+                      <ChevronDown className="pointer-events-none h-[16px] w-[16px] shrink-0 text-[#444]" />
                     </div>
                   </div>
                 </div>
@@ -432,7 +432,7 @@ export default function CheckoutPage() {
 
               <Section n={3} title="Order Notes" note="(Optional)">
                 <div className="flex items-start gap-[10px] rounded-[8px] border border-[#CFCFCF] bg-white px-[10px] py-[7px] focus-within:border-[#0B5A22] focus-within:ring-1 focus-within:ring-[#0B5A22]/30">
-                  <FileText className="mt-[2px] h-[19px] w-[19px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+                  <FileText className="mt-[2px] h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
                   <textarea
                     aria-label="Order notes"
                     rows={1}
@@ -445,76 +445,76 @@ export default function CheckoutPage() {
                 </div>
               </Section>
 
-              <ul className="mt-[0px] grid grid-cols-2 gap-y-2 rounded-[10px] bg-[#F1F8E6] px-[12px] py-[7px] sm:grid-cols-4">
+              <ul className="mt-[2px] grid grid-cols-2 gap-y-2 rounded-[10px] bg-[#F1F8E6] px-[12px] py-[8px] sm:grid-cols-4">
                 {STRIP.map(({ icon: Icon, a, b }, i) => (
-                  <li key={a} className={`flex items-center gap-[10px] ${i ? "sm:border-l sm:border-[#D3E2C6] sm:pl-[8px]" : ""}`}>
-                    <Icon className="h-[26px] w-[26px] shrink-0 text-[#1F5F2A]" strokeWidth={1.5} />
-                    <span className="whitespace-nowrap text-[11.5px] leading-[15px] text-[#222]">{a}<br />{b}</span>
+                  <li key={a} className={`flex items-center gap-[8px] ${i ? "sm:border-l sm:border-[#D3E2C6] sm:pl-[8px]" : ""}`}>
+                    <Icon className="h-[22px] w-[22px] shrink-0 text-[#1F5F2A]" strokeWidth={1.6} />
+                    <span className="whitespace-nowrap text-[11px] font-medium leading-[14px] text-[#24421E]">{a}<br />{b}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
             {/* ================= Middle: summary ================= */}
-            <div className="flex flex-col overflow-hidden rounded-[14px] border bg-white shadow-[0_3px_12px_rgba(60,100,40,0.12)] lg:[contain:size]" style={{ borderColor: BORDER }}>
-              <h2 className={`${poppins.className} flex h-[44px] items-center gap-[12px] px-[16px] text-[18px] font-semibold text-white`} style={{ background: "linear-gradient(90deg,#063E19,#004A17 55%,#004016)" }}>
-                <ShoppingBag className="h-[24px] w-[24px]" strokeWidth={1.7} />
-                <span>Order Summary <span className="text-[15px] font-normal">({count} {count === 1 ? "Item" : "Items"})</span></span>
+            <div className="flex flex-col overflow-hidden rounded-[14px] border bg-white shadow-[0_3px_12px_rgba(60,100,40,0.1)] lg:[contain:size]" style={{ borderColor: BORDER }}>
+              <h2 className={`${poppins.className} flex h-[42px] items-center gap-[10px] px-[14px] text-[16px] font-semibold text-white`} style={{ background: "linear-gradient(90deg,#063E19,#004A17 55%,#004016)" }}>
+                <ShoppingBag className="h-[20px] w-[20px]" strokeWidth={1.8} />
+                <span>Order Summary <span className="text-[13px] font-medium text-white/80">({count} {count === 1 ? "Item" : "Items"})</span></span>
               </h2>
 
               <ul className="px-[12px] lg:min-h-[64px] lg:flex-1 lg:overflow-y-auto">
                 {items.map((i) => (
-                  <li key={i.id} className="flex items-center gap-[12px] border-b border-[#E7EEE0] py-[7px]">
-                    <span className="relative h-[48px] w-[48px] shrink-0 overflow-hidden rounded-[8px] bg-[#FBF3E6]">
+                  <li key={i.id} className="flex items-center gap-[10px] border-b border-[#E7EEE0] py-[8px]">
+                    <span className="relative h-[46px] w-[46px] shrink-0 overflow-hidden rounded-[8px] bg-[#FBF3E6]">
                       <CmsImage fill sizes="56px" src={i.image} alt="" className="object-cover" />
                     </span>
-                    <span className="min-w-0 flex-1 leading-[1.25]">
-                      <b className="block truncate text-[13.5px] font-semibold text-[#111]">{i.title}</b>
-                      {i.subtitle && <span className="block truncate text-[11.5px] text-[#444]">{i.subtitle}</span>}
-                      {i.size && <span className="block text-[11.5px] text-[#444]">{i.size}</span>}
+                    <span className="min-w-0 flex-1 leading-[1.3]">
+                      <span className="block truncate text-[13px] font-semibold text-[#111]">{i.title}</span>
+                      {i.subtitle && <span className="block truncate text-[11px] font-medium text-[#666]">{i.subtitle}</span>}
+                      {i.size && <span className="block text-[11px] font-medium text-[#666]">{i.size}</span>}
                     </span>
                     <span className="inline-flex h-[26px] shrink-0 items-center rounded-[7px] border border-[#BFD3B4] bg-white">
-                      <button type="button" aria-label={`Decrease ${i.title}`} onClick={() => setQty(i.id, i.qty - 1)} className="flex h-full items-center px-[7px] text-[#111]"><Minus className="h-[13px] w-[13px]" strokeWidth={2.6} /></button>
-                      <span className="min-w-[18px] text-center text-[13.5px] font-bold">{i.qty}</span>
-                      <button type="button" aria-label={`Increase ${i.title}`} onClick={() => setQty(i.id, i.qty + 1)} className="flex h-full items-center px-[7px] text-[#0B5A22]"><Plus className="h-[13px] w-[13px]" strokeWidth={2.6} /></button>
+                      <button type="button" aria-label={`Decrease ${i.title}`} onClick={() => setQty(i.id, i.qty - 1)} className="flex h-full items-center px-[6px] text-[#111] hover:text-[#0B5A22]"><Minus className="h-[12px] w-[12px]" strokeWidth={2.4} /></button>
+                      <span className="min-w-[18px] text-center text-[12.5px] font-semibold text-[#111]">{i.qty}</span>
+                      <button type="button" aria-label={`Increase ${i.title}`} onClick={() => setQty(i.id, i.qty + 1)} className="flex h-full items-center px-[6px] text-[#0B5A22] hover:text-[#074619]"><Plus className="h-[12px] w-[12px]" strokeWidth={2.4} /></button>
                     </span>
-                    <b className="w-[62px] shrink-0 text-right text-[15px] font-bold text-[#111]">{rupees(i.price * i.qty)}</b>
-                    <button type="button" aria-label={`Remove ${i.title}`} onClick={() => remove(i.id)} className="shrink-0 text-[#0B5A22] hover:text-[#B3402D]">
-                      <Trash2 className="h-[19px] w-[19px]" strokeWidth={1.8} />
+                    <span className="w-[60px] shrink-0 text-right text-[14px] font-semibold text-[#111]">{rupees(i.price * i.qty)}</span>
+                    <button type="button" aria-label={`Remove ${i.title}`} onClick={() => remove(i.id)} className="shrink-0 text-[#888] transition-colors hover:text-[#B3402D]">
+                      <Trash2 className="h-[16px] w-[16px]" strokeWidth={1.8} />
                     </button>
                   </li>
                 ))}
               </ul>
 
-              <dl className="px-[12px] pt-[4px] text-[13px] text-[#222]">
-                <div className="flex justify-between border-b border-[#EEF2EA] py-[4px]"><dt>Subtotal ({count} {count === 1 ? "Item" : "Items"})</dt><dd className="font-semibold">{rupees(subtotal)}</dd></div>
-                <div className="flex justify-between border-b border-[#EEF2EA] py-[4px]"><dt>Delivery Charges</dt><dd className="font-semibold text-[#2C7A32]">Free</dd></div>
+              <dl className="px-[12px] pt-[6px] text-[12.5px] text-[#333]">
+                <div className="flex justify-between border-b border-[#EEF2EA] py-[5px]"><dt className="font-medium">Subtotal ({count} {count === 1 ? "Item" : "Items"})</dt><dd className="font-semibold text-[#111]">{rupees(subtotal)}</dd></div>
+                <div className="flex justify-between border-b border-[#EEF2EA] py-[5px]"><dt className="font-medium">Delivery Charges</dt><dd className="font-semibold text-[#2C7A32]">Free</dd></div>
                 {coupon && (
-                  <div className="flex justify-between py-[4px]">
-                    <dt>Discount <span className="text-[#2C7A32]">(Coupon: {coupon.code})</span></dt>
+                  <div className="flex justify-between py-[5px]">
+                    <dt className="font-medium">Discount <span className="text-[#2C7A32]">(Coupon: {coupon.code})</span></dt>
                     <dd className="font-semibold text-[#2C7A32]">− {rupees(couponOff)}</dd>
                   </div>
                 )}
               </dl>
-              <div className="mx-[8px] mt-[2px] flex items-center justify-between rounded-[8px] bg-[#EAF4D6] px-[10px] py-[3px]">
-                <span className="flex items-baseline gap-2">
-                  <b className={`${poppins.className} text-[15.5px] font-semibold`} style={{ color: GREEN }}>Total Payable</b>
-                  <span className="text-[11px] text-[#333]">(Inclusive of all taxes)</span>
+              <div className="mx-[8px] mt-[4px] flex items-center justify-between rounded-[8px] bg-[#EAF4D6] px-[12px] py-[6px]">
+                <span className="flex items-baseline gap-1.5">
+                  <span className={`${poppins.className} text-[14px] font-semibold`} style={{ color: GREEN }}>Total Payable</span>
+                  <span className="text-[10.5px] font-medium text-[#555]">(Inclusive of all taxes)</span>
                 </span>
-                <b className={`${poppins.className} text-[19px] font-bold leading-tight`} style={{ color: "#003000" }}>{rupees(payable)}</b>
+                <span className={`${poppins.className} text-[17.5px] font-semibold leading-tight`} style={{ color: "#003000" }}>{rupees(payable)}</span>
               </div>
 
               {/* Coupon: the server checks the code and works out the discount, and charges that amount */}
-              <div className="mx-[8px] mt-[6px] rounded-[10px] border border-[#E3E8DE] bg-[#FCFDFB] px-[10px] pb-[7px] pt-[5px]">
-                <label htmlFor="co-coupon" className="flex items-center gap-[8px] text-[12.5px] font-semibold text-[#111]">
-                  <TicketPercent className="h-[17px] w-[17px] text-[#0B5A22]" strokeWidth={1.8} />
+              <div className="mx-[8px] mt-[6px] rounded-[10px] border border-[#E3E8DE] bg-[#FCFDFB] px-[10px] pb-[7px] pt-[6px]">
+                <label htmlFor="co-coupon" className="flex items-center gap-[6px] text-[12px] font-medium text-[#222]">
+                  <TicketPercent className="h-[15px] w-[15px] text-[#0B5A22]" strokeWidth={1.8} />
                   Apply Coupon Code
                 </label>
-                <div className="mt-[4px] flex gap-[8px]">
+                <div className="mt-[4px] flex gap-[6px]">
                   <div className={`${inputBox} !h-[32px] min-w-0 flex-1`}>
                     <input
                       id="co-coupon"
-                      className={`${inputEl} uppercase placeholder:normal-case`}
+                      className={`${inputEl} text-[12px] uppercase placeholder:normal-case`}
                       placeholder="Enter coupon code"
                       value={couponInput}
                       onChange={(e) => {
@@ -530,59 +530,59 @@ export default function CheckoutPage() {
                       }}
                       autoComplete="off"
                     />
-                    {coupon && <Check className="h-[18px] w-[18px] shrink-0 text-[#2C8A2C]" strokeWidth={2.6} aria-label="Coupon applied" />}
+                    {coupon && <Check className="h-[16px] w-[16px] shrink-0 text-[#2C8A2C]" strokeWidth={2.6} aria-label="Coupon applied" />}
                   </div>
                   <button
                     type="button"
                     onClick={coupon ? removeCode : applyCode}
                     disabled={couponBusy || (!coupon && !couponInput)}
-                    className="h-[32px] w-[92px] shrink-0 rounded-[8px] text-[13.5px] font-semibold text-white shadow-[0_2px_5px_rgba(4,58,20,0.3)] hover:brightness-110 disabled:opacity-60"
+                    className="h-[32px] w-[86px] shrink-0 rounded-[8px] text-[12.5px] font-medium text-white shadow-sm hover:brightness-110 disabled:opacity-60"
                     style={{ background: GREEN_BTN }}
                   >
                     {couponBusy ? "…" : coupon ? "Remove" : "Apply"}
                   </button>
                 </div>
-                {couponMsg && <p role="status" className={`mt-[3px] text-[11.5px] ${coupon ? "text-[#2C7A32]" : "text-[#B3402D]"}`}>{couponMsg}</p>}
+                {couponMsg && <p role="status" className={`mt-[3px] text-[11px] font-medium ${coupon ? "text-[#2C7A32]" : "text-[#B3402D]"}`}>{couponMsg}</p>}
               </div>
 
-              <label className="mx-[12px] mt-[7px] flex cursor-pointer items-center gap-[8px] text-[12px] text-[#222]">
+              <label className="mx-[12px] mt-[8px] flex cursor-pointer items-center gap-[7px] text-[11.5px] font-medium text-[#444]">
                 <input type="checkbox" required checked={agree} onChange={(e) => setAgree(e.target.checked)} className="peer sr-only" />
-                <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[4px] border-2 border-[#074619] text-white peer-checked:bg-[#074619] peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
-                  <svg viewBox="0 0 12 12" className="h-[12px] w-[12px]" aria-hidden><path d="M2.2 6.3l2.6 2.5 5-5.3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                <span className="flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-[4px] border-2 border-[#074619] text-white peer-checked:bg-[#074619] peer-focus-visible:ring-2 peer-focus-visible:ring-[#074619]/40 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100">
+                  <svg viewBox="0 0 12 12" className="h-[11px] w-[11px]" aria-hidden><path d="M2.2 6.3l2.6 2.5 5-5.3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </span>
                 <span>
                   I agree to the <Link href="/terms" className="text-[#1F7A2E] underline">Terms &amp; Conditions</Link> and <Link href="/privacy" className="text-[#1A1A1A] underline">Privacy Policy</Link>.
                 </span>
               </label>
 
-              {error && <p role="alert" className="mx-[12px] mt-3 rounded-md bg-[#FBEDEA] px-3 py-2 text-[13px] font-medium text-[#B3402D]">{error}</p>}
+              {error && <p role="alert" className="mx-[12px] mt-2 rounded-md bg-[#FBEDEA] px-3 py-2 text-[12.5px] font-medium text-[#B3402D]">{error}</p>}
 
-              <div className="px-[10px] pb-[6px] pt-[7px]">
+              <div className="px-[10px] pb-[8px] pt-[8px]">
                 <button
                   type="submit"
                   disabled={busy || couponBusy}
-                  className="flex h-[40px] w-full items-center justify-center gap-[12px] rounded-[10px] text-[15px] font-semibold text-white shadow-[0_3px_8px_rgba(4,58,20,0.35)] transition-[filter] hover:brightness-110 disabled:opacity-60"
+                  className="flex h-[38px] w-full items-center justify-center gap-[10px] rounded-[10px] text-[14px] font-medium text-white shadow-[0_3px_8px_rgba(4,58,20,0.3)] transition-[filter] hover:brightness-110 disabled:opacity-60"
                   style={{ background: GREEN_BTN }}
                 >
-                  <Lock className="h-[20px] w-[20px]" strokeWidth={1.8} />
+                  <Lock className="h-[16px] w-[16px]" strokeWidth={1.8} />
                   <span>{busy ? "Please wait…" : "Proceed to Payment"}</span>
                   {!busy && (
                     <>
-                      <span className="h-[22px] w-px bg-white/50" />
-                      <span>{rupees(payable)}</span>
-                      <ArrowRight className="h-[20px] w-[20px]" strokeWidth={2.2} />
+                      <span className="h-[18px] w-px bg-white/40" />
+                      <span className="font-semibold">{rupees(payable)}</span>
+                      <ArrowRight className="h-[16px] w-[16px]" strokeWidth={2.2} />
                     </>
                   )}
                 </button>
-                <p className="mt-[3px] text-center text-[10.5px] leading-tight text-[#777]">{PREVIEW_MODE ? "Preview mode: no payment is taken" : "Secure payment by Razorpay (UPI, cards, netbanking)"}</p>
+                <p className="mt-[4px] text-center text-[10.5px] font-medium leading-tight text-[#777]">{PREVIEW_MODE ? "Preview mode: no payment is taken" : "Secure payment by Razorpay (UPI, cards, netbanking)"}</p>
               </div>
             </div>
 
             {/* ================= Right: guidelines ================= */}
             <aside className="flex flex-col gap-[8px] lg:col-span-2 lg:grid lg:grid-cols-2 xl:col-span-1 xl:flex xl:[contain:size]">
-              <div className="overflow-hidden rounded-[14px] border bg-white shadow-[0_2px_8px_rgba(60,100,40,0.08)]" style={{ borderColor: BORDER }}>
-                <h2 className={`${poppins.className} flex items-center gap-[8px] bg-[#E9F1E3] px-[14px] py-[8px] text-[15px] font-semibold`} style={{ color: GREEN }}>
-                  <Info className="h-[26px] w-[26px] shrink-0" strokeWidth={1.5} />
+              <div className="overflow-hidden rounded-[14px] border bg-white shadow-[0_2px_8px_rgba(60,100,40,0.06)]" style={{ borderColor: BORDER }}>
+                <h2 className={`${poppins.className} flex items-center gap-[8px] bg-[#E9F1E3] px-[12px] py-[8px] text-[14px] font-semibold`} style={{ color: GREEN }}>
+                  <Info className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.8} />
                   Checkout Guidelines
                 </h2>
                 <ul className="px-[12px] py-[2px]">
@@ -592,26 +592,26 @@ export default function CheckoutPage() {
                     { icon: Truck, t: "Provide a complete & correct delivery address." },
                     { icon: CreditCard, t: "Choose a secure payment method and place your order." },
                   ].map(({ icon: Icon, t }, i) => (
-                    <li key={t} className={`flex items-center gap-[10px] py-[6px] ${i ? "border-t border-[#EDEDED]" : ""}`}>
-                      <Icon className="h-[26px] w-[28px] shrink-0 text-[#1F5F2A]" strokeWidth={1.5} />
-                      <span className="text-[12.5px] leading-[16px] text-[#222]">{t}</span>
+                    <li key={t} className={`flex items-center gap-[8px] py-[6px] ${i ? "border-t border-[#EDEDED]" : ""}`}>
+                      <Icon className="h-[18px] w-[18px] shrink-0 text-[#1F5F2A]" strokeWidth={1.6} />
+                      <span className="text-[12px] font-medium leading-[16px] text-[#333]">{t}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="relative flex-1 overflow-hidden rounded-[14px] border bg-white shadow-[0_2px_8px_rgba(60,100,40,0.08)] xl:min-h-[0px]" style={{ borderColor: BORDER }}>
-                <h2 className={`${poppins.className} flex items-center gap-[10px] px-[12px] pt-[10px] text-[15px] font-semibold leading-tight`} style={{ color: GREEN }}>
-                  <img src="/checkout-v2/leaf.png" alt="" className="h-[28px] w-[30px] shrink-0 object-contain mix-blend-multiply" />
+              <div className="relative flex-1 overflow-hidden rounded-[14px] border bg-white shadow-[0_2px_8px_rgba(60,100,40,0.06)] xl:min-h-[0px]" style={{ borderColor: BORDER }}>
+                <h2 className={`${poppins.className} flex items-center gap-[8px] px-[12px] pt-[9px] text-[14px] font-semibold leading-tight`} style={{ color: GREEN }}>
+                  <img src="/checkout-v2/leaf.png" alt="" className="h-[20px] w-[22px] shrink-0 object-contain mix-blend-multiply" />
                   Why Shop at Vaidhyashala?
                 </h2>
-                <ul className="relative z-[1] px-[14px] pb-[110px] pt-[4px] xl:pb-[8px]">
+                <ul className="relative z-[1] px-[12px] pb-[110px] pt-[4px] xl:pb-[8px]">
                   {["Authentic Ayurvedic Formulations", "High-Quality, Natural Ingredients", "Safe & Trusted for Daily Use", "Secure & Multiple Payment Options", "Reliable & On-Time Delivery"].map((t) => (
-                    <li key={t} className="flex items-center gap-[10px] py-[4px]">
-                      <span className="flex h-[20px] w-[20px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
-                        <svg viewBox="0 0 12 12" className="h-[12px] w-[12px] text-white" aria-hidden><path d="M2.2 6.3l2.6 2.5 5-5.3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <li key={t} className="flex items-center gap-[8px] py-[4px]">
+                      <span className="flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
+                        <svg viewBox="0 0 12 12" className="h-[10px] w-[10px] text-white" aria-hidden><path d="M2.2 6.3l2.6 2.5 5-5.3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </span>
-                      <span className="text-[12.5px] leading-tight text-[#222]">{t}</span>
+                      <span className="text-[12px] font-medium leading-tight text-[#333]">{t}</span>
                     </li>
                   ))}
                 </ul>

@@ -141,3 +141,9 @@ nextjs-portal {
 @media (prefers-reduced-motion: reduce) {
   [class*="helpFloat"] { animation: none !important; }
 }
+
+/* Add to Cart Toast countdown progress bar */
+@keyframes toastProgress {
+  from { width: 100%; }
+  to { width: 0%; }
+}

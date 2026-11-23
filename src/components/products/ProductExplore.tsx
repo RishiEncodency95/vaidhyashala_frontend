@@ -80,12 +80,14 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
             <span aria-hidden style={at(616, 28, { width: u(57), height: u(2), background: "#B1CD7C" })} />
             <img src="/explore-v2/leaf.png" alt="" style={at(682, 6, { width: u(52), height: u(32) })} />
             <span aria-hidden style={at(744, 28, { width: u(54), height: u(2), background: "#B1CD7C" })} />
-            <span aria-hidden style={at(258, 65, { width: u(80), height: u(2), background: "linear-gradient(90deg,rgba(177,205,124,0),#8DB64F)" })} />
-            <span aria-hidden style={at(1078, 65, { width: u(80), height: u(2), background: "linear-gradient(90deg,#8DB64F,rgba(177,205,124,0))" })} />
-            <h2 id="explore-title" className={`${poppins.className} font-semibold`} style={cline(708, 66, 38, { color: INK, margin: 0 })}>
+            <span aria-hidden style={at(258, 64, { width: u(80), height: u(2), background: "linear-gradient(90deg,rgba(177,205,124,0),#8DB64F)" })} />
+            <span aria-hidden style={at(1078, 64, { width: u(80), height: u(2), background: "linear-gradient(90deg,#8DB64F,rgba(177,205,124,0))" })} />
+            <h2 id="explore-title" className={`${poppins.className} font-semibold`} style={cline(708, 64, 32, { color: INK, margin: 0, letterSpacing: "-0.01em", fontSize: u(27) })}>
               Explore More <span style={{ color: GREEN }}>Ayurvedic Essentials</span>
             </h2>
-            <p style={cline(706, 104, 21, { color: "#2B2B2B", margin: 0 })}>Discover wellness products that complement your healing journey.</p>
+            <p className="font-medium" style={cline(706, 96, 17, { color: "#444", margin: 0, fontSize: u(14.5) })}>
+              Discover wellness products that complement your healing journey.
+            </p>
 
             {cards.map((c, i) => {
               const x = CARD_X[i];
@@ -93,63 +95,69 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
               return (
                 <article
                   key={c.title}
-                  style={at(x, 147, {
+                  style={at(x, 140, {
                     width: u(CARD_W),
-                    height: u(330),
+                    height: u(324),
                     borderRadius: u(18),
                     background: "linear-gradient(180deg,#FCFBF5 0%,#FBF9EF 55%,#FAF7ED 100%)",
-                    boxShadow: `0 ${u(4)} ${u(12)} rgba(60,70,40,0.12), 0 ${u(1)} ${u(2)} rgba(60,70,40,0.06)`,
+                    boxShadow: `0 ${u(4)} ${u(12)} rgba(60,70,40,0.1), 0 ${u(1)} ${u(2)} rgba(60,70,40,0.05)`,
                   })}
                 >
                   <span
+                    className="font-medium"
                     style={at(13, 11, {
-                      height: u(26),
+                      height: u(24),
                       display: "flex",
                       alignItems: "center",
-                      gap: u(6),
-                      paddingLeft: u(12),
-                      paddingRight: u(14),
-                      borderRadius: u(13),
+                      gap: u(5),
+                      paddingLeft: u(10),
+                      paddingRight: u(12),
+                      borderRadius: u(12),
                       background: "#E8F1D6",
-                      fontSize: u(12.62),
-                      color: "#222",
+                      fontSize: u(11.8),
+                      color: "#1B4D12",
                       whiteSpace: "nowrap",
                     })}
                   >
-                    <img src={c.tagIcon} alt="" className="mix-blend-multiply" style={{ width: u(20), height: u(20) }} />
-                    <span style={{ paddingTop: u(2) }}>{c.tag}</span>
+                    <img src={c.tagIcon} alt="" className="mix-blend-multiply" style={{ width: u(16), height: u(16) }} />
+                    <span>{c.tag}</span>
                   </span>
                   <img
                     src={c.image}
                     alt={c.title}
                     className="mix-blend-multiply"
-                    style={at(12, 39, {
+                    style={at(12, 38, {
                       width: u(247),
-                      height: u(160),
+                      height: u(155),
                       maskImage: "radial-gradient(ellipse 60% 62% at 50% 50%, #000 78%, transparent 100%)",
                       WebkitMaskImage: "radial-gradient(ellipse 60% 62% at 50% 50%, #000 78%, transparent 100%)",
                     })}
                   />
-                  <h3 className="font-bold" style={cline(cx, 213, 22, { color: INK, margin: 0 })}>{c.title}</h3>
-                  <p style={cline(cx, 237, 16, { color: "#2E2E2E", margin: 0 })}>{c.lines[0]}</p>
-                  <p style={cline(cx, 258, 16, { color: "#2E2E2E", margin: 0 })}>{c.lines[1]}</p>
+                  <h3 className="font-semibold" style={cline(cx, 206, 18, { color: INK, margin: 0, fontSize: u(16), letterSpacing: "-0.01em" })}>{c.title}</h3>
+                  <div style={at(12, 226, { width: u(CARD_W - 24), textAlign: "center" })}>
+                    <p className="font-medium" style={{ fontSize: u(12.5), lineHeight: u(17.5), color: "#4A4A4A", margin: 0 }}>
+                      {c.lines[0]}
+                      <br />
+                      {c.lines[1]}
+                    </p>
+                  </div>
                   <Link
                     href={hrefFor(c.title)}
-                    className="group font-semibold text-white transition-[filter] hover:brightness-110"
-                    style={at(48, 279, {
+                    className="group font-medium text-white transition-[filter] hover:brightness-110"
+                    style={at(53, 274, {
                       ...viewBtn,
-                      width: u(177),
-                      height: u(35),
-                      borderRadius: u(18),
+                      width: u(165),
+                      height: u(34),
+                      borderRadius: u(17),
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: u(6),
-                      fontSize: u(13.92),
+                      fontSize: u(13),
                     })}
                   >
-                    <span style={{ paddingTop: u(2) }}>View Product</span>
-                    <ArrowRight className="transition-transform group-hover:translate-x-0.5" style={{ width: u(16), height: u(16) }} strokeWidth={2.6} />
+                    <span>View Product</span>
+                    <ArrowRight className="transition-transform group-hover:translate-x-0.5" style={{ width: u(14), height: u(14) }} strokeWidth={2.2} />
                   </Link>
                 </article>
               );
@@ -159,27 +167,27 @@ export default function ProductExplore({ items = EXPLORE_ITEMS, currentTitle = "
       </div>
 
       {/* ================= Mobile / tablet ================= */}
-      <div className="px-4 py-4 sm:px-6 xl:hidden">
-        <h2 className={`${poppins.className} text-center text-[26px] font-semibold leading-tight`} style={{ color: INK }}>
+      <div className="px-4 py-6 sm:px-6 xl:hidden">
+        <h2 className={`${poppins.className} text-center text-[22px] font-semibold leading-tight tracking-[-0.01em] sm:text-[26px]`} style={{ color: INK }}>
           Explore More <span style={{ color: GREEN }}>Ayurvedic Essentials</span>
         </h2>
-        <p className="mt-1 text-center text-[16px] text-[#2B2B2B]">Discover wellness products that complement your healing journey.</p>
+        <p className="mt-1 text-center text-[13.5px] font-medium text-[#444] sm:text-[14.5px]">Discover wellness products that complement your healing journey.</p>
         <div className="mt-6 flex snap-x gap-4 overflow-x-auto pb-3 [scrollbar-width:none]">
           {cards.map((c) => (
-            <article key={c.title} className="flex w-[250px] shrink-0 snap-start flex-col items-center rounded-[18px] bg-[linear-gradient(180deg,#FCFBF5,#FAF7ED)] p-3 text-center shadow-[0_4px_12px_rgba(60,70,40,0.12)]">
-              <span className="flex items-center gap-1.5 self-start rounded-full bg-[#E8F1D6] py-1 pl-2.5 pr-3 text-[13px] text-[#222]">
-                <img src={c.tagIcon} alt="" className="h-[18px] w-[18px] mix-blend-multiply" />
+            <article key={c.title} className="flex w-[240px] shrink-0 snap-start flex-col items-center rounded-[18px] bg-[linear-gradient(180deg,#FCFBF5,#FAF7ED)] p-3.5 text-center shadow-[0_4px_12px_rgba(60,70,40,0.1)]">
+              <span className="flex items-center gap-1.5 self-start rounded-full bg-[#E8F1D6] py-0.5 pl-2 pr-2.5 text-[11.5px] font-medium text-[#1B4D12]">
+                <img src={c.tagIcon} alt="" className="h-[16px] w-[16px] mix-blend-multiply" />
                 {c.tag}
               </span>
-              <img src={c.image} alt={c.title} className="mt-1 h-[150px] w-auto mix-blend-multiply" />
-              <h3 className="text-[20px] font-bold" style={{ color: INK }}>{c.title}</h3>
-              <p className="text-[15px] leading-tight text-[#2E2E2E]">
+              <img src={c.image} alt={c.title} className="mt-1 h-[145px] w-auto mix-blend-multiply" />
+              <h3 className="mt-1 text-[16px] font-semibold tracking-[-0.01em]" style={{ color: INK }}>{c.title}</h3>
+              <p className="mt-1 text-[12.5px] font-medium leading-[1.35] text-[#4A4A4A]">
                 {c.lines[0]}
                 <br />
                 {c.lines[1]}
               </p>
-              <Link href={hrefFor(c.title)} className="mt-3 flex h-[36px] w-[170px] items-center justify-center gap-1.5 rounded-full text-[15px] font-semibold text-white" style={viewBtn}>
-                View Product <ArrowRight className="h-4 w-4" strokeWidth={2.6} />
+              <Link href={hrefFor(c.title)} className="mt-3 flex h-[34px] w-[155px] items-center justify-center gap-1.5 rounded-full text-[13px] font-medium text-white shadow-sm" style={viewBtn}>
+                View Product <ArrowRight className="h-3.5 w-3.5" strokeWidth={2.2} />
               </Link>
             </article>
           ))}

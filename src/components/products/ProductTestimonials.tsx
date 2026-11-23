@@ -55,10 +55,10 @@ const SLIDE_EVERY = 3500;
 const SLIDE_MS = 700;
 
 const FEATURES = [
-  { icon: "/testimonial-v2/feat1.png", l: 174, w: 60, h: 62, tl: 250, a: "Authentic", b: "Ayurvedic Formulations" },
-  { icon: "/testimonial-v2/feat2.png", l: 504, w: 60, h: 60, tl: 586, a: "Quality", b: "Assured" },
-  { icon: "/testimonial-v2/feat3.png", l: 740, w: 56, h: 62, tl: 818, a: "Safe &", b: "Effective" },
-  { icon: "/testimonial-v2/feat4.png", l: 984, w: 62, h: 58, tl: 1070, a: "Trusted by", b: "Wellness Seekers" },
+  { icon: "/testimonial-v2/feat1.png", l: 174, w: 52, h: 54, tl: 238, a: "Authentic", b: "Ayurvedic Formulations" },
+  { icon: "/testimonial-v2/feat2.png", l: 495, w: 52, h: 52, tl: 558, a: "Quality", b: "Assured" },
+  { icon: "/testimonial-v2/feat3.png", l: 730, w: 48, h: 54, tl: 790, a: "Safe &", b: "Effective" },
+  { icon: "/testimonial-v2/feat4.png", l: 968, w: 54, h: 50, tl: 1032, a: "Trusted by", b: "Wellness Seekers" },
 ];
 
 const initials = (name: string) =>
@@ -101,50 +101,50 @@ function Card({ t, left, top = 136 }: { t: ProductTestimonial; left: number; top
         width: u(CARD_W),
         height: u(234),
         borderRadius: u(16),
-        border: `${u(1.5)} solid rgba(190,225,180,0.78)`,
-        background: "linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.015) 100%)",
+        border: `${u(1.5)} solid rgba(190,225,180,0.65)`,
+        background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%)",
         boxShadow: `0 0 ${u(14)} rgba(0,0,0,0.45)`,
       })}
     >
       <span
-        className="font-bold"
-        style={at(17, 13, {
-          width: u(38),
-          height: u(38),
+        className="font-semibold"
+        style={at(16, 14, {
+          width: u(36),
+          height: u(36),
           borderRadius: "50%",
           background: "#566704",
           color: "#fff",
-          fontSize: u(14.79),
+          fontSize: u(13.5),
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: u(2),
         })}
       >
         {initials(t.name)}
       </span>
-      <p className="font-semibold" style={line(67, 22, 16, { color: "#fff", margin: 0 })}>{t.name}</p>
-      <p style={{ ...line(0, 22, 11, { color: "#E8EEE6", margin: 0 }), left: "auto", right: u(14) }}>{t.date}</p>
+      <p className="font-semibold" style={line(62, 22, 15, { color: "#fff", margin: 0, fontSize: u(14.5) })}>{t.name}</p>
+      <p className="font-medium" style={{ ...line(0, 22, 11, { color: "rgba(255,255,255,0.65)", margin: 0, fontSize: u(11) }), left: "auto", right: u(14) }}>{t.date}</p>
       {t.verified && (
         <>
-          <VerifiedTick style={at(67, 35, { width: u(12), height: u(12) })} />
-          <p style={line(84, 41, 12.5, { color: "#E8EEE6", margin: 0 })}>Verified Buyer</p>
+          <VerifiedTick style={at(62, 34, { width: u(12), height: u(12) })} />
+          <p className="font-medium" style={line(79, 40, 12, { color: "#D1E2C8", margin: 0, fontSize: u(11.5) })}>Verified Buyer</p>
         </>
       )}
       {stars > 0 && (
-        <span style={at(64, 53, { display: "flex", gap: u(1.5) })} aria-label={`${stars} out of 5 stars`}>
+        <span style={at(62, 53, { display: "flex", gap: u(2) })} aria-label={`${stars} out of 5 stars`}>
           {Array.from({ length: stars }, (_, i) => (
-            <Star key={i} style={{ width: u(19), height: u(19) }} fill="#F5B400" color="#F5B400" strokeWidth={1} />
+            <Star key={i} style={{ width: u(15), height: u(15) }} fill="#F5B400" color="#F5B400" strokeWidth={1} />
           ))}
         </span>
       )}
       <blockquote
-        style={at(27, 81.4 + 2, {
+        className="font-medium"
+        style={at(20, 78, {
           margin: 0,
-          width: u(222),
-          fontSize: u(15.75),
-          lineHeight: u(19.2),
-          color: "#fff",
+          width: u(220),
+          fontSize: u(13),
+          lineHeight: u(18.5),
+          color: "rgba(255,255,255,0.92)",
           display: "-webkit-box",
           WebkitLineClamp: 5,
           WebkitBoxOrient: "vertical",
@@ -153,10 +153,10 @@ function Card({ t, left, top = 136 }: { t: ProductTestimonial; left: number; top
       >
         {t.quote}
       </blockquote>
-      <span aria-hidden style={at(27, 188, { width: u(215), height: u(1), background: "rgba(255,255,255,0.28)" })} />
-      <MapPin style={at(26, 199, { width: u(16), height: u(16), color: "#fff" })} fill="#fff" stroke="#00220B" strokeWidth={2} />
-      <p style={line(52, 207, 16, { color: "#fff", margin: 0 })}>{t.city}</p>
-      <QuoteMark style={at(CARD_W - 44, 198, { width: u(26), height: u(20) })} />
+      <span aria-hidden style={at(20, 186, { width: u(220), height: u(1), background: "rgba(255,255,255,0.2)" })} />
+      <MapPin style={at(20, 197, { width: u(14), height: u(14), color: "#A8D38D" })} fill="#A8D38D" stroke="#00220B" strokeWidth={1.5} />
+      <p className="font-medium" style={line(39, 204, 13, { color: "rgba(255,255,255,0.85)", margin: 0, fontSize: u(12.5) })}>{t.city}</p>
+      <QuoteMark style={at(CARD_W - 38, 196, { width: u(22), height: u(17) })} />
     </article>
   );
 }
@@ -218,17 +218,19 @@ export default function ProductTestimonials({ items = SAMPLE_TESTIMONIALS }: { i
       <div className="mx-auto hidden max-w-[1440px] px-12 xl:block">
         <div style={{ containerType: "inline-size", width: "100%", margin: "0 auto" }}>
           <div className="relative" style={{ "--tu": "calc(100cqw / 1344)", height: u(458), marginTop: u(-20) } as CSSProperties}>
-            <span aria-hidden style={at(255, 68, { width: u(133), height: u(2), background: "linear-gradient(90deg, rgba(248,205,15,0) 0%, #FFE504 100%)" })} />
-            <span aria-hidden style={at(948, 68, { width: u(134), height: u(2), background: "linear-gradient(90deg, #FFE504 0%, rgba(248,205,15,0) 100%)" })} />
+            <span aria-hidden style={at(255, 64, { width: u(133), height: u(2), background: "linear-gradient(90deg, rgba(248,205,15,0) 0%, #FFE504 100%)" })} />
+            <span aria-hidden style={at(948, 64, { width: u(134), height: u(2), background: "linear-gradient(90deg, #FFE504 0%, rgba(248,205,15,0) 100%)" })} />
             <h2
               id="product-testimonials-title"
               className={`${poppins.className} font-semibold`}
-              style={line(668, 55, 38, { transform: "translateX(-50%)", color: "#fff", margin: 0, letterSpacing: "0.005em" })}
+              style={line(668, 52, 32, { transform: "translateX(-50%)", color: "#fff", margin: 0, letterSpacing: "-0.01em", fontSize: u(27) })}
             >
               Customer <span style={{ color: GOLD }}>Testimonials</span>
             </h2>
-            <p style={line(666, 92, 22, { transform: "translateX(-50%)", color: "#fff", margin: 0 })}>Trusted by Our Wellness Community</p>
-            <span aria-hidden style={at(657, 116, { width: u(50), height: u(3), background: GOLD, borderRadius: u(2) })} />
+            <p className="font-medium" style={line(666, 86, 17, { transform: "translateX(-50%)", color: "rgba(255,255,255,0.88)", margin: 0, fontSize: u(14.5) })}>
+              Trusted by Our Wellness Community
+            </p>
+            <span aria-hidden style={at(657, 108, { width: u(50), height: u(3), background: GOLD, borderRadius: u(2) })} />
 
             {/* Card row: clipped window (with room for the cards' glow) around a sliding track */}
             <div
@@ -256,10 +258,12 @@ export default function ProductTestimonials({ items = SAMPLE_TESTIMONIALS }: { i
 
             {FEATURES.map((f, i) => (
               <div key={f.a}>
-                <img src={f.icon} alt="" className="mix-blend-lighten" style={at(f.l, 390, { width: u(f.w), height: u(f.h) })} />
-                <p style={line(f.tl, 409, 17.5, { color: "#fff", margin: 0 })}>{f.a}</p>
-                <p style={line(f.tl, 431, 17.5, { color: "#fff", margin: 0 })}>{f.b}</p>
-                {i < 3 && <span aria-hidden style={at([461, 702, 938][i], 400, { width: u(1.5), height: u(44), background: "#C9B53A" })} />}
+                <img src={f.icon} alt="" className="mix-blend-lighten" style={at(f.l, 394, { width: u(f.w), height: u(f.h) })} />
+                <div style={at(f.tl, 394, { height: u(f.h), display: "flex", flexDirection: "column", justifyContent: "center" })}>
+                  <p className="font-medium text-white" style={{ fontSize: u(14), lineHeight: u(18), margin: 0, whiteSpace: "nowrap" }}>{f.a}</p>
+                  <p className="font-medium text-white/90" style={{ fontSize: u(14), lineHeight: u(18), margin: 0, whiteSpace: "nowrap" }}>{f.b}</p>
+                </div>
+                {i < 3 && <span aria-hidden style={at([461, 702, 938][i], 402, { width: u(1.5), height: u(36), background: "rgba(201,181,58,0.35)" })} />}
               </div>
             ))}
           </div>
@@ -267,54 +271,56 @@ export default function ProductTestimonials({ items = SAMPLE_TESTIMONIALS }: { i
       </div>
 
       {/* ================= Mobile / tablet ================= */}
-      <div className="px-4 py-6 text-white sm:px-6 xl:hidden">
-        <h2 className={`${poppins.className} text-center text-[28px] font-semibold leading-tight`}>
+      <div className="px-4 py-8 text-white sm:px-6 xl:hidden">
+        <h2 className={`${poppins.className} text-center text-[24px] font-semibold leading-tight tracking-[-0.01em] sm:text-[28px]`}>
           Customer <span style={{ color: GOLD }}>Testimonials</span>
         </h2>
-        <p className="mt-1 text-center text-[17px]">Trusted by Our Wellness Community</p>
+        <p className="mt-1 text-center text-[13.5px] font-medium text-white/85 sm:text-[15px]">Trusted by Our Wellness Community</p>
         <span className="mx-auto mt-2 block h-[3px] w-[50px] rounded" style={{ background: GOLD }} />
-        <div className="mt-6 flex snap-x gap-4 overflow-x-auto pb-2 [scrollbar-width:none]">
+        <div className="mt-6 flex snap-x gap-4 overflow-x-auto pb-3 [scrollbar-width:none]">
           {cards.map((t, i) => (
-            <article key={t.name + i} className="w-[260px] shrink-0 snap-start rounded-2xl border-[1.5px] border-[rgba(190,225,180,0.78)] p-4">
+            <article key={t.name + i} className="w-[260px] shrink-0 snap-start rounded-2xl border-[1.5px] border-[rgba(190,225,180,0.6)] bg-white/[0.03] p-4 shadow-lg backdrop-blur-sm">
               <div className="flex items-start gap-3">
-                <span className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full bg-[#566704] pt-0.5 text-[16px] font-bold">{initials(t.name)}</span>
+                <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#566704] text-[13.5px] font-semibold text-white">{initials(t.name)}</span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <b className="truncate text-[16px]">{t.name}</b>
-                    <span className="shrink-0 text-[11px] text-[#E8EEE6]">{t.date}</span>
+                  <div className="flex items-baseline justify-between gap-1.5">
+                    <p className="truncate text-[14.5px] font-semibold text-white">{t.name}</p>
+                    <span className="shrink-0 text-[11px] font-medium text-white/60">{t.date}</span>
                   </div>
                   {t.verified && (
-                    <span className="flex items-center gap-1 text-[12.5px] text-[#E8EEE6]">
+                    <span className="mt-0.5 flex items-center gap-1 text-[11.5px] font-medium text-[#D1E2C8]">
                       <VerifiedTick style={{ width: 12, height: 12 }} /> Verified Buyer
                     </span>
                   )}
                 </div>
               </div>
               {(t.rating ?? 0) > 0 && (
-                <div className="mt-1 flex gap-0.5 pl-[50px]">
+                <div className="mt-2 flex gap-1 pl-[48px]">
                   {Array.from({ length: Math.round(t.rating ?? 0) }, (_, s) => (
-                    <Star key={s} className="h-[18px] w-[18px]" fill="#F5B400" color="#F5B400" strokeWidth={1} />
+                    <Star key={s} className="h-[15px] w-[15px]" fill="#F5B400" color="#F5B400" strokeWidth={1} />
                   ))}
                 </div>
               )}
-              <p className="mt-2 text-[16px] leading-[1.25]">{t.quote}</p>
-              <div className="mt-3 flex items-center justify-between border-t border-white/25 pt-3">
-                <span className="flex items-center gap-2 text-[15px]">
-                  <MapPin className="h-4 w-4" fill="#fff" stroke="#00220B" strokeWidth={2} /> {t.city}
+              <blockquote className="mt-2.5 text-[13px] font-medium leading-[1.45] text-white/90 line-clamp-4">
+                {t.quote}
+              </blockquote>
+              <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2.5">
+                <span className="flex items-center gap-1.5 text-[12.5px] font-medium text-white/80">
+                  <MapPin className="h-3.5 w-3.5 text-[#A8D38D]" fill="currentColor" stroke="#00220B" strokeWidth={1.5} /> {t.city}
                 </span>
-                <QuoteMark style={{ width: 24, height: 18 }} />
+                <QuoteMark style={{ width: 22, height: 16 }} />
               </div>
             </article>
           ))}
         </div>
-        <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="mt-8 grid grid-cols-2 gap-4 border-t border-white/15 pt-6 sm:grid-cols-4">
           {FEATURES.map((f) => (
             <div key={f.a} className="flex items-center gap-3">
-              <img src={f.icon} alt="" className="h-[44px] w-auto mix-blend-lighten" />
-              <span className="text-[14px] leading-tight">
+              <img src={f.icon} alt="" className="h-[40px] w-auto shrink-0 mix-blend-lighten" />
+              <span className="text-[13px] font-medium leading-[1.3] text-white">
                 {f.a}
                 <br />
-                {f.b}
+                <span className="text-white/90">{f.b}</span>
               </span>
             </div>
           ))}

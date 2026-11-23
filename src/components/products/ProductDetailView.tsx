@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -8,6 +8,7 @@ import {
   BookOpen,
   CalendarDays,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
   ChevronUp,
@@ -30,6 +31,7 @@ import {
   Stethoscope,
   Truck,
   Users,
+  X,
   Zap,
   ArrowRight,
 } from "lucide-react";
@@ -100,6 +102,8 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
+  const [showCartToast, setShowCartToast] = useState(false);
+  const toastTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [tab, setTab] = useState<TabKey>("about");
   const [pin, setPin] = useState("");
@@ -131,7 +135,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   const extras = productExtras(title);
   const tagline = extras.tagline || firstSentence(description);
   const about = extras.about || description;
-  const qtyLabel = netQuantity(productInfo);
+  const qtyLabel = netQuantity(productInfo) || extras.netQuantity || "750 ml";
   const ingredientList = ingredients(productInfo);
 
   const price = Number(product?.price) || 0;
@@ -150,10 +154,23 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     if (!addToCart()) return;
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 2000);
+
+    // Trigger notification toast
+    setShowCartToast(true);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => {
+      setShowCartToast(false);
+    }, 4500);
   };
   const onBuy = () => {
     if (addToCart()) router.push("/checkout");
   };
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
 
   const checkPin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,7 +191,83 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     key === "reviews" && extras.reviewCount ? `${label} (${extras.reviewCount})` : label;
 
   return (
-    <div className={`${poppins.className} w-full bg-white text-[#252729]`}>
+    <div className={`${poppins.className} relative w-full bg-white text-[#252729]`}>
+      {/* ============ Add to Cart Notification Toast ============ */}
+      <aside
+        aria-live="assertive"
+        aria-atomic="true"
+        className={`fixed top-4 right-4 z-[999] w-[calc(100vw-32px)] sm:w-[380px] max-w-[390px] transition-all duration-300 ease-out ${
+          showCartToast
+            ? "translate-y-0 opacity-100 pointer-events-auto"
+            : "-translate-y-6 opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="relative overflow-hidden rounded-2xl border border-[#BDE3B4] bg-white p-4 shadow-[0_12px_36px_rgba(10,50,15,0.18)]">
+          {/* Header row */}
+          <div className="flex items-center justify-between border-b border-[#EEF5EB] pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#E5F4DF] text-[#1B7826]">
+                <CheckCircle2 className="h-4 w-4" />
+              </span>
+              <p className="text-[13.5px] font-semibold text-[#0E491A]">Added to Cart Successfully!</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowCartToast(false)}
+              className="rounded-full p-1 text-[#888] transition-colors hover:bg-[#F3F4F3] hover:text-[#222]"
+              aria-label="Close notification"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Product details */}
+          <div className="flex items-center gap-3 pt-3">
+            <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[#D7E8D3] bg-[#F7FAF5] p-1">
+              <img
+                src={galleryImages[0] || "/placeholder-product.png"}
+                alt={title}
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h4 className="truncate text-[13.5px] font-semibold text-[#111]">{title}</h4>
+              <p className="text-[11.5px] font-medium text-[#666]">{qtyLabel} • Qty: {qty}</p>
+              <p className="text-[13px] font-bold text-[#145C1A]">{rupees(price * qty)}</p>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="mt-3.5 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowCartToast(false)}
+              className="h-[34px] flex-1 rounded-[10px] border border-[#D5DDD2] bg-white text-[12.5px] font-medium text-[#444] transition-colors hover:bg-[#F7F8F6] hover:text-[#111]"
+            >
+              Continue Shopping
+            </button>
+            <Link
+              href="/checkout"
+              onClick={() => setShowCartToast(false)}
+              className="flex h-[34px] flex-1 items-center justify-center gap-1.5 rounded-[10px] bg-gradient-to-r from-[#20790B] to-[#125807] text-[12.5px] font-medium text-white shadow-sm transition-all hover:brightness-105"
+            >
+              <span>View Cart</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          {/* Auto-dismiss progress bar */}
+          {showCartToast && (
+            <div
+              className="absolute bottom-0 left-0 h-[2.5px] bg-gradient-to-r from-[#20790B] to-[#FBC408]"
+              style={{
+                width: "100%",
+                animation: "toastProgress 4.5s linear forwards",
+              }}
+            />
+          )}
+        </div>
+      </aside>
       <div className="mx-auto max-w-[1440px] px-4 pb-0 pt-2 sm:px-6 lg:px-12">
         {/* ============ Breadcrumb ============ */}
         <nav aria-label="Breadcrumb" className="flex h-[34px] flex-wrap items-center gap-x-3 text-[13.1px] text-[#1E1E22]">
@@ -218,11 +311,10 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                       type="button"
                       onClick={() => setActiveImageIndex(idx)}
                       aria-label={`Show picture ${idx + 1}`}
-                      className={`relative h-[56px] w-[56px] shrink-0 overflow-hidden rounded-[10px] bg-[#FBF3E6] transition-all ${
-                        activeImageIndex === idx
+                      className={`relative h-[56px] w-[56px] shrink-0 overflow-hidden rounded-[10px] bg-[#FBF3E6] transition-all ${activeImageIndex === idx
                           ? "border-2 border-[#163217] p-[3px] shadow-[0_2px_6px_rgba(0,0,0,0.12)]"
                           : "border border-[#ECE8E0] opacity-90 hover:opacity-100"
-                      }`}
+                        }`}
                     >
                       <span className="relative block h-full w-full overflow-hidden rounded-[7px]">
                         <CmsImage fill sizes="80px" src={src} alt={`${imageAlt} – picture ${idx + 1}`} className="object-cover" />
@@ -234,11 +326,10 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                       type="button"
                       onClick={() => setActiveImageIndex(videoIndex)}
                       aria-label="Play product video"
-                      className={`relative h-[56px] w-[56px] shrink-0 overflow-hidden rounded-[10px] bg-[#FBF3E6] transition-all ${
-                        showingVideo
+                      className={`relative h-[56px] w-[56px] shrink-0 overflow-hidden rounded-[10px] bg-[#FBF3E6] transition-all ${showingVideo
                           ? "border-2 border-[#163217] p-[3px] shadow-[0_2px_6px_rgba(0,0,0,0.12)]"
                           : "border border-[#ECE8E0] opacity-90 hover:opacity-100"
-                      }`}
+                        }`}
                     >
                       <span className="relative block h-full w-full overflow-hidden rounded-[7px] bg-[#1d2a1f]">
                         {ytId ? (
@@ -265,9 +356,8 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 </button>
               </div>
               <div
-                className={`relative aspect-[384/385] w-full self-start overflow-hidden rounded-[16px] sm:w-[384px] sm:shrink-0 ${
-                  showingVideo ? "bg-black" : "bg-[#F7DDBA]"
-                }`}
+                className={`relative aspect-[384/385] w-full self-start overflow-hidden rounded-[16px] sm:w-[384px] sm:shrink-0 ${showingVideo ? "bg-black" : "bg-[#F7DDBA]"
+                  }`}
               >
                 {showingVideo ? (
                   ytId ? (
@@ -311,7 +401,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   <span className="translate-y-px">{badge}</span>
                 </span>
               )}
-              <h1 className="mt-[6px] text-[31.3px] font-bold leading-[1.08] tracking-[-0.01em]" style={{ color: GREEN }}>
+              <h1 className="mt-[6px] text-[22px] lg:text-[24px] font-semibold leading-tight tracking-[-0.01em]" style={{ color: GREEN }}>
                 {title}
               </h1>
               {tagline && <p className="mt-[4px] max-w-[400px] text-[15.2px] leading-[23px] text-[#1D1F21]">{tagline}</p>}
@@ -353,7 +443,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                         {percentOff}% OFF
                       </span>
                     )}
-                    <span className="shrink-0 text-[40px] font-bold leading-none" style={{ color: GREEN }}>{rupees(price)}</span>
+                    <span className="shrink-0 text-[22px] lg:text-[24px] font-semibold leading-none" style={{ color: GREEN }}>{rupees(price)}</span>
                     {hasDiscount && (
                       <span className="shrink-0 whitespace-nowrap leading-[22px]">
                         <span className="block text-[13.5px] text-[#8F8F90]">
@@ -367,44 +457,44 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   <span className="text-[15.7px] font-semibold" style={{ color: GREEN }}>Price on request</span>
                 )}
                 {qtyLabel && (
-                  <span className="ml-auto flex shrink-0 items-center gap-[10px] self-stretch border-l border-[#DADAD4] my-[4px] pl-[12px]">
-                    <Milk className="h-[34px] w-[24px] text-[#2B2B2B]" strokeWidth={1.5} />
+                  <span className="ml-auto flex shrink-0 items-center gap-[8px] self-stretch border-l border-[#DADAD4] my-[4px] pl-[12px]">
+                    <Milk className="h-[22px] w-[20px] text-[#2B2B2B]" strokeWidth={1.5} />
                     <span className="leading-tight">
-                      <span className="block text-[11.3px] text-[#333]">Net Quantity</span>
-                      <span className="block text-[18.3px] font-semibold text-[#111]">{qtyLabel}</span>
+                      <span className="block text-[11px] font-medium text-[#555]">Net Quantity</span>
+                      <span className="block text-[14px] font-medium text-[#111]">{qtyLabel}</span>
                     </span>
                   </span>
                 )}
               </div>
 
               {/* Actions */}
-              <div className="mt-[6px] flex flex-wrap items-center gap-[10px]">
-                <div className="inline-flex h-[42px] w-[104px] items-center justify-between rounded-[12px] border border-[#E3E3E3] bg-white px-[8px] shadow-[0_2px_5px_rgba(0,0,0,0.1)]">
-                  <button type="button" aria-label="Decrease quantity" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-1 text-[#111]">
-                    <Minus className="h-[18px] w-[18px]" strokeWidth={2.4} />
+              <div className="mt-[6px] flex flex-wrap items-center gap-[9px]">
+                <div className="inline-flex h-[38px] w-[96px] items-center justify-between rounded-[10px] border border-[#D5D5D5] bg-white px-[8px] shadow-sm">
+                  <button type="button" aria-label="Decrease quantity" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-1 text-[#444] transition-colors hover:text-[#111]">
+                    <Minus className="h-[14px] w-[14px]" strokeWidth={2.2} />
                   </button>
-                  <span className="text-[18.3px] font-semibold text-[#111]" aria-live="polite">{qty}</span>
-                  <button type="button" aria-label="Increase quantity" onClick={() => setQty((q) => Math.min(20, q + 1))} className="p-1 text-[#111]">
-                    <Plus className="h-[18px] w-[18px]" strokeWidth={2.4} />
+                  <span className="text-[14.5px] font-medium text-[#111]" aria-live="polite">{qty}</span>
+                  <button type="button" aria-label="Increase quantity" onClick={() => setQty((q) => Math.min(20, q + 1))} className="p-1 text-[#444] transition-colors hover:text-[#111]">
+                    <Plus className="h-[14px] w-[14px]" strokeWidth={2.2} />
                   </button>
                 </div>
                 <button
                   type="button"
                   onClick={onAdd}
                   disabled={!hasPrice}
-                  className="inline-flex h-[42px] w-[146px] items-center justify-center gap-[8px] rounded-[12px] border-2 border-[#0A4A1F] bg-white text-[16.1px] font-semibold text-[#0B0B0B] shadow-[0_2px_5px_rgba(0,0,0,0.08)] transition-colors hover:bg-[#F3F8F2] disabled:opacity-50"
+                  className="inline-flex h-[38px] w-[138px] items-center justify-center gap-[7px] rounded-[10px] border border-[#0A4A1F] bg-white text-[13.5px] font-medium text-[#0A4A1F] shadow-sm transition-all hover:bg-[#F3F8F2] disabled:opacity-50"
                 >
-                  {justAdded ? <Check className="h-[22px] w-[22px] text-[#0A4A1F]" /> : <ShoppingCart className="h-[24px] w-[24px] text-[#0A4A1F]" strokeWidth={1.8} />}
+                  {justAdded ? <Check className="h-[16px] w-[16px] text-[#0A4A1F]" /> : <ShoppingCart className="h-[16px] w-[16px] text-[#0A4A1F]" strokeWidth={1.9} />}
                   <span className="translate-y-px">{justAdded ? "Added" : "Add to Cart"}</span>
                 </button>
                 <button
                   type="button"
                   onClick={onBuy}
                   disabled={!hasPrice}
-                  className="inline-flex h-[44px] min-w-[170px] flex-1 items-center justify-center gap-[8px] rounded-[12px] text-[20px] font-semibold text-[#0A1F0A] shadow-[0_3px_8px_rgba(235,169,0,0.35)] transition-[filter] hover:brightness-105 disabled:opacity-50"
+                  className="inline-flex h-[38px] min-w-[150px] flex-1 items-center justify-center gap-[7px] rounded-[10px] text-[14px] font-medium text-[#0A1F0A] shadow-[0_2px_8px_rgba(235,169,0,0.3)] transition-all hover:brightness-105 disabled:opacity-50"
                   style={{ background: GOLD_BTN }}
                 >
-                  <Zap className="h-[24px] w-[24px] fill-[#0A3314] text-[#0A3314]" />
+                  <Zap className="h-[16px] w-[16px] fill-[#0A3314] text-[#0A3314]" />
                   <span className="translate-y-px">Buy Now</span>
                 </button>
               </div>
@@ -486,11 +576,11 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               <ul className="mt-[4px]">
                 {["Authentic Ayurvedic Formulation", "High-Quality, Natural Ingredients", "Safe for Daily Use", "Trusted for Long-Term Wellness"].map(
                   (t, i) => (
-                    <li key={t} className={`flex h-[28px] items-center gap-[12px] ${i < 3 ? "border-b border-[#F0F0F0]" : ""}`}>
-                      <span className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
-                        <Check className="h-[16px] w-[16px] text-white" strokeWidth={3} />
+                    <li key={t} className={`flex h-[26px] items-center gap-[9px] ${i < 3 ? "border-b border-[#F0F0F0]" : ""}`}>
+                      <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
+                        <Check className="h-[11px] w-[11px] text-white" strokeWidth={2.8} />
                       </span>
-                      <span className="translate-y-px text-[14.8px] font-semibold text-[#111]">{t}</span>
+                      <span className="text-[12.8px] font-medium text-[#222]">{t}</span>
                     </li>
                   ),
                 )}
@@ -498,23 +588,23 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             </div>
 
             {/* Guidance */}
-            <div className="rounded-[16px] border border-[#F3EBD7] bg-[linear-gradient(180deg,#FEFCF5_0%,#FCF5E5_100%)] px-[18px] pb-[8px] pt-[8px] shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
-              <div className="flex gap-[16px]">
-                <img src="/product-v2/doctor.png" alt="" className="mt-[4px] h-[56px] w-[56px] shrink-0 object-contain" />
+            <div className="rounded-[16px] border border-[#F3EBD7] bg-[linear-gradient(180deg,#FEFCF5_0%,#FCF5E5_100%)] px-[16px] pb-[8px] pt-[8px] shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+              <div className="flex items-center gap-[12px]">
+                <img src="/product-v2/doctor.png" alt="" className="h-[44px] w-[44px] shrink-0 object-contain" />
                 <div>
-                  <h2 className="text-[20px] font-semibold leading-tight text-[#092810]">Need Guidance?</h2>
-                  <p className="mt-[2px] text-[12.6px] leading-[19px] text-[#222]">Consult our Ayurvedic Experts for personalized advice.</p>
+                  <h2 className="text-[17px] font-semibold leading-tight text-[#092810]">Need Guidance?</h2>
+                  <p className="mt-[2px] text-[12px] font-medium leading-[16px] text-[#333]">Consult our Ayurvedic Experts for personalized advice.</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setConsultOpen(true)}
-                className="mt-[4px] flex h-[36px] w-full items-center justify-center gap-[12px] rounded-full text-[16.5px] font-semibold text-white shadow-[0_3px_8px_rgba(11,89,36,0.35)] hover:brightness-110"
+                className="mt-[6px] flex h-[34px] w-full items-center justify-center gap-[8px] rounded-full text-[13.5px] font-medium text-white shadow-[0_3px_8px_rgba(11,89,36,0.35)] transition-all hover:brightness-110"
                 style={{ background: GREEN_BTN }}
               >
-                <CalendarDays className="h-[22px] w-[22px]" strokeWidth={1.8} />
+                <CalendarDays className="h-[16px] w-[16px]" strokeWidth={1.8} />
                 <span className="translate-y-px">Book a Consultation</span>
-                <ArrowRight className="h-[20px] w-[20px]" strokeWidth={2.2} />
+                <ArrowRight className="h-[15px] w-[15px]" strokeWidth={2.2} />
               </button>
             </div>
           </aside>
@@ -528,18 +618,18 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 const active = tab === key;
                 return (
                   <React.Fragment key={key}>
-                    {i > 0 && !active && tab !== TABS[i - 1].key && <span className="h-[30px] w-px shrink-0 bg-[#E1E0E3]" />}
+                    {i > 0 && !active && tab !== TABS[i - 1].key && <span className="h-[26px] w-px shrink-0 bg-[#E1E0E3]" />}
                     <button
                       role="tab"
                       aria-selected={active}
                       type="button"
                       onClick={() => setTab(key)}
-                      className={`flex h-[32px] shrink-0 items-center justify-center gap-[10px] rounded-[8px] text-[14.5px] transition-colors ${
-                        active ? "w-[172px] font-semibold text-white" : "flex-1 px-[16px] font-medium text-[#111] hover:text-[#0B5924]"
+                      className={`flex h-[30px] shrink-0 items-center justify-center gap-[8px] rounded-[7px] text-[13.5px] transition-colors ${
+                        active ? "w-[155px] font-medium text-white" : "flex-1 px-[14px] font-medium text-[#333] hover:text-[#0B5924]"
                       }`}
                       style={active ? { background: "linear-gradient(180deg,#0B6125,#095D23)" } : undefined}
                     >
-                      <Icon className={`h-[22px] w-[22px] ${active ? "fill-[#FFD54A]/30 text-[#FFD54A]" : "text-[#2D8717]"}`} strokeWidth={1.7} />
+                      <Icon className={`h-[17px] w-[17px] ${active ? "fill-[#FFD54A]/30 text-[#FFD54A]" : "text-[#2D8717]"}`} strokeWidth={1.7} />
                       <span className="translate-y-px whitespace-nowrap">{tabLabel(key, label)}</span>
                     </button>
                   </React.Fragment>
@@ -547,16 +637,16 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               })}
             </div>
 
-            <div className="relative min-h-[0px] px-[20px] pb-[8px] pt-[8px]">
+            <div className="relative min-h-[0px] px-[18px] pb-[10px] pt-[10px]">
               {tab === "about" && (
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div className="max-w-[620px]">
-                    <h2 className="text-[21px] font-semibold leading-tight" style={{ color: GREEN }}>About {title}</h2>
-                    <span className="mt-[4px] block h-[3px] w-[60px] rounded-full bg-[#EDA515]" />
-                    <p className="mt-[6px] whitespace-pre-line text-[14.5px] leading-[20px] text-[#252729]">{about}</p>
+                    <h2 className="text-[17px] font-semibold leading-tight" style={{ color: GREEN }}>About {title}</h2>
+                    <span className="mt-[3px] block h-[2.5px] w-[45px] rounded-full bg-[#EDA515]" />
+                    <p className="mt-[6px] whitespace-pre-line text-[13px] font-medium leading-[21px] text-[#333]">{about}</p>
                   </div>
                   {extras.aboutImage && (
-                    <img src={extras.aboutImage} alt="" className="-my-[6px] mr-[10px] h-[92px] w-[172px] shrink-0 self-center object-contain mix-blend-multiply" />
+                    <img src={extras.aboutImage} alt="" className="-my-[4px] mr-[10px] h-[80px] w-auto shrink-0 self-center object-contain mix-blend-multiply" />
                   )}
                 </div>
               )}
@@ -564,9 +654,9 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               {tab === "benefits" && (
                 <ul className="grid gap-3 sm:grid-cols-3">
                   {extras.benefits.map((b) => (
-                    <li key={b.label} className="flex items-center gap-3 rounded-[12px] border border-[#EEEEED] bg-[#F8F8F3] p-4">
+                    <li key={b.label} className="flex items-center gap-3 rounded-[12px] border border-[#EEEEED] bg-[#F8F8F3] p-3">
                       <BenefitGlyph icon={b.icon} />
-                      <span className="text-[15.7px] font-semibold text-[#1E2022]">{b.label}</span>
+                      <span className="text-[13.5px] font-medium text-[#1E2022]">{b.label}</span>
                     </li>
                   ))}
                 </ul>
@@ -576,30 +666,30 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 (ingredientList.length ? (
                   <ul className="grid gap-3 sm:grid-cols-3">
                     {ingredientList.map((ing) => (
-                      <li key={ing} className="flex items-center gap-3 rounded-[12px] border border-[#EEEEED] bg-[#F8F8F3] p-4 text-[14.8px] font-medium">
-                        <Leaf className="h-[22px] w-[22px] shrink-0 text-[#2D8717]" strokeWidth={1.7} />
+                      <li key={ing} className="flex items-center gap-2.5 rounded-[12px] border border-[#EEEEED] bg-[#F8F8F3] p-3 text-[13px] font-medium text-[#222]">
+                        <Leaf className="h-[18px] w-[18px] shrink-0 text-[#2D8717]" strokeWidth={1.7} />
                         {ing}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="whitespace-pre-line text-[14.8px] leading-[26px]">
+                  <p className="whitespace-pre-line text-[13px] font-medium leading-[22px] text-[#333]">
                     {productInfo || "Ingredient details will be shared by our clinic team."}
                   </p>
                 ))}
 
-              {tab === "howto" && <p className="whitespace-pre-line text-[14.8px] leading-[26px] text-[#252729]">{directions}</p>}
+              {tab === "howto" && <p className="whitespace-pre-line text-[13px] font-medium leading-[22px] text-[#333]">{directions}</p>}
 
               {tab === "reviews" && (
-                <div className="text-[14.8px] leading-[26px]">
+                <div className="text-[13px] font-medium leading-[22px] text-[#333]">
                   {extras.rating ? (
                     <p>
-                      Rated <b>{extras.rating} out of 5</b> by {extras.reviewCount} customers.
+                      Rated <b className="font-semibold">{extras.rating} out of 5</b> by {extras.reviewCount} customers.
                     </p>
                   ) : (
                     <p>No reviews yet.</p>
                   )}
-                  <p className="mt-2 text-[#555]">
+                  <p className="mt-2 text-[#666]">
                     Bought this product? Share your experience with our team at{" "}
                     <a href="mailto:care@vaidhyashala.com" className="font-semibold text-[#0B5924] underline">care@vaidhyashala.com</a>.
                   </p>

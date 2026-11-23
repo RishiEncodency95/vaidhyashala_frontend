@@ -24,36 +24,41 @@ export interface ProductExtras {
   howToSteps?: { lines: string[] }[];
   precautions?: string[];
   formulationType?: string;
+  netQuantity?: string;
 }
 
+const TRIPHALA_EXTRAS: ProductExtras = {
+  tagline: "Supports healthy digestion, natural detox and gut balance.",
+  benefits: [
+    { label: "Healthy Digestion", icon: "digestion" },
+    { label: "Bowel Regularity", icon: "bowel" },
+    { label: "Natural Detox", icon: "detox" },
+  ],
+  rating: 4.8,
+  reviewCount: 326,
+  happyCustomers: "1,200+",
+  about:
+    "A classical Ayurvedic blend of Amla, Haritaki and Bibhitaki that supports digestive health, natural cleansing and overall gut wellness.",
+  aboutImage: "/product-v2/about-art.png",
+  guideSubtitle: "Ayurvedic Herbal Juice",
+  netQuantity: "750 ml",
+  howToSteps: [
+    { lines: ["Take 20–30 ml", "(2–3 tablespoons)"] },
+    { lines: ["Mix with", "100–150 ml", "of water"] },
+    { lines: ["Consume", "twice daily", "(morning & evening)"] },
+  ],
+  precautions: [
+    "Consult a healthcare professional if you are under any medication or have a medical condition.",
+    "Pregnant or breastfeeding women should take advice from a healthcare professional before use.",
+    "Do not exceed the recommended daily serving.",
+    "Store in a cool, dry place away from direct sunlight and keep the bottle tightly closed after use.",
+  ],
+  formulationType: "Classical Ayurvedic Formulation",
+};
+
 const EXTRAS: Record<string, ProductExtras> = {
-  "triphala juice": {
-    tagline: "Supports healthy digestion, natural detox and gut balance.",
-    benefits: [
-      { label: "Healthy Digestion", icon: "digestion" },
-      { label: "Bowel Regularity", icon: "bowel" },
-      { label: "Natural Detox", icon: "detox" },
-    ],
-    rating: 4.8,
-    reviewCount: 326,
-    happyCustomers: "1,200+",
-    about:
-      "A classical Ayurvedic blend of Amla, Haritaki and Bibhitaki that supports digestive health, natural cleansing and overall gut wellness.",
-    aboutImage: "/product-v2/about-art.png",
-    guideSubtitle: "Ayurvedic Herbal Juice",
-    howToSteps: [
-      { lines: ["Take 20–30 ml", "(2–3 tablespoons)"] },
-      { lines: ["Mix with", "100–150 ml", "of water"] },
-      { lines: ["Consume", "twice daily", "(morning & evening)"] },
-    ],
-    precautions: [
-      "Consult a healthcare professional if you are under any medication or have a medical condition.",
-      "Pregnant or breastfeeding women should take advice from a healthcare professional before use.",
-      "Do not exceed the recommended daily serving.",
-      "Store in a cool, dry place away from direct sunlight and keep the bottle tightly closed after use.",
-    ],
-    formulationType: "Classical Ayurvedic Formulation",
-  },
+  "triphala juice": TRIPHALA_EXTRAS,
+  "ayurvedic tablets": TRIPHALA_EXTRAS,
 };
 
 const DEFAULT_BENEFITS: NonNullable<ProductExtras["benefits"]> = [

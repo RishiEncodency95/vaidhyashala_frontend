@@ -27,7 +27,19 @@ export default function ProductDetailPage({ slug }: { slug: string }) {
       } catch {
         if (controller.signal.aborted) return;
       }
-      setProduct(allProducts.find((p) => p.slug === slugify(slug)) ?? null);
+      const found = allProducts.find((p) => p.slug === slugify(slug));
+      if (found) {
+        const productWithDefaults = {
+          ...found,
+          detail: found.detail ?? (found.slug === "ayurvedic-tablets" || found.slug === "triphala-juice" ? {
+            price: 450,
+            mrp: 600,
+            gallery: [found.imageSrc],
+          } : undefined),
+        };
+        return setProduct(productWithDefaults);
+      }
+      setProduct(null);
     })();
     return () => controller.abort();
   }, [slug]);
