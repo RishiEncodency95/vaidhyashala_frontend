@@ -58,7 +58,6 @@ const TRIPHALA_EXTRAS: ProductExtras = {
 
 const EXTRAS: Record<string, ProductExtras> = {
   "triphala juice": TRIPHALA_EXTRAS,
-  "ayurvedic tablets": TRIPHALA_EXTRAS,
 };
 
 const DEFAULT_BENEFITS: NonNullable<ProductExtras["benefits"]> = [
@@ -93,20 +92,37 @@ export function productExtras(title: string): Required<Pick<ProductExtras, "bene
   return { ...found, benefits: found.benefits ?? DEFAULT_BENEFITS };
 }
 
+/** Extracts a key-value like "Shelf Life: 24 Months" from admin text */
+export function extractFromInfo(text: string, field: string): string {
+  if (!text) return "";
+  const regex = new RegExp(`(?:^|\\n)\\s*${field}\\s*[:\\-–]\\s*([^\\n]+)`, "i");
+  return text.match(regex)?.[1]?.trim() ?? "";
+}
+
 /** "Net Quantity: 750 ml" line from the admin's product information text. */
 export function netQuantity(productInfo: string): string {
-  return productInfo.match(/Net\s*Quantity\s*[:\-–]\s*(.+)/i)?.[1]?.trim() ?? "";
+  return extractFromInfo(productInfo, "Net\\s*Quantity") || (productInfo.match(/Net\s*Quantity\s*[:\-–]\s*(.+)/i)?.[1]?.trim() ?? "");
 }
 
 /** Bullet lines under the "Ingredients" heading of the product information text. */
 export function ingredients(productInfo: string): string[] {
-  const lines = productInfo.split("\n").map((l) => l.trim());
-  const start = lines.findIndex((l) => /^ingredients/i.test(l));
+  if (!productInfo) return [];
+  const lines = productInfo.split("\n").map((l) => l.trim()).filter(Boolean);
+  const start = lines.findIndex((l) => /^(ingredients|composition|active ingredients)/i.test(l));
   if (start < 0) return [];
   const out: string[] = [];
   for (const l of lines.slice(start + 1)) {
-    if (!/^[•\-*]/.test(l)) break;
-    out.push(l.replace(/^[•\-*]\s*/, ""));
+    if (/^([•\-*]|\d+\.)/.test(l)) {
+      out.push(l.replace(/^([•\-*]|\d+\.)\s*/, ""));
+    } else if (l.includes(":") && !l.toLowerCase().startsWith("each")) {
+      break;
+    } else if (out.length === 0 && !l.includes(":")) {
+      const parts = l.split(/[,;]/).map((s) => s.trim()).filter(Boolean);
+      if (parts.length > 1) return parts;
+      out.push(l);
+    } else if (out.length > 0 && out.length < 6) {
+      out.push(l);
+    }
   }
   return out;
 }

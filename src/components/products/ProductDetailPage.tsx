@@ -9,10 +9,28 @@ import { slugify } from "@/lib/builtinProducts";
 import ProductDetailView from "@/components/products/ProductDetailView";
 
 /** One product's page: "/products/<slug>". Admin product first, then the built-in list. */
-export default function ProductDetailPage({ slug }: { slug: string }) {
-  const [product, setProduct] = useState<Product | null | undefined>(undefined);
+export default function ProductDetailPage({ slug, initialApiProduct }: { slug: string; initialApiProduct?: ApiProduct | null }) {
+  const [product, setProduct] = useState<Product | null | undefined>(() => {
+    if (initialApiProduct) return fromApi(initialApiProduct);
+    if (initialApiProduct === null) {
+      const found = allProducts.find((p) => p.slug === slugify(slug));
+      if (found) {
+        return {
+          ...found,
+          detail: found.detail ?? (found.slug === "ayurvedic-tablets" || found.slug === "triphala-juice" ? {
+            price: 450,
+            mrp: 600,
+            gallery: [found.imageSrc],
+          } : undefined),
+        };
+      }
+      return null;
+    }
+    return undefined;
+  });
 
   useEffect(() => {
+    if (initialApiProduct !== undefined) return;
     const controller = new AbortController();
     (async () => {
       try {
@@ -65,6 +83,7 @@ export default function ProductDetailPage({ slug }: { slug: string }) {
         title: product.title,
         category: product.category,
         categoryTag: product.categoryTag,
+        shortDescription: product.detail?.shortDescription || product.description,
         description: product.detail?.description || product.searchText,
         productType: product.detail?.productType,
         packOptions: product.detail?.packOptions,
@@ -78,6 +97,17 @@ export default function ProductDetailPage({ slug }: { slug: string }) {
         imageAlt: product.detail?.imageAlt,
         images: product.detail?.gallery ?? [product.imageSrc],
         video: product.detail?.video,
+        howToStep1: product.detail?.howToStep1,
+        howToStep2: product.detail?.howToStep2,
+        howToStep3: product.detail?.howToStep3,
+        keyIngredients: product.detail?.keyIngredients,
+        precautions: product.detail?.precautions,
+        netQuantity: product.detail?.netQuantity,
+        formulationType: product.detail?.formulationType,
+        manufacturer: product.detail?.manufacturer,
+        shelfLife: product.detail?.shelfLife,
+        batchExpiry: product.detail?.batchExpiry,
+        countryOfOrigin: product.detail?.countryOfOrigin,
       }}
     />
   );

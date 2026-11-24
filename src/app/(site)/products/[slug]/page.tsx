@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ProductDetailPage from "@/components/products/ProductDetailPage";
-import { fetchProducts } from "@/lib/catalog";
+import { fetchProduct, fetchProducts } from "@/lib/catalog";
 import { builtinProducts, slugify } from "@/lib/builtinProducts";
 
 /** Product pages built ahead of time: the admin's products, or the built-in ones if the API is down.
@@ -15,5 +15,6 @@ export const metadata: Metadata = { title: "Ayurvedic Products | The Vaidhyashal
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return <ProductDetailPage slug={slug} />;
+  const initialApiProduct = await fetchProduct(slug);
+  return <ProductDetailPage slug={slug} initialApiProduct={initialApiProduct} />;
 }

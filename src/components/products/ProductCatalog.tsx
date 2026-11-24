@@ -20,6 +20,7 @@ export interface Product {
   imageSrc: string;
   /** Only set for products from the admin */
   detail?: {
+    shortDescription?: string;
     /** The popup's paragraph (the card shows the short description) */
     description?: string;
     productType?: string;
@@ -34,6 +35,17 @@ export interface Product {
     gallery: string[];
     /** Uploaded video or YouTube link, shown after the pictures */
     video?: string;
+    howToStep1?: string;
+    howToStep2?: string;
+    howToStep3?: string;
+    keyIngredients?: string;
+    precautions?: string;
+    netQuantity?: string;
+    formulationType?: string;
+    manufacturer?: string;
+    shelfLife?: string;
+    batchExpiry?: string;
+    countryOfOrigin?: string;
   };
 }
 
@@ -70,6 +82,7 @@ export const fromApi = (p: ApiProduct): Product => {
     searchText: [p.shortDescription, p.description, p.productType].filter(Boolean).join(" "),
     imageSrc,
     detail: {
+      shortDescription: p.shortDescription,
       description: p.description || p.shortDescription,
       productType: p.productType,
       packOptions: p.packOptions,
@@ -82,6 +95,17 @@ export const fromApi = (p: ApiProduct): Product => {
       imageAlt: p.imageAlt,
       gallery,
       video: assetUrl(p.video?.trim()),
+      howToStep1: p.howToStep1,
+      howToStep2: p.howToStep2,
+      howToStep3: p.howToStep3,
+      keyIngredients: p.keyIngredients,
+      precautions: p.precautions,
+      netQuantity: p.netQuantity,
+      formulationType: p.formulationType,
+      manufacturer: p.manufacturer,
+      shelfLife: p.shelfLife,
+      batchExpiry: p.batchExpiry,
+      countryOfOrigin: p.countryOfOrigin,
     },
   };
 };

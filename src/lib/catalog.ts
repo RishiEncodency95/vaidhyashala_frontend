@@ -28,6 +28,17 @@ export interface ApiProduct {
   galleryImage2?: string;
   galleryImage3?: string;
   video?: string;
+  howToStep1?: string;
+  howToStep2?: string;
+  howToStep3?: string;
+  keyIngredients?: string;
+  precautions?: string;
+  netQuantity?: string;
+  formulationType?: string;
+  manufacturer?: string;
+  shelfLife?: string;
+  batchExpiry?: string;
+  countryOfOrigin?: string;
 }
 
 export interface ApiTestimonial {
@@ -55,6 +66,11 @@ async function getData<T>(path: string, signal?: AbortSignal): Promise<T | null>
 export async function fetchProducts(signal?: AbortSignal): Promise<ApiProduct[] | null> {
   const data = await getData<{ items?: ApiProduct[] }>("/website/products", signal);
   return data?.items ?? null;
+}
+
+/** One product by slug or id; null if not found or unreachable */
+export async function fetchProduct(slug: string, signal?: AbortSignal): Promise<ApiProduct | null> {
+  return getData<ApiProduct>(`/website/products/${encodeURIComponent(slug)}`, signal);
 }
 
 /** Visible testimonial cards; null if the API is unreachable */

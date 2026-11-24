@@ -51,6 +51,7 @@ export interface ProductDetailViewProps {
     /** Category name as the admin wrote it, e.g. "Ayurvedic Preparations" */
     category?: string;
     categoryTag?: string;
+    shortDescription?: string;
     description?: string;
     productType?: string;
     packOptions?: string;
@@ -66,6 +67,17 @@ export interface ProductDetailViewProps {
     images?: string[];
     /** Uploaded video file or a YouTube link; shown after the pictures */
     video?: string;
+    howToStep1?: string;
+    howToStep2?: string;
+    howToStep3?: string;
+    keyIngredients?: string;
+    precautions?: string;
+    netQuantity?: string;
+    formulationType?: string;
+    manufacturer?: string;
+    shelfLife?: string;
+    batchExpiry?: string;
+    countryOfOrigin?: string;
   };
 }
 
@@ -132,11 +144,19 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
     "Use as directed by your physician or as indicated on the pack label. Store in a cool, dry place away from direct sunlight.";
   const imageAlt = product?.imageAlt || title;
 
+  const isTriphala = title.toLowerCase().includes("triphala");
   const extras = productExtras(title);
-  const tagline = extras.tagline || firstSentence(description);
-  const about = extras.about || description;
-  const qtyLabel = netQuantity(productInfo) || extras.netQuantity || "750 ml";
-  const ingredientList = ingredients(productInfo);
+  const tagline = product?.shortDescription || (isTriphala ? extras.tagline : "") || firstSentence(description);
+  const about = description || extras.about;
+  const qtyLabel =
+    product?.netQuantity?.trim() ||
+    (product?.packOptions && product.packOptions !== "Confirm with the clinic" ? product.packOptions : "") ||
+    netQuantity(productInfo) ||
+    extras.netQuantity ||
+    "";
+  const ingredientList = product?.keyIngredients?.trim()
+    ? product.keyIngredients.split("\n").map((l) => l.trim()).filter(Boolean)
+    : ingredients(productInfo);
 
   const price = Number(product?.price) || 0;
   const mrp = Number(product?.mrp) || 0;
@@ -270,21 +290,21 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
       </aside>
       <div className="mx-auto max-w-[1440px] px-4 pb-0 pt-2 sm:px-6 lg:px-12">
         {/* ============ Breadcrumb ============ */}
-        <nav aria-label="Breadcrumb" className="flex h-[34px] flex-wrap items-center gap-x-3 text-[13.1px] text-[#1E1E22]">
-          <Link href="/" aria-label="Home" className="hover:text-[#0B5924]">
-            <House className="h-[19px] w-[19px]" strokeWidth={1.9} />
+        <nav aria-label="Breadcrumb" className="flex h-[34px] flex-wrap items-center gap-x-2 text-[12px] sm:text-[12.5px] font-medium text-[#666]">
+          <Link href="/" aria-label="Home" className="text-[#555] hover:text-[#0B5924]">
+            <House className="h-[15px] w-[15px]" strokeWidth={1.8} />
           </Link>
           <Link href="/" className="hover:text-[#0B5924]">Home</Link>
-          <ChevronRight className="h-4 w-4" strokeWidth={2.2} />
+          <ChevronRight className="h-3.5 w-3.5 text-[#999]" strokeWidth={2} />
           <Link href="/products" className="hover:text-[#0B5924]">Products</Link>
           {category && (
             <>
-              <ChevronRight className="h-4 w-4" strokeWidth={2.2} />
+              <ChevronRight className="h-3.5 w-3.5 text-[#999]" strokeWidth={2} />
               <Link href="/products" className="hover:text-[#0B5924]">{category}</Link>
             </>
           )}
-          <ChevronRight className="h-4 w-4" strokeWidth={2.2} />
-          <span className="font-semibold">{title}</span>
+          <ChevronRight className="h-3.5 w-3.5 text-[#999]" strokeWidth={2} />
+          <span className="font-semibold text-[#14602A]">{title}</span>
         </nav>
 
         {/* ============ Row 1: gallery · info · sidebar ============ */}
@@ -317,7 +337,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                         }`}
                     >
                       <span className="relative block h-full w-full overflow-hidden rounded-[7px]">
-                        <CmsImage fill sizes="80px" src={src} alt={`${imageAlt} – picture ${idx + 1}`} className="object-cover" />
+                        <CmsImage fill sizes="80px" src={src} alt={`${title} – picture ${idx + 1}`} className="object-cover" />
                       </span>
                     </button>
                   ))}
@@ -394,113 +414,115 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             </div>
 
             {/* Product info */}
-            <div className="min-w-0 flex-1 lg:ml-[18px]">
-              {badge && (
-                <span className="inline-flex h-[30px] items-center gap-2 rounded-full bg-[#EEF3D4] pl-[12px] pr-[14px] text-[13.5px] font-medium text-[#1F3B1F]">
-                  <Leaf className="h-[18px] w-[18px] fill-[#4A9A22] text-[#3A8A1A]" strokeWidth={1.5} />
-                  <span className="translate-y-px">{badge}</span>
-                </span>
-              )}
-              <h1 className="mt-[6px] text-[22px] lg:text-[24px] font-semibold leading-tight tracking-[-0.01em]" style={{ color: GREEN }}>
-                {title}
-              </h1>
-              {tagline && <p className="mt-[4px] max-w-[400px] text-[15.2px] leading-[23px] text-[#1D1F21]">{tagline}</p>}
+            <div className="min-w-0 flex-1 lg:ml-[20px] flex flex-col justify-between gap-3.5 lg:gap-0 lg:h-[385px]">
+              <div>
+                {badge && (
+                  <span className="inline-flex h-[26px] items-center gap-1.5 rounded-full bg-[#EEF3D4] px-[10px] text-[12px] font-medium text-[#1F3B1F]">
+                    <Leaf className="h-[14px] w-[14px] fill-[#4A9A22] text-[#3A8A1A]" strokeWidth={1.5} />
+                    <span>{badge}</span>
+                  </span>
+                )}
+                <h1 className="mt-[4px] text-[22px] lg:text-[24px] font-semibold leading-tight tracking-[-0.01em]" style={{ color: GREEN }}>
+                  {title}
+                </h1>
+                {tagline && <p className="mt-[3px] max-w-[420px] text-[13.5px] font-medium leading-[20px] text-[#444]">{tagline}</p>}
+              </div>
 
               {extras.rating && (
-                <div className="mt-[8px] flex flex-wrap items-center gap-x-3 gap-y-1 text-[13.1px] text-[#222]">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12.5px] font-medium text-[#555]">
                   <span className="flex gap-[2px]" aria-label={`${extras.rating} out of 5`}>
                     {[0, 1, 2, 3, 4].map((i) => (
-                      <Star key={i} className="h-[18px] w-[18px] fill-[#FBBC14] text-[#FBBC14]" />
+                      <Star key={i} className="h-[15px] w-[15px] fill-[#FBBC14] text-[#FBBC14]" />
                     ))}
                   </span>
                   <span>
-                    <b className="text-[14.8px] font-bold">{extras.rating}</b> ({extras.reviewCount} Reviews)
+                    <span className="font-semibold text-[#111]">{extras.rating}</span> ({extras.reviewCount} Reviews)
                   </span>
-                  <span className="h-[22px] w-px bg-[#BDBDBD]" />
-                  <Users className="h-[21px] w-[21px] text-[#F0A020]" strokeWidth={1.8} />
+                  <span className="h-[16px] w-px bg-[#D0D0D0]" />
+                  <Users className="h-[16px] w-[16px] text-[#E59819]" strokeWidth={1.8} />
                   <span>
-                    <b className="text-[14.8px] font-bold">{extras.happyCustomers}</b> Happy Customers
+                    <span className="font-semibold text-[#111]">{extras.happyCustomers}</span> Happy Customers
                   </span>
                 </div>
               )}
 
               {/* Benefit badges */}
-              <div className="mt-[6px] grid h-[74px] grid-cols-3 rounded-[16px] border border-[#EEEEED] bg-[#F8F8F3] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="grid h-[72px] grid-cols-3 rounded-[16px] border border-[#EEEEED] bg-[#F8F8F3] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                 {extras.benefits.map((b, i) => (
                   <div key={b.label} className={`flex flex-col items-center justify-center gap-[3px] ${i ? "border-l border-[#E2E2DE]" : ""} my-[4px]`}>
                     <BenefitGlyph icon={b.icon} />
-                    <span className="whitespace-nowrap text-center text-[14.4px] font-semibold leading-[18px] text-[#1E2022]">{b.label}</span>
+                    <span className="whitespace-nowrap text-center text-[12.5px] sm:text-[13px] font-semibold leading-[17px] text-[#1E2022]">{b.label}</span>
                   </div>
                 ))}
               </div>
 
               {/* Price */}
-              <div className="mt-[6px] flex min-h-[48px] flex-wrap items-center gap-x-[12px] gap-y-2 rounded-[14px] sm:flex-nowrap border border-[#EFEFE8] bg-[linear-gradient(90deg,#FEF9E8_0%,#FBF9F0_45%,#F8F9F4_100%)] px-[10px] py-[6px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+              <div className="flex min-h-[46px] flex-wrap items-center gap-x-[12px] gap-y-2 rounded-[14px] sm:flex-nowrap border border-[#EFEFE8] bg-[linear-gradient(90deg,#FEF9E8_0%,#FBF9F0_45%,#F8F9F4_100%)] px-[12px] py-[6px] shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
                 {hasPrice ? (
                   <>
                     {hasDiscount && (
-                      <span className="shrink-0 rounded-full bg-[linear-gradient(90deg,#EB9E03,#F4A400)] px-[12px] pb-[5px] pt-[7px] text-[14.8px] font-semibold leading-none text-white">
+                      <span className="shrink-0 rounded-full bg-[linear-gradient(90deg,#EB9E03,#F4A400)] px-[10px] py-[3px] text-[12.5px] font-semibold leading-none text-white">
                         {percentOff}% OFF
                       </span>
                     )}
-                    <span className="shrink-0 text-[22px] lg:text-[24px] font-semibold leading-none" style={{ color: GREEN }}>{rupees(price)}</span>
+                    <span className="shrink-0 text-[19px] lg:text-[21px] font-semibold leading-none" style={{ color: GREEN }}>{rupees(price)}</span>
                     {hasDiscount && (
-                      <span className="shrink-0 whitespace-nowrap leading-[22px]">
-                        <span className="block text-[13.5px] text-[#8F8F90]">
+                      <span className="shrink-0 whitespace-nowrap leading-tight">
+                        <span className="block text-[12px] font-medium text-[#777]">
                           M.R.P. <span className="line-through">{rupees(mrp)}</span>
                         </span>
-                        <span className="block text-[14.4px] font-semibold text-[#147911]">You Save {rupees(savings)}</span>
+                        <span className="block text-[12.5px] font-semibold text-[#147911]">You Save {rupees(savings)}</span>
                       </span>
                     )}
                   </>
                 ) : (
-                  <span className="text-[15.7px] font-semibold" style={{ color: GREEN }}>Price on request</span>
+                  <span className="text-[15px] font-semibold" style={{ color: GREEN }}>Price on request</span>
                 )}
                 {qtyLabel && (
-                  <span className="ml-auto flex shrink-0 items-center gap-[8px] self-stretch border-l border-[#DADAD4] my-[4px] pl-[12px]">
-                    <Milk className="h-[22px] w-[20px] text-[#2B2B2B]" strokeWidth={1.5} />
+                  <span className="ml-auto flex shrink-0 items-center gap-[7px] self-stretch border-l border-[#DADAD4] my-[2px] pl-[12px]">
+                    <Milk className="h-[18px] w-[18px] text-[#444]" strokeWidth={1.5} />
                     <span className="leading-tight">
-                      <span className="block text-[11px] font-medium text-[#555]">Net Quantity</span>
-                      <span className="block text-[14px] font-medium text-[#111]">{qtyLabel}</span>
+                      <span className="block text-[10.5px] font-medium text-[#666]">Net Quantity</span>
+                      <span className="block text-[13px] font-semibold text-[#111]">{qtyLabel}</span>
                     </span>
                   </span>
                 )}
               </div>
 
               {/* Actions */}
-              <div className="mt-[6px] flex flex-wrap items-center gap-[9px]">
-                <div className="inline-flex h-[38px] w-[96px] items-center justify-between rounded-[10px] border border-[#D5D5D5] bg-white px-[8px] shadow-sm">
+              <div className="flex flex-wrap items-center gap-[9px]">
+                <div className="inline-flex h-[36px] w-[92px] items-center justify-between rounded-[8px] border border-[#D5D5D5] bg-white px-[8px] shadow-sm">
                   <button type="button" aria-label="Decrease quantity" onClick={() => setQty((q) => Math.max(1, q - 1))} className="p-1 text-[#444] transition-colors hover:text-[#111]">
-                    <Minus className="h-[14px] w-[14px]" strokeWidth={2.2} />
+                    <Minus className="h-[13px] w-[13px]" strokeWidth={2.2} />
                   </button>
-                  <span className="text-[14.5px] font-medium text-[#111]" aria-live="polite">{qty}</span>
+                  <span className="text-[13.5px] font-medium text-[#111]" aria-live="polite">{qty}</span>
                   <button type="button" aria-label="Increase quantity" onClick={() => setQty((q) => Math.min(20, q + 1))} className="p-1 text-[#444] transition-colors hover:text-[#111]">
-                    <Plus className="h-[14px] w-[14px]" strokeWidth={2.2} />
+                    <Plus className="h-[13px] w-[13px]" strokeWidth={2.2} />
                   </button>
                 </div>
                 <button
                   type="button"
                   onClick={onAdd}
                   disabled={!hasPrice}
-                  className="inline-flex h-[38px] w-[138px] items-center justify-center gap-[7px] rounded-[10px] border border-[#0A4A1F] bg-white text-[13.5px] font-medium text-[#0A4A1F] shadow-sm transition-all hover:bg-[#F3F8F2] disabled:opacity-50"
+                  className="inline-flex h-[36px] w-[130px] items-center justify-center gap-[7px] rounded-[8px] border border-[#0A4A1F] bg-white text-[13px] font-medium text-[#0A4A1F] shadow-sm transition-all hover:bg-[#F3F8F2] disabled:opacity-50"
                 >
-                  {justAdded ? <Check className="h-[16px] w-[16px] text-[#0A4A1F]" /> : <ShoppingCart className="h-[16px] w-[16px] text-[#0A4A1F]" strokeWidth={1.9} />}
-                  <span className="translate-y-px">{justAdded ? "Added" : "Add to Cart"}</span>
+                  {justAdded ? <Check className="h-[15px] w-[15px] text-[#0A4A1F]" /> : <ShoppingCart className="h-[15px] w-[15px] text-[#0A4A1F]" strokeWidth={1.9} />}
+                  <span>{justAdded ? "Added" : "Add to Cart"}</span>
                 </button>
                 <button
                   type="button"
                   onClick={onBuy}
                   disabled={!hasPrice}
-                  className="inline-flex h-[38px] min-w-[150px] flex-1 items-center justify-center gap-[7px] rounded-[10px] text-[14px] font-medium text-[#0A1F0A] shadow-[0_2px_8px_rgba(235,169,0,0.3)] transition-all hover:brightness-105 disabled:opacity-50"
+                  className="inline-flex h-[36px] min-w-[140px] flex-1 items-center justify-center gap-[7px] rounded-[8px] text-[13.5px] font-medium text-[#0A1F0A] shadow-[0_2px_8px_rgba(235,169,0,0.3)] transition-all hover:brightness-105 disabled:opacity-50"
                   style={{ background: GOLD_BTN }}
                 >
-                  <Zap className="h-[16px] w-[16px] fill-[#0A3314] text-[#0A3314]" />
-                  <span className="translate-y-px">Buy Now</span>
+                  <Zap className="h-[15px] w-[15px] fill-[#0A3314] text-[#0A3314]" />
+                  <span>Buy Now</span>
                 </button>
               </div>
 
               {/* Service features */}
-              <ul className="mt-[6px] grid grid-cols-2 gap-y-1 sm:flex sm:justify-between">
+              <ul className="grid grid-cols-2 gap-y-1 sm:flex sm:justify-between">
                 {[
                   { icon: Truck, a: "Fast Delivery", b: "(2–5 Days)" },
                   { icon: ShieldCheck, a: "Secure", b: "Packaging" },
@@ -508,9 +530,9 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   { icon: RefreshCw, a: "Easy", b: "Returns*" },
                 ].map(({ icon: Icon, a, b }, i) => (
                   <li key={a} className={`flex items-center gap-[7px] ${i ? "sm:border-l sm:border-[#E2E2E2] sm:pl-[9px]" : ""}`}>
-                    <Icon className="h-[26px] w-[26px] shrink-0 text-[#2F6B3A]" strokeWidth={1.6} />
-                    <span className="whitespace-nowrap text-[11px] leading-[16px] text-[#333]">
-                      {a}
+                    <Icon className="h-[20px] w-[20px] shrink-0 text-[#2F6B3A]" strokeWidth={1.6} />
+                    <span className="whitespace-nowrap text-[10.5px] font-medium leading-[14px] text-[#444]">
+                      <span className="font-semibold text-[#222]">{a}</span>
                       <br />
                       {b}
                     </span>
@@ -525,25 +547,25 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             {/* Check delivery */}
             <form
               onSubmit={checkPin}
-              className="relative overflow-hidden rounded-[16px] px-[16px] pb-[10px] pt-[8px] text-white shadow-[0_4px_12px_rgba(0,46,20,0.25)]"
+              className="relative overflow-hidden rounded-[14px] px-[16px] pb-[12px] pt-[10px] text-white shadow-[0_4px_12px_rgba(0,46,20,0.25)]"
               style={{ background: "linear-gradient(180deg,#156229 0%,#0D5325 35%,#073E19 70%,#002E14 100%)" }}
             >
               <img
                 src="/product-v2/truck.png"
                 alt=""
-                className="absolute right-[14px] top-[12px] h-[50px] w-[80px] object-contain"
+                className="absolute right-[14px] top-[10px] h-[44px] w-[70px] object-contain"
                 style={{ maskImage: "radial-gradient(ellipse 50% 50% at 50% 50%, #000 75%, transparent 100%)", WebkitMaskImage: "radial-gradient(ellipse 50% 50% at 50% 50%, #000 75%, transparent 100%)" }}
               />
-              <div className="flex items-center gap-[10px]">
-                <MapPin className="h-[28px] w-[28px] fill-[#F5B60B] text-[#0B4A1E]" strokeWidth={1.6} />
-                <h2 className="text-[19.1px] font-semibold leading-none">Check Delivery</h2>
+              <div className="flex items-center gap-[8px]">
+                <MapPin className="h-[20px] w-[20px] fill-[#F5B60B] text-[#0B4A1E]" strokeWidth={1.6} />
+                <h2 className="text-[15.5px] font-semibold leading-none">Check Delivery</h2>
               </div>
-              <p className="mt-[4px] max-w-[240px] text-[12.6px] leading-[19px] text-white/90">
+              <p className="mt-[4px] max-w-[240px] text-[11.5px] font-medium leading-[16px] text-white/85">
                 Enter your PIN code to check delivery availability in your area.
               </p>
-              <div className="mt-[8px] flex gap-[10px]">
-                <label className="flex h-[36px] min-w-0 flex-1 items-center gap-[10px] rounded-[10px] bg-white px-[12px] text-[#555]">
-                  <MapPin className="h-[18px] w-[18px] shrink-0" strokeWidth={1.8} />
+              <div className="mt-[8px] flex gap-[8px]">
+                <label className="flex h-[34px] min-w-0 flex-1 items-center gap-[8px] rounded-[8px] bg-white px-[10px] text-[#555]">
+                  <MapPin className="h-[15px] w-[15px] shrink-0 text-[#666]" strokeWidth={1.8} />
                   <input
                     value={pin}
                     onChange={(e) => {
@@ -553,34 +575,34 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                     inputMode="numeric"
                     placeholder="Enter PIN Code"
                     aria-label="PIN code"
-                    className="min-w-0 flex-1 bg-transparent text-[13.9px] text-[#111] outline-none placeholder:text-[#8A8A8A]"
+                    className="min-w-0 flex-1 bg-transparent text-[12.5px] font-medium text-[#111] outline-none placeholder:text-[#8A8A8A]"
                   />
                 </label>
                 <button
                   type="submit"
-                  className="h-[36px] w-[82px] shrink-0 rounded-[10px] text-[14.8px] font-semibold text-[#0A1F0A] hover:brightness-105"
+                  className="h-[34px] w-[74px] shrink-0 rounded-[8px] text-[13px] font-semibold text-[#0A1F0A] hover:brightness-105"
                   style={{ background: GOLD_BTN }}
                 >
                   Check
                 </button>
               </div>
-              {pinMsg && <p className={`mt-2 text-[11.3px] ${pinMsg.ok ? "text-[#D8F5C8]" : "text-[#FFD7A0]"}`}>{pinMsg.text}</p>}
+              {pinMsg && <p className={`mt-2 text-[11px] font-medium ${pinMsg.ok ? "text-[#D8F5C8]" : "text-[#FFD7A0]"}`}>{pinMsg.text}</p>}
             </form>
 
             {/* Why choose */}
-            <div className="rounded-[16px] border border-[#EEEEEE] bg-white px-[16px] pb-[6px] pt-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
+            <div className="rounded-[14px] border border-[#EEEEEE] bg-white px-[16px] pb-[8px] pt-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
               <div className="flex items-center gap-[8px]">
-                <img src="/product-v2/leaf.png" alt="" className="h-[38px] w-[40px] object-contain" />
-                <h2 className="text-[19.1px] font-semibold leading-none" style={{ color: GREEN }}>Why Choose Vaidhyashala?</h2>
+                <img src="/product-v2/leaf.png" alt="" className="h-[30px] w-[32px] object-contain" />
+                <h2 className="text-[15.5px] font-semibold leading-none" style={{ color: GREEN }}>Why Choose Vaidhyashala?</h2>
               </div>
-              <ul className="mt-[4px]">
+              <ul className="mt-[6px]">
                 {["Authentic Ayurvedic Formulation", "High-Quality, Natural Ingredients", "Safe for Daily Use", "Trusted for Long-Term Wellness"].map(
                   (t, i) => (
-                    <li key={t} className={`flex h-[26px] items-center gap-[9px] ${i < 3 ? "border-b border-[#F0F0F0]" : ""}`}>
-                      <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
-                        <Check className="h-[11px] w-[11px] text-white" strokeWidth={2.8} />
+                    <li key={t} className={`flex h-[26px] items-center gap-[8px] ${i < 3 ? "border-b border-[#F0F0F0]" : ""}`}>
+                      <span className="flex h-[16px] w-[16px] shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_35%_30%,#9FD356,#3D9A2B)]">
+                        <Check className="h-[10px] w-[10px] text-white" strokeWidth={2.8} />
                       </span>
-                      <span className="text-[12.8px] font-medium text-[#222]">{t}</span>
+                      <span className="text-[12px] font-medium text-[#333]">{t}</span>
                     </li>
                   ),
                 )}
@@ -588,23 +610,23 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
             </div>
 
             {/* Guidance */}
-            <div className="rounded-[16px] border border-[#F3EBD7] bg-[linear-gradient(180deg,#FEFCF5_0%,#FCF5E5_100%)] px-[16px] pb-[8px] pt-[8px] shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
-              <div className="flex items-center gap-[12px]">
-                <img src="/product-v2/doctor.png" alt="" className="h-[44px] w-[44px] shrink-0 object-contain" />
+            <div className="rounded-[14px] border border-[#F3EBD7] bg-[linear-gradient(180deg,#FEFCF5_0%,#FCF5E5_100%)] px-[16px] pb-[10px] pt-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+              <div className="flex items-center gap-[10px]">
+                <img src="/product-v2/doctor.png" alt="" className="h-[38px] w-[38px] shrink-0 object-contain" />
                 <div>
-                  <h2 className="text-[17px] font-semibold leading-tight text-[#092810]">Need Guidance?</h2>
-                  <p className="mt-[2px] text-[12px] font-medium leading-[16px] text-[#333]">Consult our Ayurvedic Experts for personalized advice.</p>
+                  <h2 className="text-[15px] font-semibold leading-tight text-[#092810]">Need Guidance?</h2>
+                  <p className="mt-[2px] text-[11.5px] font-medium leading-[15px] text-[#444]">Consult our Ayurvedic Experts for personalized advice.</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setConsultOpen(true)}
-                className="mt-[6px] flex h-[34px] w-full items-center justify-center gap-[8px] rounded-full text-[13.5px] font-medium text-white shadow-[0_3px_8px_rgba(11,89,36,0.35)] transition-all hover:brightness-110"
+                className="mt-[8px] flex h-[34px] w-full items-center justify-center gap-[7px] rounded-full text-[12.5px] font-semibold text-white shadow-[0_3px_8px_rgba(11,89,36,0.3)] transition-all hover:brightness-110"
                 style={{ background: GREEN_BTN }}
               >
-                <CalendarDays className="h-[16px] w-[16px]" strokeWidth={1.8} />
-                <span className="translate-y-px">Book a Consultation</span>
-                <ArrowRight className="h-[15px] w-[15px]" strokeWidth={2.2} />
+                <CalendarDays className="h-[15px] w-[15px]" strokeWidth={1.8} />
+                <span>Book a Consultation</span>
+                <ArrowRight className="h-[14px] w-[14px]" strokeWidth={2.2} />
               </button>
             </div>
           </aside>
@@ -613,40 +635,40 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         {/* ============ Row 2: tabs · trust ============ */}
         <div className="mt-[10px] flex flex-col gap-4 min-[1360px]:flex-row min-[1360px]:gap-[16px]">
           <section className="min-w-0 flex-1 overflow-hidden rounded-[16px] border border-[#EAEAEA] bg-white shadow-[0_2px_10px_rgba(0,0,0,0.06)]">
-            <div role="tablist" className="flex items-center overflow-x-auto border-b border-[#ECECEE] px-[10px] py-[5px] [scrollbar-width:none]">
+            <div role="tablist" className="flex items-center overflow-x-auto border-b border-[#ECECEE] px-[8px] py-[5px] [scrollbar-width:none]">
               {TABS.map(({ key, label, icon: Icon }, i) => {
                 const active = tab === key;
                 return (
                   <React.Fragment key={key}>
-                    {i > 0 && !active && tab !== TABS[i - 1].key && <span className="h-[26px] w-px shrink-0 bg-[#E1E0E3]" />}
+                    {i > 0 && !active && tab !== TABS[i - 1].key && <span className="h-[22px] w-px shrink-0 bg-[#E1E0E3]" />}
                     <button
                       role="tab"
                       aria-selected={active}
                       type="button"
                       onClick={() => setTab(key)}
-                      className={`flex h-[30px] shrink-0 items-center justify-center gap-[8px] rounded-[7px] text-[13.5px] transition-colors ${
-                        active ? "w-[155px] font-medium text-white" : "flex-1 px-[14px] font-medium text-[#333] hover:text-[#0B5924]"
+                      className={`flex h-[32px] shrink-0 items-center justify-center gap-[7px] rounded-[7px] text-[12.5px] sm:text-[13px] transition-colors ${
+                        active ? "w-[150px] font-semibold text-white shadow-sm" : "flex-1 px-[12px] font-medium text-[#444] hover:text-[#0B5924]"
                       }`}
                       style={active ? { background: "linear-gradient(180deg,#0B6125,#095D23)" } : undefined}
                     >
-                      <Icon className={`h-[17px] w-[17px] ${active ? "fill-[#FFD54A]/30 text-[#FFD54A]" : "text-[#2D8717]"}`} strokeWidth={1.7} />
-                      <span className="translate-y-px whitespace-nowrap">{tabLabel(key, label)}</span>
+                      <Icon className={`h-[15px] w-[15px] ${active ? "fill-[#FFD54A]/30 text-[#FFD54A]" : "text-[#2D8717]"}`} strokeWidth={1.7} />
+                      <span className="whitespace-nowrap">{tabLabel(key, label)}</span>
                     </button>
                   </React.Fragment>
                 );
               })}
             </div>
 
-            <div className="relative min-h-[0px] px-[18px] pb-[10px] pt-[10px]">
+            <div className="relative min-h-[0px] px-[16px] pb-[12px] pt-[10px]">
               {tab === "about" && (
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                   <div className="max-w-[620px]">
-                    <h2 className="text-[17px] font-semibold leading-tight" style={{ color: GREEN }}>About {title}</h2>
-                    <span className="mt-[3px] block h-[2.5px] w-[45px] rounded-full bg-[#EDA515]" />
-                    <p className="mt-[6px] whitespace-pre-line text-[13px] font-medium leading-[21px] text-[#333]">{about}</p>
+                    <h2 className="text-[15.5px] font-semibold leading-tight" style={{ color: GREEN }}>About {title}</h2>
+                    <span className="mt-[3px] block h-[2.5px] w-[40px] rounded-full bg-[#EDA515]" />
+                    <p className="mt-[6px] whitespace-pre-line text-[12.5px] font-medium leading-[20px] text-[#444]">{about}</p>
                   </div>
                   {extras.aboutImage && (
-                    <img src={extras.aboutImage} alt="" className="-my-[4px] mr-[10px] h-[80px] w-auto shrink-0 self-center object-contain mix-blend-multiply" />
+                    <img src={extras.aboutImage} alt="" className="-my-[4px] mr-[10px] h-[75px] w-auto shrink-0 self-center object-contain mix-blend-multiply" />
                   )}
                 </div>
               )}
@@ -656,7 +678,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   {extras.benefits.map((b) => (
                     <li key={b.label} className="flex items-center gap-3 rounded-[12px] border border-[#EEEEED] bg-[#F8F8F3] p-3">
                       <BenefitGlyph icon={b.icon} />
-                      <span className="text-[13.5px] font-medium text-[#1E2022]">{b.label}</span>
+                      <span className="text-[12.5px] sm:text-[13px] font-semibold text-[#1E2022]">{b.label}</span>
                     </li>
                   ))}
                 </ul>
@@ -664,27 +686,27 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
               {tab === "ingredients" &&
                 (ingredientList.length ? (
-                  <ul className="grid gap-3 sm:grid-cols-3">
+                  <ul className="grid gap-2.5 sm:grid-cols-3">
                     {ingredientList.map((ing) => (
-                      <li key={ing} className="flex items-center gap-2.5 rounded-[12px] border border-[#EEEEED] bg-[#F8F8F3] p-3 text-[13px] font-medium text-[#222]">
-                        <Leaf className="h-[18px] w-[18px] shrink-0 text-[#2D8717]" strokeWidth={1.7} />
+                      <li key={ing} className="flex items-center gap-2.5 rounded-[10px] border border-[#EEEEED] bg-[#F8F8F3] p-2.5 text-[12.5px] font-medium text-[#222]">
+                        <Leaf className="h-[16px] w-[16px] shrink-0 text-[#2D8717]" strokeWidth={1.7} />
                         {ing}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="whitespace-pre-line text-[13px] font-medium leading-[22px] text-[#333]">
+                  <p className="whitespace-pre-line text-[12.5px] font-medium leading-[20px] text-[#444]">
                     {productInfo || "Ingredient details will be shared by our clinic team."}
                   </p>
                 ))}
 
-              {tab === "howto" && <p className="whitespace-pre-line text-[13px] font-medium leading-[22px] text-[#333]">{directions}</p>}
+              {tab === "howto" && <p className="whitespace-pre-line text-[12.5px] font-medium leading-[20px] text-[#444]">{directions}</p>}
 
               {tab === "reviews" && (
-                <div className="text-[13px] font-medium leading-[22px] text-[#333]">
+                <div className="text-[12.5px] font-medium leading-[20px] text-[#444]">
                   {extras.rating ? (
                     <p>
-                      Rated <b className="font-semibold">{extras.rating} out of 5</b> by {extras.reviewCount} customers.
+                      Rated <span className="font-semibold text-[#111]">{extras.rating} out of 5</span> by {extras.reviewCount} customers.
                     </p>
                   ) : (
                     <p>No reviews yet.</p>
@@ -699,24 +721,24 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
           </section>
 
           {/* Trust */}
-          <aside className="rounded-[16px] border border-[#EEEFE8] bg-[#FBFCF6] px-[16px] pb-[6px] pt-[8px] shadow-[0_2px_10px_rgba(0,0,0,0.05)] min-[1360px]:w-[342px] min-[1360px]:shrink-0">
-            <div className="flex items-center gap-[10px]">
-              <ShieldCheck className="h-[30px] w-[30px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
-              <h2 className="translate-y-px whitespace-nowrap text-[17.8px] font-semibold leading-none" style={{ color: GREEN }}>Your Trust, Our Commitment</h2>
+          <aside className="rounded-[14px] border border-[#EEEFE8] bg-[#FBFCF6] px-[16px] pb-[8px] pt-[10px] shadow-[0_2px_10px_rgba(0,0,0,0.05)] min-[1360px]:w-[342px] min-[1360px]:shrink-0">
+            <div className="flex items-center gap-[8px]">
+              <ShieldCheck className="h-[22px] w-[22px] shrink-0 text-[#1F5F2A]" strokeWidth={1.7} />
+              <h2 className="whitespace-nowrap text-[15.5px] font-semibold leading-none" style={{ color: GREEN }}>Your Trust, Our Commitment</h2>
             </div>
-            <ul className="mt-[0px]">
+            <ul className="mt-[4px]">
               {[
                 { icon: Leaf, t: "Genuine Ayurvedic Products" },
                 { icon: Award, t: "Clinic-Backed Quality & Safety" },
                 { icon: Headset, t: "Dedicated Customer Support" },
               ].map(({ icon: Icon, t }) => (
-                <li key={t} className="flex h-[30px] items-center gap-[14px] border-b border-[#ECEDE6] pl-[6px]">
-                  <Icon className="h-[24px] w-[24px] shrink-0 text-[#2F7D32]" strokeWidth={1.6} />
-                  <span className="translate-y-px text-[14.4px] text-[#13131C]">{t}</span>
+                <li key={t} className="flex h-[28px] items-center gap-[10px] border-b border-[#ECEDE6]">
+                  <Icon className="h-[18px] w-[18px] shrink-0 text-[#2F7D32]" strokeWidth={1.6} />
+                  <span className="text-[12.5px] font-medium text-[#222]">{t}</span>
                 </li>
               ))}
             </ul>
-            <p className="mt-[6px] flex flex-wrap items-center gap-x-3 text-[13px] text-[#13131C]">
+            <p className="mt-[6px] flex flex-wrap items-center gap-x-2.5 text-[12px] font-normal text-[#555]">
               <a href="tel:+919811979147" className="hover:text-[#0B5924]">+91 98119 79147</a>
               <span className="text-[#888]">|</span>
               <a href="mailto:care@vaidhyashala.com" className="hover:text-[#0B5924]">care@vaidhyashala.com</a>
@@ -725,7 +747,27 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         </div>
 
         {/* ============ Row 3: specifications & usage guide ============ */}
-        <ProductUsageGuide title={title} productInfo={productInfo} />
+        <ProductUsageGuide
+          title={title}
+          category={category}
+          productInfo={productInfo}
+          directions={directions}
+          usageNotes={product?.usageNotes || ""}
+          productType={product?.productType || ""}
+          packOptions={product?.packOptions || ""}
+          description={description}
+          howToStep1={product?.howToStep1}
+          howToStep2={product?.howToStep2}
+          howToStep3={product?.howToStep3}
+          keyIngredients={product?.keyIngredients}
+          precautionsText={product?.precautions}
+          netQuantity={product?.netQuantity}
+          formulationType={product?.formulationType}
+          manufacturer={product?.manufacturer}
+          shelfLife={product?.shelfLife}
+          batchExpiry={product?.batchExpiry}
+          countryOfOrigin={product?.countryOfOrigin}
+        />
       </div>
 
       {/* ============ Row 4: customer testimonials (full width) ============ */}

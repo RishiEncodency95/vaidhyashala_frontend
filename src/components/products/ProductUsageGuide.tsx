@@ -2,7 +2,29 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { ChevronRight, ClipboardList, Soup, Sprout, TriangleAlert } from "lucide-react";
-import { DEFAULT_PRECAUTIONS, ingredients, netQuantity, productExtras, splitIngredient } from "@/lib/productExtras";
+import { DEFAULT_PRECAUTIONS, extractFromInfo, ingredients, netQuantity, productExtras, splitIngredient } from "@/lib/productExtras";
+
+export interface ProductUsageGuideProps {
+  title: string;
+  category?: string;
+  productInfo?: string;
+  directions?: string;
+  usageNotes?: string;
+  productType?: string;
+  packOptions?: string;
+  description?: string;
+  howToStep1?: string;
+  howToStep2?: string;
+  howToStep3?: string;
+  keyIngredients?: string;
+  precautionsText?: string;
+  netQuantity?: string;
+  formulationType?: string;
+  manufacturer?: string;
+  shelfLife?: string;
+  batchExpiry?: string;
+  countryOfOrigin?: string;
+}
 
 /*
  * "Product Specifications & Usage Guide" block under the product details.
@@ -87,21 +109,96 @@ function Card({ left, top, width, height }: { left: number; top: number; width: 
   );
 }
 
-export default function ProductUsageGuide({ title, productInfo }: { title: string; productInfo: string }) {
+export default function ProductUsageGuide({
+  title,
+  category = "",
+  productInfo = "",
+  directions = "",
+  usageNotes = "",
+  productType = "",
+  packOptions = "",
+  howToStep1 = "",
+  howToStep2 = "",
+  howToStep3 = "",
+  keyIngredients = "",
+  precautionsText = "",
+  netQuantity: netQuantityProp = "",
+  formulationType: formulationTypeProp = "",
+  manufacturer: manufacturerProp = "",
+  shelfLife: shelfLifeProp = "",
+  batchExpiry: batchExpiryProp = "",
+  countryOfOrigin: countryOfOriginProp = "",
+}: ProductUsageGuideProps) {
+  const isTriphala = title.toLowerCase().includes("triphala");
   const extras = productExtras(title);
-  const subtitle = extras.guideSubtitle || "";
-  const steps = extras.howToSteps ?? [];
-  const precautions = extras.precautions ?? DEFAULT_PRECAUTIONS;
-  const ingList = ingredients(productInfo).map(splitIngredient).slice(0, 3);
+  const subtitle = category || productType || extras.guideSubtitle || "Classical Ayurvedic Formulation";
+
+  // Steps
+  const customStepStrings = [howToStep1, howToStep2, howToStep3].map((s) => s.trim()).filter(Boolean);
+  const parseStepLines = (step: string): string[] => {
+    if (step.includes("\n")) return step.split("\n").map((s) => s.trim()).filter(Boolean);
+    const m = step.match(/^(.*?)\s*(\(.*?\))\s*$/);
+    if (m) return [m[1].trim(), m[2].trim()];
+    const m2 = step.match(/^(Mix with)\s+(.+)$/i);
+    if (m2) return [m2[1], m2[2]];
+    return [step];
+  };
+  const customSteps = customStepStrings.map((s) => ({ lines: parseStepLines(s) }));
+  const steps = customSteps.length ? customSteps : (isTriphala && extras.howToSteps?.length ? extras.howToSteps : []);
+
+  // Key Ingredients
+  const ingRawLines = keyIngredients.trim()
+    ? keyIngredients.split("\n").map((l) => l.trim()).filter(Boolean)
+    : ingredients(productInfo);
+  const ingList = ingRawLines.map(splitIngredient).slice(0, 3);
+
+  // Precautions
+  const customPrecautions = precautionsText.trim()
+    ? precautionsText.split("\n").map((l) => l.trim()).filter(Boolean)
+    : [];
+  const precautions = customPrecautions.length ? customPrecautions : (extras.precautions ?? DEFAULT_PRECAUTIONS);
+
+  // Specifications
+  const netQty =
+    netQuantityProp.trim() ||
+    (packOptions && packOptions !== "Confirm with the clinic" ? packOptions : "") ||
+    netQuantity(productInfo) ||
+    extras.netQuantity ||
+    "As per pack";
+  const formType =
+    formulationTypeProp.trim() ||
+    productType ||
+    extractFromInfo(productInfo, "Formulation Type") ||
+    extras.formulationType ||
+    "Classical Ayurvedic Formulation";
+  const mfg =
+    manufacturerProp.trim() ||
+    extractFromInfo(productInfo, "Manufacturer / Marketer") ||
+    extractFromInfo(productInfo, "Manufacturer") ||
+    "As per product label";
+  const shelfLife =
+    shelfLifeProp.trim() ||
+    extractFromInfo(productInfo, "Shelf Life") ||
+    "As per product label";
+  const batchInfo =
+    batchExpiryProp.trim() ||
+    extractFromInfo(productInfo, "Batch No. / Mfg. / Expiry") ||
+    extractFromInfo(productInfo, "Batch") ||
+    "Available on bottle label";
+  const country =
+    countryOfOriginProp.trim() ||
+    extractFromInfo(productInfo, "Country of Origin") ||
+    "India";
+
   const specs = [
-    ["Product Name", title || "Triphala Juice"],
-    ["Product Category", subtitle || extras.guideSubtitle || "Ayurvedic Herbal Juice"],
-    ["Net Quantity", netQuantity(productInfo) || extras.netQuantity || "750 ml"],
-    ["Formulation Type", extras.formulationType || "Classical Ayurvedic Formulation"],
-    ["Manufacturer / Marketer", "As per product label"],
-    ["Shelf Life", "As per product label"],
-    ["Batch No. / Mfg. / Expiry", "Available on bottle label"],
-    ["Country of Origin", "India"],
+    ["Product Name", title || "Ayurvedic Product"],
+    ["Product Category", category || subtitle || "Ayurvedic Preparations"],
+    ["Net Quantity", netQty],
+    ["Formulation Type", formType],
+    ["Manufacturer / Marketer", mfg],
+    ["Shelf Life", shelfLife],
+    ["Batch No. / Mfg. / Expiry", batchInfo],
+    ["Country of Origin", country],
   ];
 
   /* positions from the design */
@@ -192,9 +289,11 @@ export default function ProductUsageGuide({ title, productInfo }: { title: strin
               </div>
             ))
           ) : (
-            <p className="font-medium" style={at(335, 225, { width: u(530), fontSize: u(13.5), lineHeight: u(22), color: "#222" })}>
-              Use as directed on the product label or as advised by your treating doctor.
-            </p>
+            <div style={at(335, 222, { width: u(530), color: "#222" })}>
+              <p className="font-medium" style={{ fontSize: u(13.5), lineHeight: u(20), margin: 0 }}>
+                {directions || "Use as directed on the product label or as advised by your treating doctor."}
+              </p>
+            </div>
           )}
 
           {/* Key ingredients */}
@@ -210,7 +309,9 @@ export default function ProductUsageGuide({ title, productInfo }: { title: strin
               </div>
             ))
           ) : (
-            <p className="font-medium" style={cline(598, 410, 15, { color: "#222", margin: 0 })}>Ingredients as printed on the product label.</p>
+            <p className="font-medium" style={cline(598, 410, 14, { color: "#333", margin: 0 })}>
+              Ingredients as printed on the product label. Ask our clinic team for complete details.
+            </p>
           )}
 
           {/* Precautions */}
@@ -220,7 +321,7 @@ export default function ProductUsageGuide({ title, productInfo }: { title: strin
             <div key={t}>
               <img src={`/product-v2/prec${i + 1}.png`} alt="" style={at(950, precIconY[i] - 22, { width: u(44), height: u(42) })} />
               <p className="font-medium" style={at(1015, precTextY[i] - 10, { width: u(380), fontSize: u(13.5), lineHeight: u(19), color: "#222", margin: 0, paddingTop: u(2) })}>{t}</p>
-              {i < 3 && <span aria-hidden style={at(1020, [272, 323, 375][i], { width: u(390), height: u(1), background: "#EDEDED" })} />}
+              {i < Math.min(precautions.length, 4) - 1 && <span aria-hidden style={at(1020, [272, 323, 375][i], { width: u(390), height: u(1), background: "#EDEDED" })} />}
             </div>
           ))}
 
@@ -313,7 +414,9 @@ export default function ProductUsageGuide({ title, productInfo }: { title: strin
                 ))}
               </div>
             ) : (
-              <p className="text-[13.5px] font-medium">Use as directed on the product label or as advised by your treating doctor.</p>
+              <p className="text-[13px] font-medium leading-[20px] text-[#222]">
+                {directions || "Use as directed on the product label or as advised by your treating doctor."}
+              </p>
             )}
           </MobileCard>
           <MobileCard title="Precautions" icon={<TriangleAlert className="h-5 w-5" />}>
@@ -326,7 +429,7 @@ export default function ProductUsageGuide({ title, productInfo }: { title: strin
               ))}
             </ul>
           </MobileCard>
-          {ingList.length > 0 && (
+          {ingList.length > 0 ? (
             <MobileCard title="Key Ingredients" icon={<Sprout className="h-5 w-5" />}>
               <div className="grid grid-cols-3 gap-2 text-center text-[12.5px] text-[#333]">
                 {ingList.map((ing) => (
@@ -337,6 +440,12 @@ export default function ProductUsageGuide({ title, productInfo }: { title: strin
                   </div>
                 ))}
               </div>
+            </MobileCard>
+          ) : (
+            <MobileCard title="Key Ingredients" icon={<Sprout className="h-5 w-5" />}>
+              <p className="text-[12.5px] font-medium leading-[19px] text-[#333]">
+                Ingredients as printed on the product label. Ask our clinic team for complete details.
+              </p>
             </MobileCard>
           )}
           <MobileCard title="Product Specifications" icon={<ClipboardList className="h-5 w-5" />} wide>
