@@ -12,20 +12,18 @@ import ProductDetailView from "@/components/products/ProductDetailView";
 export default function ProductDetailPage({ slug, initialApiProduct }: { slug: string; initialApiProduct?: ApiProduct | null }) {
   const [product, setProduct] = useState<Product | null | undefined>(() => {
     if (initialApiProduct) return fromApi(initialApiProduct);
-    if (initialApiProduct === null) {
-      const found = allProducts.find((p) => p.slug === slugify(slug));
-      if (found) {
-        return {
-          ...found,
-          detail: found.detail ?? (found.slug === "ayurvedic-tablets" || found.slug === "triphala-juice" ? {
-            price: 450,
-            mrp: 600,
-            gallery: [found.imageSrc],
-          } : undefined),
-        };
-      }
-      return null;
+    const found = allProducts.find((p) => p.slug === slugify(slug));
+    if (found) {
+      return {
+        ...found,
+        detail: found.detail ?? (found.slug === "ayurvedic-tablets" || found.slug === "triphala-juice" ? {
+          price: 450,
+          mrp: 600,
+          gallery: [found.imageSrc],
+        } : undefined),
+      };
     }
+    if (initialApiProduct === null) return null;
     return undefined;
   });
 
