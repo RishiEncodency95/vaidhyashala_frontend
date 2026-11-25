@@ -36,10 +36,10 @@ const LEAD_OTP_PROFILE = "CHAT_LEAD";
 
 const T = {
   en: {
-    name: "Vaidhya Mitra",
+    name: "Salu",
     subtitle: "Vaidhyashala Assistant",
-    greetTitle: "Namo Gange Namaskar! 🙏",
-    greetLine: "I'm Vaidhya Mitra, your Ayurveda care assistant.",
+    greetTitle: "Namaskar! 🙏",
+    greetLine: "I'm Salu, your Ayurveda care assistant.",
     followUp: "Contact details only for follow-up",
     askName: "May I know your name?",
     namePlaceholder: "Type your name...",
@@ -68,10 +68,10 @@ const T = {
     times: ["Any working-hour slot", "Morning (10 AM – 1 PM)", "Afternoon (1 PM – 4 PM)", "Evening (4 PM – 7 PM)"],
   },
   hi: {
-    name: "वैद्य मित्र",
+    name: "शालू",
     subtitle: "वैद्यशाला सहायक",
-    greetTitle: "नमो गंगे नमस्कार! 🙏",
-    greetLine: "मैं वैद्य मित्र हूँ, आपका आयुर्वेद सहायक।",
+    greetTitle: "नमस्कार! 🙏",
+    greetLine: "मैं शालू हूँ, आपकी आयुर्वेद सहायक।",
     followUp: "संपर्क विवरण केवल फ़ॉलो-अप के लिए",
     askName: "क्या मैं आपका नाम जान सकता हूँ?",
     namePlaceholder: "अपना नाम लिखें...",

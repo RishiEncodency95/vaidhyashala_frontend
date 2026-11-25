@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" fill="none">
+  <defs>
+    <linearGradient id="vdsLeafGrad" x1="0" y1="0" x2="400" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0b3d2e" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#bf8a2e" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="vdsWaveGrad" x1="0" y1="200" x2="400" y2="320" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0b3d2e" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#125742" stop-opacity="0.14"/>
+    </linearGradient>
+  </defs>
+  <!-- Soft rolling herbal hills -->
+  <path d="M0 250 C90 215, 190 275, 290 235 C345 212, 375 225, 400 240 L400 320 L0 320 Z" fill="url(#vdsWaveGrad)"/>
+  <path d="M0 280 C110 255, 230 295, 400 262 L400 320 L0 320 Z" fill="#0b3d2e" fill-opacity="0.06"/>
+  <!-- Left botanical tulsi/neem branch -->
+  <g stroke="#0b3d2e" stroke-opacity="0.14" stroke-width="1.4" stroke-linecap="round">
+    <path d="M24 318 C28 260, 44 210, 74 168"/>
+    <path d="M40 264 C18 254, 12 232, 24 222 C38 232, 44 250, 40 264 Z" fill="url(#vdsLeafGrad)"/>
+    <path d="M48 235 C68 228, 82 210, 74 198 C58 202, 48 218, 48 235 Z" fill="url(#vdsLeafGrad)"/>
+    <path d="M60 200 C38 190, 32 170, 44 160 C56 170, 62 186, 60 200 Z" fill="url(#vdsLeafGrad)"/>
+    <path d="M74 168 C72 150, 86 138, 96 144 C96 158, 86 168, 74 168 Z" fill="url(#vdsLeafGrad)"/>
+  </g>
+  <!-- Right botanical branch & lotus accent -->
+  <g stroke="#bf8a2e" stroke-opacity="0.22" stroke-width="1.3" stroke-linecap="round">
+    <path d="M372 318 C366 268, 348 225, 322 188"/>
+    <path d="M356 268 C376 258, 384 238, 372 228 C358 236, 352 254, 356 268 Z" fill="#bf8a2e" fill-opacity="0.08"/>
+    <path d="M342 234 C322 226, 312 208, 322 198 C336 204, 344 220, 342 234 Z" fill="#bf8a2e" fill-opacity="0.08"/>
+    <path d="M322 188 C324 170, 310 158, 300 166 C300 180, 310 188, 322 188 Z" fill="#0b3d2e" fill-opacity="0.07"/>
+  </g>
+  <!-- Subtle Ayurveda lotus watermark bottom center -->
+  <g transform="translate(200,282)" stroke="#bf8a2e" stroke-opacity="0.2" stroke-width="1.2" fill="#bf8a2e" fill-opacity="0.05">
+    <path d="M0 -24 C10 -12, 10 4, 0 12 C-10 4, -10 -12, 0 -24 Z"/>
+    <path d="M-4 8 C-20 4, -28 -10, -22 -18 C-10 -14, -4 -2, -4 8 Z"/>
+    <path d="M4 8 C20 4, 28 -10, 22 -18 C10 -14, 4 -2, 4 8 Z"/>
+  </g>
+</svg>

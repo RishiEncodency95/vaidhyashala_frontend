@@ -1,10 +1,3 @@
-/**
- * Product and testimonial cards from the backend (Admin → Products / Testimonials).
- * Public, read-only: GET {API}/website/products and {API}/website/testimonials.
- * Each call returns null if the API cannot be reached, so the page keeps the
- * text and images it shipped with.
- */
-
 import { API_BASE } from "@/lib/api";
 
 export interface ApiProduct {

@@ -1,0 +1,86 @@
+/* Saumya's launcher: the drawn avatar (public/moksha-chatbot/saumya-real.svg, moved by saumyaRealAvatar.ts) in the
+   corner, with no speech bubble. ChatbotLauncher sets .mv-ready (she is drawn), .mv-failed (she couldn't load: an ॐ
+   badge instead), .mv-intro (her first namaste: she rises) and .sv-hidden (the chat is open). Only she takes clicks;
+   the rest of the box lets clicks through to the page. The SVG's layers follow the classes and data-v that
+   saumyaRealAvatar.ts sets on it. The earlier 3D avatar is kept in moksha-aunty-avatar/. */
+.mv-bot{--sv-w:128px;--sv-h:156px;--mx:0;--my:0;--tilt:0;position:fixed;width:var(--sv-w);height:var(--sv-h);
+        padding:0;border:0;margin:0;background:none;pointer-events:none;-webkit-tap-highlight-color:transparent;outline:none;
+        transition:opacity .3s ease,visibility .3s ease}
+.mv-bot.sv-hidden{opacity:0;visibility:hidden}
+
+/* ✕ that hides Saumya until the page is reloaded: by the top right of her box, clear of the bubble on her left */
+.sv-close{--sv-w:128px;--sv-h:156px;position:fixed;width:22px;height:22px;margin:0 6px calc(var(--sv-h) - 26px) 0;padding:0;
+        display:grid;place-items:center;border-radius:50%;border:1.5px solid #fff;cursor:pointer;
+        background:#2f5a52;color:#fbe7b0;box-shadow:0 4px 10px rgba(30,60,55,.35);transition:transform .2s ease,background .2s ease}
+.sv-close:hover{background:#3f6a61;transform:scale(1.08)}
+.sv-close:focus-visible{outline:2px solid #e0b54f;outline-offset:2px}
+.sv-close svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+
+
+/* her */
+.mv-stage{position:absolute;inset:0;display:block;pointer-events:auto;cursor:pointer;opacity:0;transition:opacity .6s ease,scale .3s}
+.mv-ready .mv-stage{opacity:1}
+.mv-bot:hover .mv-stage{scale:1.03}
+.mv-bot:focus-visible .mv-stage{outline:3px solid rgba(224,181,79,.85);outline-offset:-6px;border-radius:40% 40% 12px 12px}
+.mv-tilt{display:block;width:100%;height:100%;transform:perspective(900px) rotateY(calc(var(--mx) * 5deg)) rotateX(calc(var(--my) * -3deg));
+        transform-origin:50% 100%}
+.mv-figure{display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 100%;
+        filter:drop-shadow(0 6px 16px rgba(20,40,36,.22))}
+
+
+/* she couldn't load: a round ॐ badge */
+.mv-fallback{display:none}
+.mv-failed .mv-stage{display:none}
+.mv-failed .mv-fallback{display:grid;place-items:center;position:absolute;left:50%;bottom:34px;transform:translateX(-50%);
+        width:64px;height:64px;border-radius:50%;font-size:34px;font-weight:700;color:#7a1500;pointer-events:auto;cursor:pointer;
+        font-family:"Nirmala UI","Mangal","Kohinoor Devanagari","Noto Sans Devanagari",serif;
+        background:radial-gradient(circle at 35% 30%,#fff2b8,#ffbf3a 55%,#e86d00);box-shadow:0 8px 18px rgba(140,50,0,.3)}
+
+/* ---- the SVG's layers (from the designer's page) ---- */
+.mv-figure .mv-glow{animation:mv-glow 4s ease-in-out infinite}
+.mv-figure .mv-breathe{transform-box:view-box;transform-origin:245px 598px;animation:mv-breathe 4.4s ease-in-out infinite}
+.mv-figure .mv-bodyp{transform:translate(calc(var(--mx) * 1.5px),calc(var(--my) * 1px))}
+.mv-figure .mv-headp{transform-box:view-box;transform-origin:245px 220px;
+        transform:translate(calc(var(--mx) * 7px),calc(var(--my) * 4px)) rotate(calc(var(--mx) * 2.4deg + var(--tilt) * 1deg))}
+.mv-figure .mv-nod,.mv-figure .mv-htalk{transform-box:view-box;transform-origin:245px 220px}
+/* arms: open, then joined for namaste */
+.mv-figure .mv-armL{transform-box:view-box;transform-origin:76px 552.5px;transition:transform .8s cubic-bezier(.45,0,.2,1)}
+.mv-figure .mv-armR{transform-box:view-box;transform-origin:410px 552.5px;transition:transform .8s cubic-bezier(.45,0,.2,1)}
+.mv-figure.mv-open .mv-armL{transform:rotate(-5.5deg);transition-duration:.45s}
+.mv-figure.mv-open .mv-armR{transform:rotate(5.5deg);transition-duration:.45s}
+.mv-figure .mv-arms{transform-box:view-box;transform-origin:245px 552px}
+.mv-figure.mv-press .mv-arms{animation:mv-press .7s ease-out}
+/* the face: mouth shapes (data-v 1–5), eyes to a side, brows up, blinking */
+.mv-figure .mv-v,.mv-figure .mv-gz,.mv-figure .mv-brow,.mv-figure .mv-blink{opacity:0}
+.mv-figure .mv-v{transition:opacity .07s}
+.mv-figure[data-v="1"] .mv-v1,.mv-figure[data-v="2"] .mv-v2,.mv-figure[data-v="3"] .mv-v3,
+.mv-figure[data-v="4"] .mv-v4,.mv-figure[data-v="5"] .mv-v5{opacity:1}
+.mv-figure .mv-gz{transition:opacity .12s}
+.mv-figure.mv-look-l .mv-gL,.mv-figure.mv-look-r .mv-gR{opacity:1}
+.mv-figure .mv-brow{transition:opacity .22s}
+.mv-figure.mv-brow-up .mv-brow{opacity:1}
+.mv-figure .mv-blink{transition:opacity .05s}
+.mv-figure.mv-blinking .mv-blink,.mv-figure.mv-eyes-closed .mv-blink{opacity:1}
+/* bowing, and small nods */
+.mv-bot .mv-figure.mv-bowing{animation:mv-bowbody 1.4s ease-in-out both}
+.mv-figure.mv-bowing .mv-nod{animation:mv-nod 1.4s ease-in-out both}
+.mv-figure.mv-nodlet .mv-htalk{animation:mv-nodlet .6s ease-in-out}
+
+/* her first namaste: she rises from below */
+.mv-intro .mv-stage{animation:mv-rise 1.3s cubic-bezier(.2,.9,.25,1) .15s both}
+
+@keyframes mv-rise{0%{transform:translateY(78%);opacity:0;filter:blur(5px)}55%{opacity:1;filter:blur(0)}82%{transform:translateY(-2%)}100%{transform:none;opacity:1;filter:none}}
+@keyframes mv-glow{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes mv-breathe{0%,100%{transform:none}50%{transform:translateY(-2.4px) scaleY(1.003)}}
+@keyframes mv-press{0%,100%{transform:none}40%{transform:translateY(-3.5px)}}
+@keyframes mv-bowbody{0%,100%{transform:none}32%,66%{transform:translateY(4px) scaleY(.988)}}
+@keyframes mv-nod{0%,100%{transform:none}32%,66%{transform:translateY(8px) scaleY(.965)}}
+@keyframes mv-nodlet{0%,100%{transform:none}45%{transform:translateY(3px) rotate(.6deg)}}
+
+/* phones: smaller, above the bottom tab bar */
+@media (max-width:600px){
+  .mv-bot,.sv-close{--sv-w:88px;--sv-h:107px}
+  .sv-close{width:20px;height:20px;margin:0 4px calc(var(--sv-h) - 22px) 0}
+  .mv-failed .mv-fallback{width:54px;height:54px;font-size:28px;bottom:28px}
+}
+@media (prefers-reduced-motion:reduce){.mv-bot,.mv-bot *{animation:none!important;transition:none!important}}
