@@ -37,7 +37,7 @@ import { poppins } from "@/lib/fonts";
 
 declare global {
   interface Window {
-    Razorpay?: new (opts: Record<string, unknown>) => { open: () => void; on: (e: string, cb: () => void) => void };
+    Razorpay?: new (opts: Record<string, unknown>) => { open: () => void; on: (e: string, cb: (resp?: unknown) => void) => void };
   }
 }
 
@@ -238,6 +238,18 @@ export default function CheckoutPage() {
         ...(f.notes.trim() ? { notes: f.notes.trim() } : {}),
         ...(coupon ? { couponCode: coupon.code } : {}),
       });
+      let paymentHandled = false;
+      const baseOrder = {
+        orderId: order.orderId,
+        razorpayOrderId: order.razorpay.orderId,
+        orderNumber: order.orderNumber,
+        placedAt: new Date().toISOString(),
+        total: order.total ?? payable,
+        savings: savings + (order.couponDiscount ?? couponOff),
+        customer: { name: f.name, mobile, email: f.email },
+        items: items.map((i) => ({ title: i.title, image: i.image, qty: i.qty, price: i.price, mrp: i.mrp })),
+      };
+
       const rz = new window.Razorpay!({
         key: order.razorpay.keyId,
         amount: order.razorpay.amount,
@@ -247,29 +259,73 @@ export default function CheckoutPage() {
         description: `Order ${order.orderNumber}`,
         prefill: { name: f.name, email: f.email, contact: mobile },
         theme: { color: "#0D382B" },
-        modal: { ondismiss: () => setBusy(false) },
+        modal: {
+          ondismiss: async () => {
+            if (paymentHandled) return;
+            try {
+              const status = await post("/status", { orderId: order.orderId, razorpay_order_id: order.razorpay.orderId });
+              if (status?.paymentStatus === "paid") {
+                saveLastOrder({ ...baseOrder, paymentStatus: "paid" });
+                clear();
+                router.push(`/order-success?o=${encodeURIComponent(order.orderNumber)}`);
+                return;
+              }
+              if (status?.paymentStatus === "failed") {
+                saveLastOrder({
+                  ...baseOrder,
+                  paymentStatus: "failed",
+                  failureReason: status.reason || "Payment was declined.",
+                  failureCode: status.code || "",
+                });
+                router.push(`/payment-failed?o=${encodeURIComponent(order.orderNumber)}`);
+                return;
+              }
+            } catch {
+              // fall through to pending page
+            }
+            saveLastOrder({ ...baseOrder, paymentStatus: "pending" });
+            router.push(`/payment-pending?o=${encodeURIComponent(order.orderNumber)}`);
+          },
+        },
         handler: async (r: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+          paymentHandled = true;
           try {
             const done = await post("/verify", { orderId: order.orderId, ...r });
             saveLastOrder({
+              ...baseOrder,
               orderNumber: done.orderNumber,
-              placedAt: new Date().toISOString(),
               total: done.total,
-              // Product discounts plus the coupon, so the summary adds up to what was paid
-              savings: savings + (order.couponDiscount ?? 0),
-              items: items.map((i) => ({ title: i.title, image: i.image, qty: i.qty, price: i.price, mrp: i.mrp })),
+              paymentStatus: "paid",
+              paymentId: r.razorpay_payment_id,
             });
             clear();
             router.push(`/order-success?o=${encodeURIComponent(done.orderNumber)}`);
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Payment could not be verified.");
-            setBusy(false);
+          } catch {
+            saveLastOrder({ ...baseOrder, paymentStatus: "pending", paymentId: r.razorpay_payment_id });
+            router.push(`/payment-pending?o=${encodeURIComponent(order.orderNumber)}`);
           }
         },
       });
-      rz.on("payment.failed", () => {
-        setError("Payment failed. You have not been charged. Please try again.");
-        setBusy(false);
+      rz.on("payment.failed", (resp: unknown) => {
+        paymentHandled = true;
+        const errObj = (resp as { error?: { description?: string; reason?: string; code?: string; metadata?: { payment_id?: string } } })?.error;
+        const reason = errObj?.description || errObj?.reason || "Payment could not be completed. You have not been charged.";
+        const code = errObj?.code || "";
+        saveLastOrder({
+          ...baseOrder,
+          paymentStatus: "failed",
+          failureReason: reason,
+          failureCode: code,
+          paymentId: errObj?.metadata?.payment_id,
+        });
+        void post("/fail", {
+          orderId: order.orderId,
+          razorpay_order_id: order.razorpay.orderId,
+          razorpay_payment_id: errObj?.metadata?.payment_id,
+          reason,
+          code,
+        }).catch(() => {});
+        router.push(`/payment-failed?o=${encodeURIComponent(order.orderNumber)}`);
       });
       rz.open();
     } catch (err) {

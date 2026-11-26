@@ -3,12 +3,19 @@
  * (the server has no public order lookup, so nothing personal is ever fetched or exposed).
  */
 export interface LastOrder {
+  orderId?: string;
+  razorpayOrderId?: string;
   orderNumber: string;
-  /** ISO time the payment was verified */
+  /** ISO time the order/payment was recorded */
   placedAt: string;
   total: number;
   /** Product discounts (MRP − price) across the order */
   savings: number;
+  paymentStatus?: "paid" | "pending" | "failed";
+  failureReason?: string;
+  failureCode?: string;
+  paymentId?: string;
+  customer?: { name: string; mobile: string; email?: string };
   items: { title: string; image: string; qty: number; price: number; mrp: number }[];
 }
 
